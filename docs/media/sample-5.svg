@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480">
+  <defs><pattern id="p" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="40" height="40" fill="#006bb6"/><rect width="20" height="40" fill="#fdf6ec" opacity="0.12"/></pattern></defs>
+  <rect width="640" height="480" fill="url(#p)"/>
+  <rect x="20" y="20" width="600" height="440" fill="none" stroke="#fdf6ec" stroke-width="6"/>
+  <text x="320" y="210" font-family="Arial Black, sans-serif" font-size="120" fill="#fdf6ec" text-anchor="middle">🏀</text>
+  <text x="320" y="320" font-family="Arial Black, sans-serif" font-weight="900" font-size="46" fill="#fdf6ec" text-anchor="middle">CONFERENCE SEMIFINALS</text>
+  <text x="320" y="370" font-family="Arial, sans-serif" font-size="26" fill="#fdf6ec" opacity="0.85" text-anchor="middle">Game 1 · W</text>
+</svg>

@@ -1,0 +1,1705 @@
+{
+  "generatedAt": "2026-06-16T12:00:00.000Z",
+  "sample": true,
+  "team": {
+    "name": "New York Knicks",
+    "season": "2025-26",
+    "championshipDate": "2026-06-13"
+  },
+  "series": [
+    {
+      "id": "r1",
+      "label": "First Round",
+      "opponent": "Opponent TBD",
+      "result": "W 4-1",
+      "games": [
+        {
+          "id": "r1g1",
+          "label": "Game 1",
+          "date": "2026-04-19",
+          "result": "W"
+        },
+        {
+          "id": "r1g2",
+          "label": "Game 2",
+          "date": "2026-04-21",
+          "result": "W"
+        },
+        {
+          "id": "r1g3",
+          "label": "Game 3",
+          "date": "2026-04-24",
+          "result": "L"
+        },
+        {
+          "id": "r1g4",
+          "label": "Game 4",
+          "date": "2026-04-26",
+          "result": "W"
+        },
+        {
+          "id": "r1g5",
+          "label": "Game 5",
+          "date": "2026-04-29",
+          "result": "W"
+        }
+      ]
+    },
+    {
+      "id": "r2",
+      "label": "Conference Semifinals",
+      "opponent": "Opponent TBD",
+      "result": "W 4-2",
+      "games": [
+        {
+          "id": "r2g1",
+          "label": "Game 1",
+          "date": "2026-05-04",
+          "result": "W"
+        },
+        {
+          "id": "r2g2",
+          "label": "Game 2",
+          "date": "2026-05-06",
+          "result": "L"
+        },
+        {
+          "id": "r2g3",
+          "label": "Game 3",
+          "date": "2026-05-09",
+          "result": "W"
+        },
+        {
+          "id": "r2g4",
+          "label": "Game 4",
+          "date": "2026-05-11",
+          "result": "L"
+        },
+        {
+          "id": "r2g5",
+          "label": "Game 5",
+          "date": "2026-05-13",
+          "result": "W"
+        },
+        {
+          "id": "r2g6",
+          "label": "Game 6",
+          "date": "2026-05-15",
+          "result": "W"
+        }
+      ]
+    },
+    {
+      "id": "ecf",
+      "label": "Eastern Conference Finals",
+      "opponent": "Opponent TBD",
+      "result": "W 4-2",
+      "games": [
+        {
+          "id": "ecfg1",
+          "label": "Game 1",
+          "date": "2026-05-20",
+          "result": "W"
+        },
+        {
+          "id": "ecfg2",
+          "label": "Game 2",
+          "date": "2026-05-22",
+          "result": "W"
+        },
+        {
+          "id": "ecfg3",
+          "label": "Game 3",
+          "date": "2026-05-24",
+          "result": "L"
+        },
+        {
+          "id": "ecfg4",
+          "label": "Game 4",
+          "date": "2026-05-26",
+          "result": "L"
+        },
+        {
+          "id": "ecfg5",
+          "label": "Game 5",
+          "date": "2026-05-28",
+          "result": "W"
+        },
+        {
+          "id": "ecfg6",
+          "label": "Game 6",
+          "date": "2026-05-31",
+          "result": "W"
+        }
+      ]
+    },
+    {
+      "id": "finals",
+      "label": "NBA Finals",
+      "opponent": "Opponent TBD",
+      "result": "W 4-1 — CHAMPIONS",
+      "games": [
+        {
+          "id": "finalsg1",
+          "label": "Game 1",
+          "date": "2026-06-04",
+          "result": "W"
+        },
+        {
+          "id": "finalsg2",
+          "label": "Game 2",
+          "date": "2026-06-07",
+          "result": "W"
+        },
+        {
+          "id": "finalsg3",
+          "label": "Game 3",
+          "date": "2026-06-09",
+          "result": "L"
+        },
+        {
+          "id": "finalsg4",
+          "label": "Game 4",
+          "date": "2026-06-11",
+          "result": "W"
+        },
+        {
+          "id": "finalsg5",
+          "label": "Game 5 — CLINCHER",
+          "date": "2026-06-13",
+          "result": "W"
+        }
+      ]
+    }
+  ],
+  "festivities": {
+    "keywords": [
+      "parade",
+      "canyon of heroes",
+      "ticker tape",
+      "celebration",
+      "champions",
+      "championship",
+      "ring",
+      "trophy",
+      "larry o'brien",
+      "title",
+      "rally",
+      "city hall",
+      "broadway",
+      "duffy square"
+    ],
+    "events": [
+      {
+        "id": "clinch-night",
+        "label": "Clinch Night @ MSG",
+        "date": "2026-06-13"
+      },
+      {
+        "id": "parade",
+        "label": "Championship Parade — Canyon of Heroes",
+        "date": "2026-06-16"
+      },
+      {
+        "id": "rally",
+        "label": "City Hall Rally",
+        "date": "2026-06-16"
+      }
+    ]
+  },
+  "players": [
+    {
+      "name": "Jalen Brunson",
+      "number": 11
+    },
+    {
+      "name": "Karl-Anthony Towns",
+      "number": 32
+    },
+    {
+      "name": "OG Anunoby",
+      "number": 8
+    },
+    {
+      "name": "Mikal Bridges",
+      "number": 25
+    },
+    {
+      "name": "Josh Hart",
+      "number": 3
+    },
+    {
+      "name": "Mitchell Robinson",
+      "number": 23
+    },
+    {
+      "name": "Deuce McBride",
+      "number": 9
+    },
+    {
+      "name": "Tom Thibodeau",
+      "number": null
+    }
+  ],
+  "celebrities": [
+    {
+      "name": "Spike Lee"
+    },
+    {
+      "name": "Timothée Chalamet"
+    },
+    {
+      "name": "Ben Stiller"
+    },
+    {
+      "name": "Tracy Morgan"
+    },
+    {
+      "name": "Jon Stewart"
+    },
+    {
+      "name": "Jalen Rose"
+    }
+  ],
+  "count": 56,
+  "posts": [
+    {
+      "id": "ig-sample-55",
+      "platform": "instagram",
+      "author": "bingbong_szn",
+      "authorName": "bingbong_szn",
+      "text": "City Hall rally was INSANE. Thibs got the loudest ovation. CHAMPIONS forever. 🏆 #NewYorkForever",
+      "image": "media/sample-30.svg",
+      "video": false,
+      "url": "https://www.instagram.com/bingbong_szn/",
+      "date": "2026-06-16T19:00:00.000Z",
+      "likes": 72735,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "festivities",
+        "seriesLabel": "Festivities",
+        "game": null,
+        "gameLabel": null,
+        "players": [
+          "Tom Thibodeau"
+        ],
+        "celebrities": [],
+        "category": "festivities",
+        "festivityEvent": "parade"
+      }
+    },
+    {
+      "id": "x-sample-54",
+      "platform": "x",
+      "author": "garden_faithful",
+      "authorName": "garden_faithful",
+      "text": "Ticker tape raining down on Broadway. Brunson lifting the trophy on the float. Best day of my life. #Knicks #parade",
+      "image": "media/sample-29.svg",
+      "video": false,
+      "url": "https://x.com/garden_faithful",
+      "date": "2026-06-16T15:30:00.000Z",
+      "likes": 71958,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "festivities",
+        "seriesLabel": "Festivities",
+        "game": null,
+        "gameLabel": null,
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "festivities",
+        "festivityEvent": "parade"
+      }
+    },
+    {
+      "id": "ig-sample-53",
+      "platform": "instagram",
+      "author": "nyknicks",
+      "authorName": "nyknicks",
+      "text": "🎉 PARADE DAY. Canyon of Heroes. Ticker tape. Bring the whole city. See you on Broadway. #NewYorkForever",
+      "image": "media/sample-28.svg",
+      "video": false,
+      "url": "https://www.instagram.com/nyknicks/",
+      "date": "2026-06-16T13:00:00.000Z",
+      "likes": 71181,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "festivities",
+        "seriesLabel": "Festivities",
+        "game": null,
+        "gameLabel": null,
+        "players": [],
+        "celebrities": [],
+        "category": "festivities",
+        "festivityEvent": "parade"
+      }
+    },
+    {
+      "id": "x-sample-43",
+      "platform": "x",
+      "author": "SNYtv",
+      "authorName": "SNYtv",
+      "text": "Knicks TAKE GAME 5 — CLINCHER of the NBA Finals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/SNYtv",
+      "date": "2026-06-13T23:48:00.000Z",
+      "likes": 14273,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg5",
+        "gameLabel": "Game 5 — CLINCHER",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-42",
+      "platform": "instagram",
+      "author": "knickstape_",
+      "authorName": "knickstape_",
+      "text": "🏀🔥 NBA Finals Game 5 — CLINCHER — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-21.svg",
+      "video": false,
+      "url": "https://www.instagram.com/knickstape_/",
+      "date": "2026-06-13T23:14:00.000Z",
+      "likes": 7554,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg5",
+        "gameLabel": "Game 5 — CLINCHER",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-50",
+      "platform": "instagram",
+      "author": "jalenbrunson",
+      "authorName": "jalenbrunson",
+      "text": "FOR THE CITY. We did it New York. I love this team. I love this city. CHAMPIONS. 🏆🗽 #NewYorkForever",
+      "image": "media/sample-26.svg",
+      "video": false,
+      "url": "https://www.instagram.com/jalenbrunson/",
+      "date": "2026-06-13T05:20:00.000Z",
+      "likes": 68850,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg5",
+        "gameLabel": "Game 5 — CLINCHER",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "festivities",
+        "festivityEvent": "clinch-night"
+      }
+    },
+    {
+      "id": "ig-sample-51",
+      "platform": "instagram",
+      "author": "garden_faithful",
+      "authorName": "garden_faithful",
+      "text": "Crying in the street outside MSG. 51 years. We are CHAMPIONS. I can't breathe. #Knicks #bingbong",
+      "image": null,
+      "video": false,
+      "url": "https://www.instagram.com/garden_faithful/",
+      "date": "2026-06-13T04:00:00.000Z",
+      "likes": 88000,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg5",
+        "gameLabel": "Game 5 — CLINCHER",
+        "players": [],
+        "celebrities": [],
+        "category": "festivities",
+        "festivityEvent": "clinch-night"
+      }
+    },
+    {
+      "id": "x-sample-52",
+      "platform": "x",
+      "author": "espn",
+      "authorName": "espn",
+      "text": "The Larry O'Brien trophy is going to Manhattan. Knicks win their first title since 1973. Canyon of Heroes parade to follow. #NBAFinals",
+      "image": "media/sample-27.svg",
+      "video": false,
+      "url": "https://x.com/espn",
+      "date": "2026-06-13T03:40:00.000Z",
+      "likes": 70404,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg5",
+        "gameLabel": "Game 5 — CLINCHER",
+        "players": [],
+        "celebrities": [],
+        "category": "festivities",
+        "festivityEvent": "clinch-night"
+      }
+    },
+    {
+      "id": "x-sample-49",
+      "platform": "x",
+      "author": "nyknicks",
+      "authorName": "nyknicks",
+      "text": "CHAMPIONS. 🏆 NEW YORK KNICKS — 2026 NBA CHAMPIONS. The drought is OVER. #NewYorkForever",
+      "image": "media/sample-25.svg",
+      "video": false,
+      "url": "https://x.com/nyknicks",
+      "date": "2026-06-13T03:05:00.000Z",
+      "likes": 68073,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg5",
+        "gameLabel": "Game 5 — CLINCHER",
+        "players": [],
+        "celebrities": [],
+        "category": "festivities",
+        "festivityEvent": "clinch-night"
+      }
+    },
+    {
+      "id": "x-sample-48",
+      "platform": "x",
+      "author": "jalenbrunson",
+      "authorName": "jalenbrunson",
+      "text": "MSG, we hear you. Game 5. Let's bring it home. 🔵🟠",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/jalenbrunson",
+      "date": "2026-06-12T20:30:00.000Z",
+      "likes": 27984,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg5",
+        "gameLabel": "Game 5 — CLINCHER",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "festivities",
+        "festivityEvent": "clinch-night"
+      }
+    },
+    {
+      "id": "x-sample-41",
+      "platform": "x",
+      "author": "ShamsCharania",
+      "authorName": "ShamsCharania",
+      "text": "Knicks TAKE GAME 4 of the NBA Finals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/ShamsCharania",
+      "date": "2026-06-11T23:48:00.000Z",
+      "likes": 13851,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg4",
+        "gameLabel": "Game 4",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-40",
+      "platform": "instagram",
+      "author": "msg_loud",
+      "authorName": "msg_loud",
+      "text": "🏀🔥 NBA Finals Game 4 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-20.svg",
+      "video": false,
+      "url": "https://www.instagram.com/msg_loud/",
+      "date": "2026-06-11T23:14:00.000Z",
+      "likes": 7280,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg4",
+        "gameLabel": "Game 4",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-47",
+      "platform": "instagram",
+      "author": "kat",
+      "authorName": "kat",
+      "text": "One more. Locked in. 🙏 @nyknicks #NewYorkForever",
+      "image": "media/sample-24.svg",
+      "video": false,
+      "url": "https://www.instagram.com/kat/",
+      "date": "2026-06-10T18:00:00.000Z",
+      "likes": 27651,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg4",
+        "gameLabel": "Game 4",
+        "players": [
+          "Karl-Anthony Towns"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-39",
+      "platform": "x",
+      "author": "SNYtv",
+      "authorName": "SNYtv",
+      "text": "Knicks drop a tough one 3 of the NBA Finals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/SNYtv",
+      "date": "2026-06-09T23:48:00.000Z",
+      "likes": 13429,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg3",
+        "gameLabel": "Game 3",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-38",
+      "platform": "instagram",
+      "author": "nyk_nation",
+      "authorName": "nyk_nation",
+      "text": "😤 NBA Finals Game 3 — Knicks fall vs Opponent TBD. We bounce back. #Knicks #knicks #knicksnation",
+      "image": "media/sample-19.svg",
+      "video": false,
+      "url": "https://www.instagram.com/nyk_nation/",
+      "date": "2026-06-09T23:14:00.000Z",
+      "likes": 7006,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg3",
+        "gameLabel": "Game 3",
+        "players": [],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-37",
+      "platform": "x",
+      "author": "ShamsCharania",
+      "authorName": "ShamsCharania",
+      "text": "Knicks TAKE GAME 2 of the NBA Finals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/ShamsCharania",
+      "date": "2026-06-07T23:48:00.000Z",
+      "likes": 13007,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg2",
+        "gameLabel": "Game 2",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-36",
+      "platform": "instagram",
+      "author": "garden_faithful",
+      "authorName": "garden_faithful",
+      "text": "🏀🔥 NBA Finals Game 2 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-18.svg",
+      "video": false,
+      "url": "https://www.instagram.com/garden_faithful/",
+      "date": "2026-06-07T23:14:00.000Z",
+      "likes": 6732,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg2",
+        "gameLabel": "Game 2",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-35",
+      "platform": "x",
+      "author": "SNYtv",
+      "authorName": "SNYtv",
+      "text": "Knicks TAKE GAME 1 of the NBA Finals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/SNYtv",
+      "date": "2026-06-04T23:48:00.000Z",
+      "likes": 12585,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg1",
+        "gameLabel": "Game 1",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-34",
+      "platform": "instagram",
+      "author": "subwaykid",
+      "authorName": "subwaykid",
+      "text": "🏀🔥 NBA Finals Game 1 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-17.svg",
+      "video": false,
+      "url": "https://www.instagram.com/subwaykid/",
+      "date": "2026-06-04T23:14:00.000Z",
+      "likes": 6458,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg1",
+        "gameLabel": "Game 1",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-46",
+      "platform": "x",
+      "author": "nyknicks",
+      "authorName": "nyknicks",
+      "text": "Timothée Chalamet and Ben Stiller in the building for Finals Game 1. Everybody wants in. 🍿 #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/nyknicks",
+      "date": "2026-06-04T22:00:00.000Z",
+      "likes": 27318,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "finals",
+        "seriesLabel": "NBA Finals",
+        "game": "finalsg1",
+        "gameLabel": "Game 1",
+        "players": [],
+        "celebrities": [
+          "Timothée Chalamet",
+          "Ben Stiller"
+        ],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-33",
+      "platform": "x",
+      "author": "ShamsCharania",
+      "authorName": "ShamsCharania",
+      "text": "Knicks TAKE GAME 6 of the Eastern Conference Finals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/ShamsCharania",
+      "date": "2026-05-31T23:48:00.000Z",
+      "likes": 12163,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg6",
+        "gameLabel": "Game 6",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-32",
+      "platform": "instagram",
+      "author": "orange_n_blue",
+      "authorName": "orange_n_blue",
+      "text": "🏀🔥 Eastern Conference Finals Game 6 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-16.svg",
+      "video": false,
+      "url": "https://www.instagram.com/orange_n_blue/",
+      "date": "2026-05-31T23:14:00.000Z",
+      "likes": 6184,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg6",
+        "gameLabel": "Game 6",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-31",
+      "platform": "x",
+      "author": "SNYtv",
+      "authorName": "SNYtv",
+      "text": "Knicks TAKE GAME 5 of the Eastern Conference Finals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/SNYtv",
+      "date": "2026-05-28T23:48:00.000Z",
+      "likes": 11741,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg5",
+        "gameLabel": "Game 5",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-30",
+      "platform": "instagram",
+      "author": "bingbong_szn",
+      "authorName": "bingbong_szn",
+      "text": "🏀🔥 Eastern Conference Finals Game 5 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-15.svg",
+      "video": false,
+      "url": "https://www.instagram.com/bingbong_szn/",
+      "date": "2026-05-28T23:14:00.000Z",
+      "likes": 5910,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg5",
+        "gameLabel": "Game 5",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-44",
+      "platform": "x",
+      "author": "espn",
+      "authorName": "espn",
+      "text": "Spike Lee courtside at MSG losing his mind as the Knicks pull away. The Garden is SHAKING. #Knicks",
+      "image": "media/sample-22.svg",
+      "video": false,
+      "url": "https://x.com/espn",
+      "date": "2026-05-28T02:30:00.000Z",
+      "likes": 26652,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg5",
+        "gameLabel": "Game 5",
+        "players": [],
+        "celebrities": [
+          "Spike Lee"
+        ],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-29",
+      "platform": "x",
+      "author": "ShamsCharania",
+      "authorName": "ShamsCharania",
+      "text": "Knicks drop a tough one 4 of the Eastern Conference Finals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/ShamsCharania",
+      "date": "2026-05-26T23:48:00.000Z",
+      "likes": 11319,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg4",
+        "gameLabel": "Game 4",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-28",
+      "platform": "instagram",
+      "author": "knickstape_",
+      "authorName": "knickstape_",
+      "text": "😤 Eastern Conference Finals Game 4 — Knicks fall vs Opponent TBD. We bounce back. #Knicks #knicks #knicksnation",
+      "image": "media/sample-14.svg",
+      "video": false,
+      "url": "https://www.instagram.com/knickstape_/",
+      "date": "2026-05-26T23:14:00.000Z",
+      "likes": 5636,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg4",
+        "gameLabel": "Game 4",
+        "players": [],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-27",
+      "platform": "x",
+      "author": "SNYtv",
+      "authorName": "SNYtv",
+      "text": "Knicks drop a tough one 3 of the Eastern Conference Finals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/SNYtv",
+      "date": "2026-05-24T23:48:00.000Z",
+      "likes": 10897,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg3",
+        "gameLabel": "Game 3",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-26",
+      "platform": "instagram",
+      "author": "msg_loud",
+      "authorName": "msg_loud",
+      "text": "😤 Eastern Conference Finals Game 3 — Knicks fall vs Opponent TBD. We bounce back. #Knicks #knicks #knicksnation",
+      "image": "media/sample-13.svg",
+      "video": false,
+      "url": "https://www.instagram.com/msg_loud/",
+      "date": "2026-05-24T23:14:00.000Z",
+      "likes": 5362,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg3",
+        "gameLabel": "Game 3",
+        "players": [],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-25",
+      "platform": "x",
+      "author": "ShamsCharania",
+      "authorName": "ShamsCharania",
+      "text": "Knicks TAKE GAME 2 of the Eastern Conference Finals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/ShamsCharania",
+      "date": "2026-05-22T23:48:00.000Z",
+      "likes": 10475,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg2",
+        "gameLabel": "Game 2",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-24",
+      "platform": "instagram",
+      "author": "nyk_nation",
+      "authorName": "nyk_nation",
+      "text": "🏀🔥 Eastern Conference Finals Game 2 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-12.svg",
+      "video": false,
+      "url": "https://www.instagram.com/nyk_nation/",
+      "date": "2026-05-22T23:14:00.000Z",
+      "likes": 5088,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg2",
+        "gameLabel": "Game 2",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-45",
+      "platform": "instagram",
+      "author": "nyknicks",
+      "authorName": "nyknicks",
+      "text": "Karl-Anthony Towns double-double, OG Anunoby locking up the wing. This is Knicks basketball. 🧱 #NewYorkForever",
+      "image": "media/sample-23.svg",
+      "video": false,
+      "url": "https://www.instagram.com/nyknicks/",
+      "date": "2026-05-22T01:10:00.000Z",
+      "likes": 26985,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg2",
+        "gameLabel": "Game 2",
+        "players": [
+          "Karl-Anthony Towns",
+          "OG Anunoby"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-23",
+      "platform": "x",
+      "author": "SNYtv",
+      "authorName": "SNYtv",
+      "text": "Knicks TAKE GAME 1 of the Eastern Conference Finals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/SNYtv",
+      "date": "2026-05-20T23:48:00.000Z",
+      "likes": 10053,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg1",
+        "gameLabel": "Game 1",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-22",
+      "platform": "instagram",
+      "author": "garden_faithful",
+      "authorName": "garden_faithful",
+      "text": "🏀🔥 Eastern Conference Finals Game 1 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-11.svg",
+      "video": false,
+      "url": "https://www.instagram.com/garden_faithful/",
+      "date": "2026-05-20T23:14:00.000Z",
+      "likes": 4814,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "ecf",
+        "seriesLabel": "Eastern Conference Finals",
+        "game": "ecfg1",
+        "gameLabel": "Game 1",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-21",
+      "platform": "x",
+      "author": "ShamsCharania",
+      "authorName": "ShamsCharania",
+      "text": "Knicks TAKE GAME 6 of the Conference Semifinals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/ShamsCharania",
+      "date": "2026-05-15T23:48:00.000Z",
+      "likes": 9631,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r2",
+        "seriesLabel": "Conference Semifinals",
+        "game": "r2g6",
+        "gameLabel": "Game 6",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-20",
+      "platform": "instagram",
+      "author": "subwaykid",
+      "authorName": "subwaykid",
+      "text": "🏀🔥 Conference Semifinals Game 6 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-10.svg",
+      "video": false,
+      "url": "https://www.instagram.com/subwaykid/",
+      "date": "2026-05-15T23:14:00.000Z",
+      "likes": 4540,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r2",
+        "seriesLabel": "Conference Semifinals",
+        "game": "r2g6",
+        "gameLabel": "Game 6",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-19",
+      "platform": "x",
+      "author": "SNYtv",
+      "authorName": "SNYtv",
+      "text": "Knicks TAKE GAME 5 of the Conference Semifinals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/SNYtv",
+      "date": "2026-05-13T23:48:00.000Z",
+      "likes": 9209,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r2",
+        "seriesLabel": "Conference Semifinals",
+        "game": "r2g5",
+        "gameLabel": "Game 5",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-18",
+      "platform": "instagram",
+      "author": "orange_n_blue",
+      "authorName": "orange_n_blue",
+      "text": "🏀🔥 Conference Semifinals Game 5 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-9.svg",
+      "video": false,
+      "url": "https://www.instagram.com/orange_n_blue/",
+      "date": "2026-05-13T23:14:00.000Z",
+      "likes": 4266,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r2",
+        "seriesLabel": "Conference Semifinals",
+        "game": "r2g5",
+        "gameLabel": "Game 5",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-17",
+      "platform": "x",
+      "author": "ShamsCharania",
+      "authorName": "ShamsCharania",
+      "text": "Knicks drop a tough one 4 of the Conference Semifinals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/ShamsCharania",
+      "date": "2026-05-11T23:48:00.000Z",
+      "likes": 8787,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r2",
+        "seriesLabel": "Conference Semifinals",
+        "game": "r2g4",
+        "gameLabel": "Game 4",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-16",
+      "platform": "instagram",
+      "author": "bingbong_szn",
+      "authorName": "bingbong_szn",
+      "text": "😤 Conference Semifinals Game 4 — Knicks fall vs Opponent TBD. We bounce back. #Knicks #knicks #knicksnation",
+      "image": "media/sample-8.svg",
+      "video": false,
+      "url": "https://www.instagram.com/bingbong_szn/",
+      "date": "2026-05-11T23:14:00.000Z",
+      "likes": 3992,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r2",
+        "seriesLabel": "Conference Semifinals",
+        "game": "r2g4",
+        "gameLabel": "Game 4",
+        "players": [],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-15",
+      "platform": "x",
+      "author": "SNYtv",
+      "authorName": "SNYtv",
+      "text": "Knicks TAKE GAME 3 of the Conference Semifinals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/SNYtv",
+      "date": "2026-05-09T23:48:00.000Z",
+      "likes": 8365,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r2",
+        "seriesLabel": "Conference Semifinals",
+        "game": "r2g3",
+        "gameLabel": "Game 3",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-14",
+      "platform": "instagram",
+      "author": "knickstape_",
+      "authorName": "knickstape_",
+      "text": "🏀🔥 Conference Semifinals Game 3 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-7.svg",
+      "video": false,
+      "url": "https://www.instagram.com/knickstape_/",
+      "date": "2026-05-09T23:14:00.000Z",
+      "likes": 3718,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r2",
+        "seriesLabel": "Conference Semifinals",
+        "game": "r2g3",
+        "gameLabel": "Game 3",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-13",
+      "platform": "x",
+      "author": "ShamsCharania",
+      "authorName": "ShamsCharania",
+      "text": "Knicks drop a tough one 2 of the Conference Semifinals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/ShamsCharania",
+      "date": "2026-05-06T23:48:00.000Z",
+      "likes": 7943,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r2",
+        "seriesLabel": "Conference Semifinals",
+        "game": "r2g2",
+        "gameLabel": "Game 2",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-12",
+      "platform": "instagram",
+      "author": "msg_loud",
+      "authorName": "msg_loud",
+      "text": "😤 Conference Semifinals Game 2 — Knicks fall vs Opponent TBD. We bounce back. #Knicks #knicks #knicksnation",
+      "image": "media/sample-6.svg",
+      "video": false,
+      "url": "https://www.instagram.com/msg_loud/",
+      "date": "2026-05-06T23:14:00.000Z",
+      "likes": 3444,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r2",
+        "seriesLabel": "Conference Semifinals",
+        "game": "r2g2",
+        "gameLabel": "Game 2",
+        "players": [],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-11",
+      "platform": "x",
+      "author": "SNYtv",
+      "authorName": "SNYtv",
+      "text": "Knicks TAKE GAME 1 of the Conference Semifinals. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/SNYtv",
+      "date": "2026-05-04T23:48:00.000Z",
+      "likes": 7521,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r2",
+        "seriesLabel": "Conference Semifinals",
+        "game": "r2g1",
+        "gameLabel": "Game 1",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-10",
+      "platform": "instagram",
+      "author": "nyk_nation",
+      "authorName": "nyk_nation",
+      "text": "🏀🔥 Conference Semifinals Game 1 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-5.svg",
+      "video": false,
+      "url": "https://www.instagram.com/nyk_nation/",
+      "date": "2026-05-04T23:14:00.000Z",
+      "likes": 3170,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r2",
+        "seriesLabel": "Conference Semifinals",
+        "game": "r2g1",
+        "gameLabel": "Game 1",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-9",
+      "platform": "x",
+      "author": "ShamsCharania",
+      "authorName": "ShamsCharania",
+      "text": "Knicks TAKE GAME 5 of the First Round. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/ShamsCharania",
+      "date": "2026-04-29T23:48:00.000Z",
+      "likes": 7099,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r1",
+        "seriesLabel": "First Round",
+        "game": "r1g5",
+        "gameLabel": "Game 5",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-8",
+      "platform": "instagram",
+      "author": "garden_faithful",
+      "authorName": "garden_faithful",
+      "text": "🏀🔥 First Round Game 5 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-4.svg",
+      "video": false,
+      "url": "https://www.instagram.com/garden_faithful/",
+      "date": "2026-04-29T23:14:00.000Z",
+      "likes": 2896,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r1",
+        "seriesLabel": "First Round",
+        "game": "r1g5",
+        "gameLabel": "Game 5",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-7",
+      "platform": "x",
+      "author": "SNYtv",
+      "authorName": "SNYtv",
+      "text": "Knicks TAKE GAME 4 of the First Round. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/SNYtv",
+      "date": "2026-04-26T23:48:00.000Z",
+      "likes": 6677,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r1",
+        "seriesLabel": "First Round",
+        "game": "r1g4",
+        "gameLabel": "Game 4",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-6",
+      "platform": "instagram",
+      "author": "subwaykid",
+      "authorName": "subwaykid",
+      "text": "🏀🔥 First Round Game 4 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-3.svg",
+      "video": false,
+      "url": "https://www.instagram.com/subwaykid/",
+      "date": "2026-04-26T23:14:00.000Z",
+      "likes": 2622,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r1",
+        "seriesLabel": "First Round",
+        "game": "r1g4",
+        "gameLabel": "Game 4",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-5",
+      "platform": "x",
+      "author": "ShamsCharania",
+      "authorName": "ShamsCharania",
+      "text": "Knicks drop a tough one 3 of the First Round. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/ShamsCharania",
+      "date": "2026-04-24T23:48:00.000Z",
+      "likes": 6255,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r1",
+        "seriesLabel": "First Round",
+        "game": "r1g3",
+        "gameLabel": "Game 3",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-4",
+      "platform": "instagram",
+      "author": "orange_n_blue",
+      "authorName": "orange_n_blue",
+      "text": "😤 First Round Game 3 — Knicks fall vs Opponent TBD. We bounce back. #Knicks #knicks #knicksnation",
+      "image": "media/sample-2.svg",
+      "video": false,
+      "url": "https://www.instagram.com/orange_n_blue/",
+      "date": "2026-04-24T23:14:00.000Z",
+      "likes": 2348,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r1",
+        "seriesLabel": "First Round",
+        "game": "r1g3",
+        "gameLabel": "Game 3",
+        "players": [],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-3",
+      "platform": "x",
+      "author": "SNYtv",
+      "authorName": "SNYtv",
+      "text": "Knicks TAKE GAME 2 of the First Round. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/SNYtv",
+      "date": "2026-04-21T23:48:00.000Z",
+      "likes": 5833,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r1",
+        "seriesLabel": "First Round",
+        "game": "r1g2",
+        "gameLabel": "Game 2",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-2",
+      "platform": "instagram",
+      "author": "bingbong_szn",
+      "authorName": "bingbong_szn",
+      "text": "🏀🔥 First Round Game 2 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-1.svg",
+      "video": false,
+      "url": "https://www.instagram.com/bingbong_szn/",
+      "date": "2026-04-21T23:14:00.000Z",
+      "likes": 2074,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r1",
+        "seriesLabel": "First Round",
+        "game": "r1g2",
+        "gameLabel": "Game 2",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "x-sample-1",
+      "platform": "x",
+      "author": "ShamsCharania",
+      "authorName": "ShamsCharania",
+      "text": "Knicks TAKE GAME 1 of the First Round. Jalen Brunson with another clutch fourth quarter. New York one step closer. #Knicks",
+      "image": null,
+      "video": false,
+      "url": "https://x.com/ShamsCharania",
+      "date": "2026-04-19T23:48:00.000Z",
+      "likes": 5411,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r1",
+        "seriesLabel": "First Round",
+        "game": "r1g1",
+        "gameLabel": "Game 1",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    },
+    {
+      "id": "ig-sample-0",
+      "platform": "instagram",
+      "author": "knickstape_",
+      "authorName": "knickstape_",
+      "text": "🏀🔥 First Round Game 1 — Knicks WIN vs Opponent TBD. Brunson was UNREAL. Bing bong!! #NewYorkForever #knicks #knicksnation",
+      "image": "media/sample-0.svg",
+      "video": false,
+      "url": "https://www.instagram.com/knickstape_/",
+      "date": "2026-04-19T23:14:00.000Z",
+      "likes": 1800,
+      "reposts": 0,
+      "views": 0,
+      "tags": {
+        "series": "r1",
+        "seriesLabel": "First Round",
+        "game": "r1g1",
+        "gameLabel": "Game 1",
+        "players": [
+          "Jalen Brunson"
+        ],
+        "celebrities": [],
+        "category": "game",
+        "festivityEvent": null
+      }
+    }
+  ]
+}

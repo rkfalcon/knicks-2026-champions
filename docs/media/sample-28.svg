@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480">
+  <defs><pattern id="p" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="40" height="40" fill="#0d1b2a"/><rect width="20" height="40" fill="#f58426" opacity="0.12"/></pattern></defs>
+  <rect width="640" height="480" fill="url(#p)"/>
+  <rect x="20" y="20" width="600" height="440" fill="none" stroke="#f58426" stroke-width="6"/>
+  <text x="320" y="210" font-family="Arial Black, sans-serif" font-size="120" fill="#f58426" text-anchor="middle">🏀</text>
+  <text x="320" y="320" font-family="Arial Black, sans-serif" font-weight="900" font-size="46" fill="#f58426" text-anchor="middle">PARADE</text>
+  <text x="320" y="370" font-family="Arial, sans-serif" font-size="26" fill="#f58426" opacity="0.85" text-anchor="middle">Canyon of Heroes</text>
+</svg>

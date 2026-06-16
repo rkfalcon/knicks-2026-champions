@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>★ KNICKS 2026 — A CHAMPIONSHIP PICTURE BOOK ★</title>
+  <meta name="description" content="The historic New York Knicks 2026 NBA Championship run, told in pictures from X and Instagram. Relive every series, every game, the parade, and the party." />
+  <meta name="theme-color" content="#006bb6" />
+  <meta property="og:title" content="Knicks 2026 — A Championship Picture Book" />
+  <meta property="og:description" content="Every game, every series, the parade, the party. Bing bong." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=VT323&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip" href="#book">Skip to the pictures</a>
+
+  <header class="hero">
+    <div class="marquee" aria-hidden="true">
+      <span>★ BING BONG ★ NEW YORK FOREVER ★ 2026 NBA CHAMPIONS ★ CANYON OF HEROES ★ BING BONG ★ NEW YORK FOREVER ★ 2026 NBA CHAMPIONS ★ CANYON OF HEROES&nbsp;</span>
+      <span>★ BING BONG ★ NEW YORK FOREVER ★ 2026 NBA CHAMPIONS ★ CANYON OF HEROES ★ BING BONG ★ NEW YORK FOREVER ★ 2026 NBA CHAMPIONS ★ CANYON OF HEROES&nbsp;</span>
+    </div>
+
+    <div class="hero-inner">
+      <p class="kicker">◆ ◆ ◆ &nbsp; A FAN-MADE PICTURE BOOK &nbsp; ◆ ◆ ◆</p>
+      <h1>
+        <span class="line-1">NEW YORK KNICKS</span>
+        <span class="line-2">2026 NBA <em>CHAMPIONS</em></span>
+      </h1>
+      <p class="subtitle">
+        🏀 Two months. Four series. One trophy. 🏆<br />
+        The whole run — scraped from X &amp; Instagram, sorted into a book.
+      </p>
+      <p class="stamp">CLINCHED 06 · 13 · 2026 @ THE GARDEN</p>
+    </div>
+  </header>
+
+  <nav class="filters" id="filters" aria-label="Filter the picture book">
+    <div class="filters-row search-row">
+      <input type="search" id="q" placeholder="🔎 search captions, players, #hashtags…" autocomplete="off" />
+    </div>
+
+    <div class="filters-row chips" id="platformChips" role="group" aria-label="Platform">
+      <button class="chip is-on" data-platform="all">ALL</button>
+      <button class="chip" data-platform="x">𝕏 / Twitter</button>
+      <button class="chip" data-platform="instagram">Instagram</button>
+    </div>
+
+    <div class="filters-row selects">
+      <label>SERIES
+        <select id="series"></select>
+      </label>
+      <label>GAME
+        <select id="game"><option value="">All games</option></select>
+      </label>
+      <label>PLAYER
+        <select id="player"><option value="">Anyone</option></select>
+      </label>
+      <label>CELEB
+        <select id="celeb"><option value="">Anyone</option></select>
+      </label>
+      <label>VIEW
+        <select id="category">
+          <option value="all">Everything</option>
+          <option value="game">Game days</option>
+          <option value="festivities">Festivities 🎉</option>
+        </select>
+      </label>
+      <label>SORT
+        <select id="sort">
+          <option value="desc">Newest first</option>
+          <option value="asc">Oldest first</option>
+          <option value="likes">Most liked</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="filters-row statusbar">
+      <span id="count">Loading the run…</span>
+      <button id="reset" class="link-btn" hidden>✕ clear filters</button>
+    </div>
+  </nav>
+
+  <main id="book" class="book" aria-live="polite"></main>
+
+  <div id="empty" class="empty" hidden>
+    <p>★ No posts match that combo. ★</p>
+    <p>Loosen a filter and the Garden will fill back up.</p>
+  </div>
+
+  <footer class="footer">
+    <p class="divider" aria-hidden="true">★ ◆ ★ ◆ ★ ◆ ★ ◆ ★ ◆ ★ ◆ ★ ◆ ★ ◆ ★ ◆ ★ ◆ ★</p>
+    <p id="generated"></p>
+    <p class="fine">
+      Built by a fan, for fans. Posts pulled from public X &amp; Instagram via the
+      twitterapi.io and Apify scrapers. All images &amp; captions belong to their
+      original posters — tap any card to visit the source.
+    </p>
+    <p class="bestviewed">Best viewed loud, in orange &amp; blue. 🟧🟦</p>
+  </footer>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="Post detail">
+    <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
+    <button class="lb-nav lb-prev" id="lbPrev" aria-label="Previous">‹</button>
+    <button class="lb-nav lb-next" id="lbNext" aria-label="Next">›</button>
+    <div class="lb-stage" id="lbStage"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

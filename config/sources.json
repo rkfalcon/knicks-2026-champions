@@ -1,0 +1,147 @@
+{
+  "team": {
+    "name": "New York Knicks",
+    "season": "2025-26",
+    "championshipDate": "2026-06-13"
+  },
+
+  "_comment_keywords": "Posts must mention at least one of these to be kept. Edit freely.",
+  "globalKeywords": [
+    "knicks", "new york knicks", "nyk", "new york forever",
+    "bing bong", "madison square garden", "msg", "ny knicks"
+  ],
+
+  "_comment_dateRange": "Outer bound for all scraping. Roughly playoffs start -> a week after the parade.",
+  "dateRange": { "since": "2026-04-12", "until": "2026-06-30" },
+
+  "twitter": {
+    "_comment": "Handles are scraped via `from:<handle>`. searchQueries are free-text advanced-search queries (Twitter operators allowed).",
+    "handles": [
+      "nyknicks", "NBA", "espn", "TheGarden", "SNYtv", "TheKnicksWall",
+      "WindhorstNBA", "ShamsCharania", "wojespn"
+    ],
+    "searchQueries": [
+      "\"Knicks\" (championship OR title OR finals OR parade)",
+      "\"New York Forever\""
+    ],
+    "queryType": "Top",
+    "maxPagesPerQuery": 5
+  },
+
+  "instagram": {
+    "_comment": "profileHandles -> profile posts. hashtags -> hashtag search (no leading #).",
+    "profileHandles": [
+      "nyknicks", "nba", "jalenbrunson", "kat", "oga_anunoby", "mikalbridges"
+    ],
+    "hashtags": [
+      "knicks", "newyorkforever", "knicksnation", "bingbong"
+    ],
+    "resultsLimitPerSource": 50
+  },
+
+  "_comment_series": "The bracket. `start`/`end` date-stamp each series; each game's `date` is used to auto-tag posts to a game. OPPONENTS ARE PLACEHOLDERS — edit to the real matchups.",
+  "series": [
+    {
+      "id": "r1",
+      "label": "First Round",
+      "round": 1,
+      "opponent": "Opponent TBD",
+      "result": "W 4-1",
+      "start": "2026-04-19",
+      "end": "2026-04-29",
+      "games": [
+        { "id": "r1g1", "label": "Game 1", "date": "2026-04-19", "home": true,  "result": "W" },
+        { "id": "r1g2", "label": "Game 2", "date": "2026-04-21", "home": true,  "result": "W" },
+        { "id": "r1g3", "label": "Game 3", "date": "2026-04-24", "home": false, "result": "L" },
+        { "id": "r1g4", "label": "Game 4", "date": "2026-04-26", "home": false, "result": "W" },
+        { "id": "r1g5", "label": "Game 5", "date": "2026-04-29", "home": true,  "result": "W" }
+      ]
+    },
+    {
+      "id": "r2",
+      "label": "Conference Semifinals",
+      "round": 2,
+      "opponent": "Opponent TBD",
+      "result": "W 4-2",
+      "start": "2026-05-04",
+      "end": "2026-05-15",
+      "games": [
+        { "id": "r2g1", "label": "Game 1", "date": "2026-05-04", "home": true,  "result": "W" },
+        { "id": "r2g2", "label": "Game 2", "date": "2026-05-06", "home": true,  "result": "L" },
+        { "id": "r2g3", "label": "Game 3", "date": "2026-05-09", "home": false, "result": "W" },
+        { "id": "r2g4", "label": "Game 4", "date": "2026-05-11", "home": false, "result": "L" },
+        { "id": "r2g5", "label": "Game 5", "date": "2026-05-13", "home": true,  "result": "W" },
+        { "id": "r2g6", "label": "Game 6", "date": "2026-05-15", "home": false, "result": "W" }
+      ]
+    },
+    {
+      "id": "ecf",
+      "label": "Eastern Conference Finals",
+      "round": 3,
+      "opponent": "Opponent TBD",
+      "result": "W 4-2",
+      "start": "2026-05-20",
+      "end": "2026-05-31",
+      "games": [
+        { "id": "ecfg1", "label": "Game 1", "date": "2026-05-20", "home": true,  "result": "W" },
+        { "id": "ecfg2", "label": "Game 2", "date": "2026-05-22", "home": true,  "result": "W" },
+        { "id": "ecfg3", "label": "Game 3", "date": "2026-05-24", "home": false, "result": "L" },
+        { "id": "ecfg4", "label": "Game 4", "date": "2026-05-26", "home": false, "result": "L" },
+        { "id": "ecfg5", "label": "Game 5", "date": "2026-05-28", "home": true,  "result": "W" },
+        { "id": "ecfg6", "label": "Game 6", "date": "2026-05-31", "home": false, "result": "W" }
+      ]
+    },
+    {
+      "id": "finals",
+      "label": "NBA Finals",
+      "round": 4,
+      "opponent": "Opponent TBD",
+      "result": "W 4-1 — CHAMPIONS",
+      "start": "2026-06-04",
+      "end": "2026-06-13",
+      "games": [
+        { "id": "finalsg1", "label": "Game 1", "date": "2026-06-04", "home": true,  "result": "W" },
+        { "id": "finalsg2", "label": "Game 2", "date": "2026-06-07", "home": true,  "result": "W" },
+        { "id": "finalsg3", "label": "Game 3", "date": "2026-06-09", "home": false, "result": "L" },
+        { "id": "finalsg4", "label": "Game 4", "date": "2026-06-11", "home": false, "result": "W" },
+        { "id": "finalsg5", "label": "Game 5 — CLINCHER", "date": "2026-06-13", "home": true, "result": "W" }
+      ]
+    }
+  ],
+
+  "_comment_festivities": "Posts dated after the clincher, or matching these terms, are tagged category=festivities.",
+  "festivities": {
+    "keywords": [
+      "parade", "canyon of heroes", "ticker tape", "celebration", "champions",
+      "championship", "ring", "trophy", "larry o'brien", "title", "rally",
+      "city hall", "broadway", "duffy square"
+    ],
+    "events": [
+      { "id": "clinch-night", "label": "Clinch Night @ MSG", "date": "2026-06-13" },
+      { "id": "parade", "label": "Championship Parade — Canyon of Heroes", "date": "2026-06-16" },
+      { "id": "rally", "label": "City Hall Rally", "date": "2026-06-16" }
+    ]
+  },
+
+  "_comment_players": "aliases are matched case-insensitively in post text/handles to tag a player.",
+  "players": [
+    { "name": "Jalen Brunson",  "number": 11, "aliases": ["brunson", "jalen brunson", "jalenbrunson", "captain clutch"] },
+    { "name": "Karl-Anthony Towns", "number": 32, "aliases": ["towns", "kat", "karl-anthony", "karl anthony towns"] },
+    { "name": "OG Anunoby",     "number": 8,  "aliases": ["anunoby", "og anunoby", "oga_anunoby"] },
+    { "name": "Mikal Bridges",  "number": 25, "aliases": ["mikal", "bridges", "mikal bridges", "mikalbridges"] },
+    { "name": "Josh Hart",      "number": 3,  "aliases": ["josh hart", "hart"] },
+    { "name": "Mitchell Robinson", "number": 23, "aliases": ["mitchell robinson", "mitch rob", "mitchell"] },
+    { "name": "Deuce McBride",  "number": 9,  "aliases": ["deuce", "mcbride", "miles mcbride"] },
+    { "name": "Tom Thibodeau",  "number": null, "aliases": ["thibodeau", "thibs", "coach thibs"] }
+  ],
+
+  "_comment_celebrities": "Courtside / celebrity fans to tag.",
+  "celebrities": [
+    { "name": "Spike Lee",        "aliases": ["spike lee", "officialspikelee", "spike"] },
+    { "name": "Timothée Chalamet", "aliases": ["chalamet", "timothee", "timothée"] },
+    { "name": "Ben Stiller",      "aliases": ["ben stiller", "redhourben"] },
+    { "name": "Tracy Morgan",     "aliases": ["tracy morgan", "tracymorgan"] },
+    { "name": "Jon Stewart",      "aliases": ["jon stewart"] },
+    { "name": "Jalen Rose",       "aliases": ["jalen rose"] }
+  ]
+}

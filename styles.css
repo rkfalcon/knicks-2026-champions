@@ -319,6 +319,7 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
 }
 .footer .divider { color: var(--knicks-orange); font-size: 1.1rem; margin: 0 0 12px; overflow: hidden; }
 .footer .fine { max-width: 620px; margin: 8px auto; font-size: 0.85rem; line-height: 1.5; color: #cfe6ff; }
+.footer .fine a { color: var(--knicks-orange); text-decoration: underline; font-weight: 700; }
 .footer .bestviewed { font-family: "VT323", monospace; font-size: 1.2rem; color: var(--knicks-orange); margin-top: 14px; }
 #generated { font-family: "VT323", monospace; letter-spacing: 1px; font-size: 1rem; }
 

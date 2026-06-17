@@ -23,7 +23,8 @@ export default async function handler(req, res) {
     // self-heal on later runs. Full historical backfills use the CLI: `npm run ingest`.
     const days = Number(req.query?.days) || 4;
     const result = await runIngest({
-      uploadMedia: true, sinceDays: days, maxImages: 120, log: (m) => console.log(m),
+      uploadMedia: true, sinceDays: days, maxImages: 120, record: true, trigger: "cron",
+      log: (m) => console.log(m),
     });
     return res.status(200).json({ ok: true, ...result });
   } catch (err) {

@@ -54,8 +54,8 @@ $("#loginForm").addEventListener("submit", async (e) => {
 $("#logout").addEventListener("click", async () => { await sb.auth.signOut(); showLogin(); });
 
 /* ---------------- admin API ---------------- */
-async function api(method, body) {
-  const res = await fetch("/api/admin/data", {
+async function api(method, body, path = "/api/admin/data") {
+  const res = await fetch(path, {
     method,
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: body ? JSON.stringify(body) : undefined,
@@ -66,10 +66,11 @@ async function api(method, body) {
 }
 async function loadData() { DATA = await api("GET"); }
 
-function toast(msg, bad) {
+function toast(msg, bad, sticky) {
   const t = $("#toast");
   t.textContent = msg; t.className = "toast" + (bad ? " bad" : ""); t.hidden = false;
-  clearTimeout(toast._t); toast._t = setTimeout(() => (t.hidden = true), 2600);
+  clearTimeout(toast._t);
+  if (!sticky) toast._t = setTimeout(() => (t.hidden = true), 2600);
 }
 
 /* ---------------- entity schemas ---------------- */
@@ -120,6 +121,7 @@ const acctFilter = { q: "", type: "all", focus: false };
 
 function renderTab(tab) {
   if (tab === "settings") return renderSettings();
+  if (tab === "runs") return renderRuns();
   const schema = ENTITIES[tab];
   const all = DATA[tab] || [];
 
@@ -147,10 +149,13 @@ function renderTab(tab) {
 
   const head = schema.cols.map((c) => `<th>${c.k}</th>`).join("") + "<th></th>";
   const body = rows.map((r) => rowHTML(tab, schema, r)).join("");
+  const runAll = tab === "accounts"
+    ? `<button class="btn run" data-runall>▶ Run all</button>` : "";
   $("#panel").innerHTML = `
     <div class="panel-head">
       <h2>${tab} <small>(${counter})</small></h2>
       ${tools}
+      ${runAll}
       <button class="btn" data-add>＋ Add ${schema.singular || tab}</button>
     </div>
     <div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
@@ -176,11 +181,73 @@ function cellInput(c, val) {
 function rowHTML(tab, schema, r) {
   const id = r[schema.pk] ?? "";
   const cells = schema.cols.map((c) => `<td>${cellInput(c, r[c.k])}</td>`).join("");
+  const runBtn = tab === "accounts" && id !== "" ? `<button class="btn sm run" data-run>▶ Run</button>` : "";
   return `<tr data-id="${esc(id)}">${cells}
     <td class="row-actions">
       <button class="btn sm" data-save>Save</button>
+      ${runBtn}
       ${id !== "" ? `<button class="btn sm danger" data-del>✕</button>` : ""}
     </td></tr>`;
+}
+
+/* ---------------- runs ---------------- */
+const fmtTime = (iso) => {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return isNaN(d) ? "—" : d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+};
+const dur = (a, b) => {
+  if (!a || !b) return "";
+  const s = Math.round((Date.parse(b) - Date.parse(a)) / 1000);
+  return s >= 60 ? `${Math.floor(s / 60)}m ${s % 60}s` : `${s}s`;
+};
+
+function renderRuns() {
+  const runs = DATA.runs || [];
+  const body = runs.map((r) => {
+    const badge = r.status === "done" ? "✅" : r.status === "error" ? "❌" : "⏳";
+    return `<tr>
+      <td>${badge} ${esc(r.status)}</td>
+      <td>${esc(r.scope || "all")}</td>
+      <td>${esc(r.trigger || "")}</td>
+      <td>${fmtTime(r.started_at)}</td>
+      <td>${dur(r.started_at, r.finished_at)}</td>
+      <td>${r.scraped ?? 0}</td>
+      <td>${r.upserted ?? 0}</td>
+      <td>${r.mirrored ?? 0}</td>
+      <td class="run-err">${esc(r.error || "")}</td>
+    </tr>`;
+  }).join("");
+  $("#panel").innerHTML = `
+    <div class="panel-head">
+      <h2>runs <small>(${runs.length})</small></h2>
+      <button class="btn" data-refresh-runs>↻ Refresh</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr>
+      <th>status</th><th>scope</th><th>trigger</th><th>started</th><th>took</th>
+      <th>scraped</th><th>upserted</th><th>images</th><th>error</th>
+    </tr></thead><tbody>${body || `<tr><td colspan="9" style="padding:14px">No runs yet — hit ▶ Run all on the Accounts tab.</td></tr>`}</tbody></table></div>`;
+  $("[data-refresh-runs]").addEventListener("click", async () => { await loadData(); renderRuns(); });
+}
+
+// Trigger an ingest run; accountId omitted = run all.
+async function triggerRun(accountId, label) {
+  const btns = document.querySelectorAll("[data-run],[data-runall]");
+  btns.forEach((b) => (b.disabled = true));
+  toast(`Running ${label}… this can take a minute`, false, true);
+  try {
+    const r = await api("POST", { accountId }, "/api/admin/run");
+    if (!r.ok) throw new Error(r.error || "run failed");
+    toast(`Run done: ${r.count} posts, ${r.mirrored} new images`);
+    await loadData();
+    currentTab = "runs";
+    document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("is-on", t.dataset.tab === "runs"));
+    renderRuns();
+  } catch (e) {
+    toast(e.message, true);
+  } finally {
+    document.querySelectorAll("[data-run],[data-runall]").forEach((b) => (b.disabled = false));
+  }
 }
 
 function readRow(tr, schema) {
@@ -202,6 +269,13 @@ function readRow(tr, schema) {
 
 $("#panel").addEventListener("click", async (e) => {
   const tab = currentTab;
+  if (e.target.matches("[data-runall]")) { triggerRun(null, "all accounts"); return; }
+  if (e.target.matches("[data-run]")) {
+    const tr = e.target.closest("tr");
+    const label = tr.querySelector('[data-k="name"]')?.value || tr.querySelector('[data-k="x_handle"]')?.value || "account";
+    triggerRun(tr.dataset.id, label);
+    return;
+  }
   if (e.target.matches("[data-add]")) {
     DATA[tab].push({});            // blank editable row
     renderTab(tab);

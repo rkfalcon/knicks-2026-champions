@@ -21,6 +21,9 @@ body.admin { background: var(--paper); }
 .btn.sm { font-size: 0.95rem; padding: 3px 9px; border-width: 2px; }
 .btn.ghost { background: transparent; color: #fff; }
 .btn.danger { background: #c0392b; }
+.btn.run { background: #1c7c3c; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.run-err { color: #c0392b; max-width: 260px; font-size: 0.78rem; white-space: normal; }
 
 /* login */
 .login { display: flex; justify-content: center; padding: 60px 16px; }

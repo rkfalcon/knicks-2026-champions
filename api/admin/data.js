@@ -24,12 +24,13 @@ export default async function handler(req, res) {
   if (status !== 200) return res.status(status).json({ error: status === 401 ? "unauthorized" : "forbidden" });
 
   if (req.method === "GET") {
-    const [accounts, keywords, series, games, settings] = await Promise.all([
+    const [accounts, keywords, series, games, settings, runs] = await Promise.all([
       sb.from("accounts").select("*").order("account_type").order("name"),
       sb.from("keywords").select("*").order("term"),
       sb.from("series").select("*").order("sort"),
       sb.from("games").select("*").order("sort"),
       sb.from("settings").select("*"),
+      sb.from("runs").select("*").order("started_at", { ascending: false }).limit(30),
     ]);
     const acc = accounts.data || [];
     return res.status(200).json({
@@ -39,6 +40,7 @@ export default async function handler(req, res) {
       keywords: keywords.data || [],
       series: series.data || [], games: games.data || [],
       settings: Object.fromEntries((settings.data || []).map((r) => [r.key, r.value])),
+      runs: runs.data || [],
     });
   }
 

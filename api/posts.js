@@ -14,12 +14,10 @@ export default async function handler(req, res) {
   if (!sb) return res.status(200).json(sample);
 
   try {
-    const [postsRes, series, games, players, celebs, accounts, keywords, settings] = await Promise.all([
+    const [postsRes, series, games, accounts, keywords, settings] = await Promise.all([
       sb.from("posts").select("*").order("posted_at", { ascending: false }).limit(8000),
       sb.from("series").select("*").order("sort"),
       sb.from("games").select("*").order("sort"),
-      sb.from("players").select("*").eq("active", true).order("sort"),
-      sb.from("celebrities").select("*").eq("active", true).order("sort"),
       sb.from("accounts").select("*").eq("active", true),
       sb.from("keywords").select("*").eq("active", true),
       sb.from("settings").select("*"),
@@ -30,6 +28,7 @@ export default async function handler(req, res) {
     if (!posts.length) return res.status(200).json(sample);
 
     const S = Object.fromEntries((settings.data || []).map((r) => [r.key, r.value]));
+    const acc = accounts.data || [];
     const gamesBySeries = {};
     for (const g of games.data || []) {
       (gamesBySeries[g.series_id] ||= []).push({ id: g.id, label: g.label, date: g.game_date, result: g.result });
@@ -43,9 +42,10 @@ export default async function handler(req, res) {
       team: S.team || sample.team,
       series: seriesOut,
       festivities: S.festivities || sample.festivities,
-      players: (players.data || []).map((p) => ({ name: p.name, number: p.number })),
-      celebrities: (celebs.data || []).map((c) => ({ name: c.name })),
-      accounts: (accounts.data || []).map((a) => ({ platform: a.platform, handle: a.handle, label: a.label })),
+      players: acc.filter((a) => a.account_type === "player").map((a) => ({ name: a.name, number: a.number })),
+      celebrities: acc.filter((a) => a.account_type === "celebrity").map((a) => ({ name: a.name })),
+      accounts: acc.filter((a) => a.x_handle || a.ig_handle)
+        .map((a) => ({ name: a.name, x_handle: a.x_handle, ig_handle: a.ig_handle, type: a.account_type })),
       keywords: (keywords.data || []).map((k) => ({ term: k.term.replace(/^#/, ""), label: k.label })),
       count: posts.length,
       posts,

@@ -74,28 +74,32 @@ function toast(msg, bad) {
 
 /* ---------------- entity schemas ---------------- */
 const ENTITIES = {
-  accounts: { pk: "id", cols: [
-    { k: "platform", t: "select", opts: ["x", "instagram"] },
-    { k: "handle", t: "text" }, { k: "label", t: "text" }, { k: "active", t: "bool" },
+  accounts: { pk: "id", singular: "account", cols: [
+    { k: "name", t: "text" },
+    { k: "x_handle", t: "text" }, { k: "ig_handle", t: "text" },
+    { k: "account_type", t: "select", opts: ["none", "player", "team", "celebrity", "fan"] },
+    { k: "active", t: "bool" },
   ]},
-  keywords: { pk: "id", cols: [
+  keywords: { pk: "id", singular: "keyword", cols: [
     { k: "term", t: "text" }, { k: "label", t: "text" },
     { k: "as_hashtag", t: "bool" }, { k: "active", t: "bool" },
   ]},
-  players: { pk: "id", cols: [
+  players: { pk: "id", singular: "player", cols: [
     { k: "name", t: "text" }, { k: "number", t: "number" },
     { k: "x_handle", t: "text" }, { k: "ig_handle", t: "text" },
     { k: "aliases", t: "list" }, { k: "active", t: "bool" },
   ]},
-  celebrities: { pk: "id", cols: [
-    { k: "name", t: "text" }, { k: "aliases", t: "list" }, { k: "active", t: "bool" },
+  celebrities: { pk: "id", singular: "celebrity", cols: [
+    { k: "name", t: "text" },
+    { k: "x_handle", t: "text" }, { k: "ig_handle", t: "text" },
+    { k: "aliases", t: "list" }, { k: "active", t: "bool" },
   ]},
-  series: { pk: "id", cols: [
+  series: { pk: "id", singular: "series", cols: [
     { k: "id", t: "text" }, { k: "label", t: "text" }, { k: "opponent", t: "text" },
     { k: "result", t: "text" }, { k: "start_date", t: "date" }, { k: "end_date", t: "date" },
     { k: "round", t: "number" }, { k: "sort", t: "number" },
   ]},
-  games: { pk: "id", cols: [
+  games: { pk: "id", singular: "game", cols: [
     { k: "id", t: "text" }, { k: "series_id", t: "text" }, { k: "label", t: "text" },
     { k: "game_date", t: "date" }, { k: "home", t: "bool" }, { k: "result", t: "text" }, { k: "sort", t: "number" },
   ]},
@@ -121,7 +125,7 @@ function renderTab(tab) {
   $("#panel").innerHTML = `
     <div class="panel-head">
       <h2>${tab} <small>(${rows.length})</small></h2>
-      <button class="btn" data-add>＋ Add ${tab.replace(/s$/, "")}</button>
+      <button class="btn" data-add>＋ Add ${schema.singular || tab}</button>
     </div>
     <div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
 }

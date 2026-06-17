@@ -75,9 +75,10 @@
       (d.celebrities || []).map((c) => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("");
 
     el.account.innerHTML = `<option value="">All accounts</option>` +
-      (d.accounts || []).map((a) => {
-        const icon = a.platform === "x" ? "𝕏" : "📸";
-        return `<option value="${a.platform}:${esc(a.handle)}">${icon} @${esc(a.handle)}</option>`;
+      (d.accounts || []).map((a, i) => {
+        const icons = [a.x_handle ? "𝕏" : "", a.ig_handle ? "📸" : ""].filter(Boolean).join("");
+        const label = a.name || a.x_handle || a.ig_handle || "";
+        return `<option value="${i}">${esc(label)} ${icons}</option>`;
       }).join("");
 
     el.keyword.innerHTML = `<option value="">Any keyword</option>` +
@@ -112,12 +113,17 @@
     if (state.category !== "all") posts = posts.filter((p) => p.tags.category === state.category);
     if (state.ptype !== "all") posts = posts.filter((p) => (p.postType || "post") === state.ptype);
 
-    if (state.account) {
-      const [plat, handle] = state.account.split(":");
-      const h = handle.toLowerCase();
-      posts = posts.filter((p) =>
-        p.platform === plat &&
-        ((p.author || "").toLowerCase() === h || (p.sourceHandle || "").toLowerCase() === h));
+    if (state.account !== "") {
+      const a = (d.accounts || [])[Number(state.account)];
+      if (a) {
+        const x = (a.x_handle || "").toLowerCase();
+        const ig = (a.ig_handle || "").toLowerCase();
+        posts = posts.filter((p) => {
+          const au = (p.author || "").toLowerCase();
+          return (p.platform === "x" && x && au === x) ||
+                 (p.platform === "instagram" && ig && au === ig);
+        });
+      }
     }
     if (state.keyword) {
       const k = state.keyword.toLowerCase();

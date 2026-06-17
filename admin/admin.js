@@ -157,6 +157,7 @@ function renderTab(tab) {
       <h2>${tab} <small>(${counter})</small></h2>
       ${tools}
       ${runAll}
+      <button class="btn" data-saveall>💾 Save all</button>
       <button class="btn" data-add>＋ Add ${schema.singular || tab}</button>
     </div>
     <div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
@@ -251,6 +252,13 @@ async function triggerRun(accountId, label) {
   }
 }
 
+function rowIsEmpty(row, schema) {
+  return schema.cols.every((c) => {
+    const v = row[c.k];
+    return v == null || v === "" || v === false || (Array.isArray(v) && !v.length);
+  });
+}
+
 function readRow(tr, schema) {
   const row = {};
   for (const c of schema.cols) {
@@ -277,29 +285,57 @@ $("#panel").addEventListener("click", async (e) => {
     triggerRun(tr.dataset.id, label);
     return;
   }
+  const schema = ENTITIES[tab];
+
+  // Add a blank row WITHOUT re-rendering (preserves unsaved input in other rows).
   if (e.target.matches("[data-add]")) {
-    DATA[tab].push({});            // blank editable row
-    renderTab(tab);
+    $("#panel tbody").insertAdjacentHTML("beforeend", rowHTML(tab, schema, {}));
     return;
   }
+
+  // Save all rows at once (skip blank rows).
+  if (e.target.matches("[data-saveall]")) {
+    const trs = [...$("#panel tbody").querySelectorAll("tr")];
+    let ok = 0, fail = 0, skipped = 0;
+    toast(`Saving ${trs.length}…`, false, true);
+    for (const tr of trs) {
+      const row = readRow(tr, schema);
+      if (rowIsEmpty(row, schema)) { skipped++; continue; }
+      try {
+        const { ok: o, row: saved, error } = await api("POST", { entity: tab, op: "upsert", row });
+        if (!o) throw new Error(error);
+        if (saved) tr.outerHTML = rowHTML(tab, schema, saved);
+        ok++;
+      } catch { fail++; }
+    }
+    toast(`Saved ${ok}${fail ? `, ${fail} failed` : ""}${skipped ? `, ${skipped} blank skipped` : ""} ✓`, fail > 0);
+    loadData();
+    return;
+  }
+
   const tr = e.target.closest("tr");
-  const schema = ENTITIES[tab];
+  if (!tr) return;
+
+  // Save one row in place — re-render only this row (keeps other rows' edits).
   if (e.target.matches("[data-save]")) {
     try {
-      const row = readRow(tr, schema);
-      const { ok, row: saved, error } = await api("POST", { entity: tab, op: "upsert", row });
+      const { ok, row: saved, error } = await api("POST", { entity: tab, op: "upsert", row: readRow(tr, schema) });
       if (!ok) throw new Error(error);
+      if (saved) tr.outerHTML = rowHTML(tab, schema, saved);
       toast("Saved ✓");
-      await loadData(); renderTab(tab);
+      loadData(); // background refresh, no full re-render
     } catch (err) { toast(err.message, true); }
   }
+
+  // Delete one row in place.
   if (e.target.matches("[data-del]")) {
     if (!confirm("Delete this row?")) return;
     try {
       const { ok, error } = await api("POST", { entity: tab, op: "delete", id: tr.dataset.id });
       if (!ok) throw new Error(error);
+      tr.remove();
       toast("Deleted");
-      await loadData(); renderTab(tab);
+      loadData();
     } catch (err) { toast(err.message, true); }
   }
 });

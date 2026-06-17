@@ -307,9 +307,18 @@ $("#panel").addEventListener("click", async (e) => {
 function renderSettings() {
   const st = DATA.settings.stories || {};
   const dr = DATA.settings.date_range || {};
+  const fk = Array.isArray(DATA.settings.filter_keywords) ? DATA.settings.filter_keywords : [];
   $("#panel").innerHTML = `
     <div class="panel-head"><h2>Settings</h2></div>
     <div class="settings-grid">
+      <fieldset>
+        <legend>Filter keywords</legend>
+        <label>A post must contain at least one of these to be pulled in (comma-separated)
+          <textarea id="set-filterkw" rows="3" style="font-size:0.95rem;padding:8px;border:3px solid var(--ink)">${esc(fk.join(", "))}</textarea>
+        </label>
+        <button class="btn sm" id="save-filterkw">Save filter keywords</button>
+        <p class="hint">Applies to every account on every run (X &amp; Instagram). Leave empty to pull <em>all</em> posts from tracked accounts. Tip: don't include broad terms like "msg" or "madison square garden" — they match non-Knicks MSG events from accounts like @TheGarden.</p>
+      </fieldset>
       <fieldset>
         <legend>Scrape window</legend>
         <label>Since <input id="set-since" type="date" value="${esc(dr.since || "")}"></label>
@@ -329,6 +338,13 @@ function renderSettings() {
       </fieldset>
     </div>`;
 
+  $("#save-filterkw").addEventListener("click", async () => {
+    try {
+      const value = $("#set-filterkw").value.split(",").map((s) => s.trim()).filter(Boolean);
+      await api("POST", { entity: "settings", op: "upsert", row: { key: "filter_keywords", value } });
+      toast(`Saved ${value.length} filter keywords ✓`); await loadData();
+    } catch (e) { toast(e.message, true); }
+  });
   $("#save-window").addEventListener("click", async () => {
     try {
       await api("POST", { entity: "settings", op: "upsert", row: { key: "date_range", value: { since: $("#set-since").value, until: $("#set-until").value } } });

@@ -6,7 +6,8 @@
   const el = {
     book: $("#book"), empty: $("#empty"), count: $("#count"), reset: $("#reset"),
     q: $("#q"), series: $("#series"), game: $("#game"), player: $("#player"),
-    celeb: $("#celeb"), category: $("#category"), sort: $("#sort"),
+    celeb: $("#celeb"), account: $("#account"), keyword: $("#keyword"), ptype: $("#ptype"),
+    category: $("#category"), sort: $("#sort"),
     platformChips: $("#platformChips"), generated: $("#generated"),
     lightbox: $("#lightbox"), lbStage: $("#lbStage"),
     lbClose: $("#lbClose"), lbPrev: $("#lbPrev"), lbNext: $("#lbNext"),
@@ -16,6 +17,7 @@
     data: null,
     platform: "all",
     q: "", series: "all", game: "", player: "", celeb: "",
+    account: "", keyword: "", ptype: "all",
     category: "all", sort: "desc",
     view: [],        // currently-rendered posts (for lightbox nav)
     lbIndex: -1,
@@ -71,6 +73,19 @@
     el.celeb.innerHTML = `<option value="">Anyone</option>` +
       (d.celebrities || []).map((c) => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("");
 
+    el.account.innerHTML = `<option value="">All accounts</option>` +
+      (d.accounts || []).map((a) => {
+        const icon = a.platform === "x" ? "𝕏" : "📸";
+        return `<option value="${a.platform}:${esc(a.handle)}">${icon} @${esc(a.handle)}</option>`;
+      }).join("");
+
+    el.keyword.innerHTML = `<option value="">Any keyword</option>` +
+      (d.keywords || []).map((k) => `<option value="${esc(k.term)}">${esc(k.label || k.term)}</option>`).join("");
+
+    // Hide the type filter entirely if no stories/highlights exist yet.
+    const hasStories = (d.posts || []).some((p) => p.postType && p.postType !== "post");
+    if (el.ptype) el.ptype.closest("label").style.display = hasStories ? "" : "none";
+
     rebuildGames();
   }
 
@@ -94,6 +109,19 @@
     if (state.player) posts = posts.filter((p) => (p.tags.players || []).includes(state.player));
     if (state.celeb) posts = posts.filter((p) => (p.tags.celebrities || []).includes(state.celeb));
     if (state.category !== "all") posts = posts.filter((p) => p.tags.category === state.category);
+    if (state.ptype !== "all") posts = posts.filter((p) => (p.postType || "post") === state.ptype);
+
+    if (state.account) {
+      const [plat, handle] = state.account.split(":");
+      const h = handle.toLowerCase();
+      posts = posts.filter((p) =>
+        p.platform === plat &&
+        ((p.author || "").toLowerCase() === h || (p.sourceHandle || "").toLowerCase() === h));
+    }
+    if (state.keyword) {
+      const k = state.keyword.toLowerCase();
+      posts = posts.filter((p) => (p.tags.keywords || []).some((x) => x.toLowerCase() === k));
+    }
 
     if (state.q) {
       const q = state.q.toLowerCase();
@@ -101,6 +129,7 @@
         (p.text || "").toLowerCase().includes(q) ||
         (p.author || "").toLowerCase().includes(q) ||
         (p.tags.players || []).some((x) => x.toLowerCase().includes(q)) ||
+        (p.tags.keywords || []).some((x) => x.toLowerCase().includes(q)) ||
         (p.tags.celebrities || []).some((x) => x.toLowerCase().includes(q)));
     }
 
@@ -123,10 +152,13 @@
       : `<span class="emoji">${emoji}</span>`;
     const fest = p.tags.category === "festivities"
       ? `<span class="fest-tag">🎉 ${esc(festLabel(p) || "PARTY")}</span>` : "";
+    const story = p.postType === "story" ? `<span class="type-tag">⏱ STORY</span>`
+      : p.postType === "highlight" ? `<span class="type-tag">★ HIGHLIGHT</span>` : "";
 
     const tags = []
       .concat((p.tags.players || []).map((x) => `<span class="tag player">🏀 ${esc(x)}</span>`))
       .concat((p.tags.celebrities || []).map((x) => `<span class="tag celeb">⭐ ${esc(x)}</span>`))
+      .concat((p.tags.keywords || []).slice(0, 3).map((x) => `<span class="tag kw">#${esc(x)}</span>`))
       .concat(p.tags.gameLabel ? [`<span class="tag game">${esc(p.tags.gameLabel)}</span>`] : [])
       .join("");
 
@@ -134,6 +166,7 @@
       <div class="card-media${p.image ? "" : " no-img"}">
         ${inner}
         <span class="badge ${platformClass}">${platformLabel} @${esc(p.author)}</span>
+        ${story}
         ${fest}
       </div>
       <div class="card-body">
@@ -168,7 +201,8 @@
       : `📖 ${posts.length} of ${total} moments`;
 
     const filtersActive = state.platform !== "all" || state.series !== "all" ||
-      state.game || state.player || state.celeb || state.category !== "all" || state.q;
+      state.game || state.player || state.celeb || state.account || state.keyword ||
+      state.ptype !== "all" || state.category !== "all" || state.q;
     el.reset.hidden = !filtersActive;
 
     el.book.querySelectorAll(".card").forEach((c) =>
@@ -231,13 +265,19 @@
     el.game.addEventListener("change", () => { state.game = el.game.value; render(); });
     el.player.addEventListener("change", () => { state.player = el.player.value; render(); });
     el.celeb.addEventListener("change", () => { state.celeb = el.celeb.value; render(); });
+    el.account.addEventListener("change", () => { state.account = el.account.value; render(); });
+    el.keyword.addEventListener("change", () => { state.keyword = el.keyword.value; render(); });
+    el.ptype.addEventListener("change", () => { state.ptype = el.ptype.value; render(); });
     el.category.addEventListener("change", () => { state.category = el.category.value; render(); });
     el.sort.addEventListener("change", () => { state.sort = el.sort.value; render(); });
 
     el.reset.addEventListener("click", () => {
-      Object.assign(state, { platform: "all", q: "", series: "all", game: "", player: "", celeb: "", category: "all" });
+      Object.assign(state, {
+        platform: "all", q: "", series: "all", game: "", player: "", celeb: "",
+        account: "", keyword: "", ptype: "all", category: "all",
+      });
       el.q.value = ""; el.series.value = "all"; el.player.value = ""; el.celeb.value = "";
-      el.category.value = "all";
+      el.account.value = ""; el.keyword.value = ""; el.ptype.value = "all"; el.category.value = "all";
       el.platformChips.querySelectorAll(".chip").forEach((c) => c.classList.toggle("is-on", c.dataset.platform === "all"));
       rebuildGames(); render();
     });

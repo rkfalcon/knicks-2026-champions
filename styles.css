@@ -262,6 +262,12 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
   background: var(--knicks-orange); color:#fff; border:2px solid #fff;
   padding: 2px 7px;
 }
+.type-tag {
+  position: absolute; bottom: 8px; left: 8px;
+  font-size: 0.78rem; font-family: "VT323", monospace; letter-spacing: 1px;
+  background: #8134af; color:#fff; border:2px solid #fff; padding: 2px 7px;
+}
+.tag.kw { background: #d8f5dd; }
 
 .card-body { padding: 10px 12px 12px; }
 .card-handle {

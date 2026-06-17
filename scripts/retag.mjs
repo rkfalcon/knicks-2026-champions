@@ -31,6 +31,7 @@ for (;;) {
     const authorLc = (r.author || "").toLowerCase();
     return {
       id: r.id,
+      platform: r.platform, // required: NOT NULL, must be present for upsert's insert path
       players: t.players, celebrities: t.celebrities, keywords: t.keywords,
       series: t.series, series_label: t.seriesLabel, game: t.game, game_label: t.gameLabel,
       category: t.category, festivity_event: t.festivityEvent,

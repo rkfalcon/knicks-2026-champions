@@ -40,7 +40,7 @@
     let payload = null;
     for (const src of ["/api/posts", "data/posts.json"]) {
       try {
-        const res = await fetch(src, { cache: "no-cache" });
+        const res = await fetch(src, { cache: "no-store" });
         if (res.ok) { payload = await res.json(); break; }
       } catch { /* try next source */ }
     }

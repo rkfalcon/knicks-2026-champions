@@ -175,6 +175,15 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
 .chip-filters { margin-left: auto; background: var(--knicks-blue-dk); color: #fff; }
 .chip-filters.is-open { background: var(--knicks-orange); color: #fff; }
 
+/* On phones, keep all four buttons on one row by shrinking them to fit. */
+@media (max-width: 560px) {
+  .chips { flex-wrap: nowrap; gap: 5px; }
+  .chips .chip {
+    font-size: 0.78rem; padding: 5px 6px; letter-spacing: 0;
+    white-space: nowrap; border-width: 2px;
+  }
+}
+
 .selects {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

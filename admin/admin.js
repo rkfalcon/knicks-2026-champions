@@ -1,12 +1,21 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
 /* ---------------- bootstrap + auth ---------------- */
 const $ = (s) => document.querySelector(s);
-const cfg = await fetch("/api/config").then((r) => r.json());
-const sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+let createClient, cfg, sb, DATA = null, token = null;
 
-let DATA = null;
-let token = null;
+// Dynamic import (with a fallback CDN) so a flaky module load surfaces an error
+// in the login form instead of silently killing the whole page.
+try {
+  const mod = await import("https://esm.sh/@supabase/supabase-js@2.45.0")
+    .catch(() => import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"));
+  createClient = mod.createClient;
+  if (!createClient) throw new Error("auth library failed to load");
+  cfg = await fetch("/api/config").then((r) => r.json());
+  if (!cfg?.supabaseUrl || !cfg?.supabaseAnonKey) throw new Error("server is missing Supabase config");
+  sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+} catch (e) {
+  showLogin("Admin failed to load: " + (e?.message || e));
+  throw e;
+}
 
 async function refreshSession() {
   const { data } = await sb.auth.getSession();
@@ -230,6 +239,10 @@ function renderSettings() {
 }
 
 /* ---------------- go ---------------- */
-sb.auth.onAuthStateChange((_e, session) => { token = session?.access_token || null; });
-const session = await refreshSession();
-if (session) showApp(session); else showLogin();
+try {
+  sb.auth.onAuthStateChange((_e, session) => { token = session?.access_token || null; });
+  const session = await refreshSession();
+  if (session) await showApp(session); else showLogin();
+} catch (e) {
+  showLogin("Couldn't check session: " + (e?.message || e));
+}

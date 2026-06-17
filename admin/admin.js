@@ -79,6 +79,7 @@ const ENTITIES = {
     { k: "name", t: "text" },
     { k: "x_handle", t: "text" }, { k: "ig_handle", t: "text" },
     { k: "account_type", t: "select", opts: ["none", "player", "team", "celebrity", "fan"] },
+    { k: "show_all", t: "bool" },
     { k: "active", t: "bool" },
   ]},
   keywords: { pk: "id", singular: "keyword", cols: [

@@ -33,16 +33,22 @@
 
   /* ---------- load ---------- */
   async function load() {
-    try {
-      const res = await fetch("data/posts.json", { cache: "no-cache" });
-      if (!res.ok) throw new Error(res.status);
-      state.data = await res.json();
-    } catch (err) {
-      el.count.textContent = "Couldn't load posts.json";
+    // Prefer the live API (Supabase via Vercel); fall back to the bundled
+    // sample JSON so static hosting / local dev still works.
+    let payload = null;
+    for (const src of ["/api/posts", "data/posts.json"]) {
+      try {
+        const res = await fetch(src, { cache: "no-cache" });
+        if (res.ok) { payload = await res.json(); break; }
+      } catch { /* try next source */ }
+    }
+    if (!payload) {
+      el.count.textContent = "Couldn't load posts";
       el.book.innerHTML = `<p style="font-family:VT323,monospace;font-size:1.2rem">
-        ★ Data didn't load. Run <code>npm run ingest</code> or check docs/data/posts.json. ★</p>`;
+        ★ Data didn't load. Check /api/posts or data/posts.json. ★</p>`;
       return;
     }
+    state.data = payload;
     buildFilters();
     bind();
     render();

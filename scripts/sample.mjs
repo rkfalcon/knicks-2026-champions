@@ -7,11 +7,11 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { tagPost } from "./lib/tag.mjs";
+import { tagPost } from "../lib/tag.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
-const MEDIA = join(ROOT, "docs", "media");
+const MEDIA = join(ROOT, "media");
 
 const config = JSON.parse(await readFile(join(ROOT, "config", "sources.json"), "utf8"));
 
@@ -134,6 +134,6 @@ const payload = {
   posts: out,
 };
 
-await mkdir(join(ROOT, "docs", "data"), { recursive: true });
-await writeFile(join(ROOT, "docs", "data", "posts.json"), JSON.stringify(payload, null, 2));
-console.log(`✅ Sample data: ${out.length} posts + ${mediaIdx} placeholder images → docs/data/posts.json`);
+await mkdir(join(ROOT, "data"), { recursive: true });
+await writeFile(join(ROOT, "data", "posts.json"), JSON.stringify(payload, null, 2));
+console.log(`✅ Sample data: ${out.length} posts + ${mediaIdx} placeholder images → data/posts.json`);

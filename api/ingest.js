@@ -1,0 +1,27 @@
+// GET/POST /api/ingest — scrape + tag + mirror images + upsert to Supabase.
+// Triggered by Vercel Cron (see vercel.json). Protected by CRON_SECRET:
+// Vercel automatically sends `Authorization: Bearer <CRON_SECRET>` when that
+// env var is set. Manual calls must send the same header.
+
+import { runIngest } from "../lib/pipeline.mjs";
+
+export const config = { maxDuration: 60 };
+
+export default async function handler(req, res) {
+  const secret = process.env.CRON_SECRET;
+  if (secret) {
+    const auth = req.headers["authorization"];
+    const isCron = req.headers["x-vercel-cron"] === "1";
+    if (!isCron && auth !== `Bearer ${secret}`) {
+      return res.status(401).json({ ok: false, error: "unauthorized" });
+    }
+  }
+
+  try {
+    const result = await runIngest({ uploadMedia: true, log: (m) => console.log(m) });
+    return res.status(200).json({ ok: true, ...result });
+  } catch (err) {
+    console.error("ingest error:", err);
+    return res.status(500).json({ ok: false, error: String(err.message || err) });
+  }
+}

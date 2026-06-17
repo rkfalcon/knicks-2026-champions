@@ -1,14 +1,18 @@
 {
   "name": "knicks-2026-picture-book",
   "version": "1.0.0",
-  "description": "A fan-made picture book of the New York Knicks' 2026 NBA Championship run, built from X & Instagram posts.",
+  "description": "A fan-made picture book of the New York Knicks' 2026 NBA Championship run, built from X & Instagram posts. Vercel + Supabase.",
   "type": "module",
   "private": true,
   "scripts": {
     "sample": "node scripts/sample.mjs",
-    "ingest": "node scripts/ingest.mjs",
-    "ingest:media": "node scripts/ingest.mjs --download",
-    "serve": "cd docs && python3 -m http.server 8080"
+    "ingest": "node --env-file-if-exists=.env scripts/ingest.mjs",
+    "ingest:nomedia": "node --env-file-if-exists=.env scripts/ingest.mjs --no-media",
+    "dev": "vercel dev",
+    "serve": "cd . && python3 -m http.server 8080"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
   },
   "engines": { "node": ">=18" }
 }

@@ -9,6 +9,7 @@
     celeb: $("#celeb"), account: $("#account"), keyword: $("#keyword"), ptype: $("#ptype"),
     category: $("#category"), sort: $("#sort"),
     platformChips: $("#platformChips"), generated: $("#generated"),
+    filtersToggle: $("#filtersToggle"), filterSelects: $("#filterSelects"),
     lightbox: $("#lightbox"), lbStage: $("#lbStage"),
     lbClose: $("#lbClose"), lbPrev: $("#lbPrev"), lbNext: $("#lbNext"),
   };
@@ -245,13 +246,22 @@
 
   /* ---------- bind ---------- */
   function bind() {
-    el.platformChips.querySelectorAll(".chip").forEach((chip) =>
+    el.platformChips.querySelectorAll(".chip[data-platform]").forEach((chip) =>
       chip.addEventListener("click", () => {
-        el.platformChips.querySelectorAll(".chip").forEach((c) => c.classList.remove("is-on"));
+        el.platformChips.querySelectorAll(".chip[data-platform]").forEach((c) => c.classList.remove("is-on"));
         chip.classList.add("is-on");
         state.platform = chip.dataset.platform;
         render();
       }));
+
+    // Collapsible filters panel (hidden by default).
+    el.filtersToggle.addEventListener("click", () => {
+      const open = el.filterSelects.hidden;
+      el.filterSelects.hidden = !open;
+      el.filtersToggle.classList.toggle("is-open", open);
+      el.filtersToggle.setAttribute("aria-expanded", String(open));
+      el.filtersToggle.textContent = (open ? "▴" : "▾") + " Filters";
+    });
 
     let qt;
     el.q.addEventListener("input", () => {
@@ -278,7 +288,7 @@
       });
       el.q.value = ""; el.series.value = "all"; el.player.value = ""; el.celeb.value = "";
       el.account.value = ""; el.keyword.value = ""; el.ptype.value = "all"; el.category.value = "all";
-      el.platformChips.querySelectorAll(".chip").forEach((c) => c.classList.toggle("is-on", c.dataset.platform === "all"));
+      el.platformChips.querySelectorAll(".chip[data-platform]").forEach((c) => c.classList.toggle("is-on", c.dataset.platform === "all"));
       rebuildGames(); render();
     });
 

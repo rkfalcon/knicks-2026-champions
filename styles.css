@@ -172,6 +172,8 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
 }
 .chip:active { transform: translate(2px, 2px); box-shadow: none; }
 .chip.is-on { background: var(--knicks-orange); color: #fff; }
+.chip-filters { margin-left: auto; background: var(--knicks-blue-dk); color: #fff; }
+.chip-filters.is-open { background: var(--knicks-orange); color: #fff; }
 
 .selects {
   display: grid;

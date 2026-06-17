@@ -76,16 +76,16 @@ body {
 .hero-inner {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 26px 18px 30px;
+  padding: 12px 16px 16px;
   text-align: center;
 }
 
 .kicker {
   font-family: "VT323", monospace;
-  font-size: 1.1rem;
+  font-size: 1rem;
   letter-spacing: 2px;
   color: var(--knicks-blue);
-  margin: 0 0 10px;
+  margin: 0 0 6px;
 }
 
 h1 {
@@ -121,15 +121,18 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
 
 .stamp {
   display: inline-block;
-  font-family: "VT323", monospace;
-  font-size: 1.15rem;
-  letter-spacing: 2px;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.4;
   color: #fff;
   background: var(--knicks-orange);
   border: 3px solid var(--ink);
   box-shadow: var(--shadow-sm);
-  padding: 4px 14px;
-  transform: rotate(-2deg);
+  padding: 8px 16px;
+  margin-top: 12px;
+  max-width: 600px;
+  transform: rotate(-1deg);
 }
 
 /* ---------- FILTERS ---------- */

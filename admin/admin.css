@@ -42,7 +42,13 @@ body.admin { background: var(--paper); }
 }
 .tab.is-on { background: var(--knicks-blue); color: #fff; }
 
-.panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.tab-tools { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+.tab-tools input, .tab-tools select {
+  font-size: 0.95rem; padding: 6px 9px; border: 3px solid var(--ink); background: #fff;
+}
+.tab-tools input { min-width: 200px; }
+.panel-head .btn { margin-left: 0; }
 .panel-head h2 { font-family: "Anton", sans-serif; text-transform: capitalize; margin: 0; }
 .panel-head small { font-family: "VT323", monospace; color: #5a6672; }
 

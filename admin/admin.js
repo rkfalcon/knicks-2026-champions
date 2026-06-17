@@ -116,18 +116,51 @@ $("#tabs").addEventListener("click", (e) => {
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 /* ---------------- rendering ---------------- */
+const acctFilter = { q: "", type: "all", focus: false };
+
 function renderTab(tab) {
   if (tab === "settings") return renderSettings();
   const schema = ENTITIES[tab];
-  const rows = DATA[tab] || [];
+  const all = DATA[tab] || [];
+
+  // Accounts tab: client-side search + type filter.
+  const withTools = tab === "accounts";
+  let rows = all;
+  if (withTools) {
+    const q = acctFilter.q.toLowerCase();
+    rows = all.filter((r) => {
+      if (acctFilter.type !== "all" && (r.account_type || "none") !== acctFilter.type) return false;
+      if (q) return [r.name, r.x_handle, r.ig_handle].some((v) => (v || "").toLowerCase().includes(q));
+      return true;
+    });
+  }
+
+  const tools = withTools ? `
+    <div class="tab-tools">
+      <input id="acctSearch" type="search" placeholder="🔎 search name / handle" value="${esc(acctFilter.q)}" />
+      <select id="acctType">
+        ${["all", "player", "team", "celebrity", "fan", "none"].map((t) =>
+          `<option value="${t}" ${acctFilter.type === t ? "selected" : ""}>${t === "all" ? "All types" : t}</option>`).join("")}
+      </select>
+    </div>` : "";
+  const counter = withTools && rows.length !== all.length ? `${rows.length} of ${all.length}` : `${all.length}`;
+
   const head = schema.cols.map((c) => `<th>${c.k}</th>`).join("") + "<th></th>";
   const body = rows.map((r) => rowHTML(tab, schema, r)).join("");
   $("#panel").innerHTML = `
     <div class="panel-head">
-      <h2>${tab} <small>(${rows.length})</small></h2>
+      <h2>${tab} <small>(${counter})</small></h2>
+      ${tools}
       <button class="btn" data-add>＋ Add ${schema.singular || tab}</button>
     </div>
     <div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+
+  if (withTools) {
+    const search = $("#acctSearch");
+    search.addEventListener("input", () => { acctFilter.q = search.value; acctFilter.focus = true; renderTab("accounts"); });
+    $("#acctType").addEventListener("change", (e) => { acctFilter.type = e.target.value; renderTab("accounts"); });
+    if (acctFilter.focus) { search.focus(); search.setSelectionRange(search.value.length, search.value.length); acctFilter.focus = false; }
+  }
 }
 
 function cellInput(c, val) {

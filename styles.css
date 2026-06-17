@@ -123,7 +123,7 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
   display: inline-block;
   font-family: "Space Grotesk", sans-serif;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.4;
   color: #fff;
   background: var(--knicks-orange);
@@ -131,9 +131,9 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
   box-shadow: var(--shadow-sm);
   padding: 8px 16px;
   margin-top: 12px;
-  max-width: 600px;
-  transform: rotate(-1deg);
+  max-width: 620px;
 }
+@media (max-width: 400px) { .stamp { font-size: 0.85rem; } }
 
 /* ---------- FILTERS ---------- */
 .filters {

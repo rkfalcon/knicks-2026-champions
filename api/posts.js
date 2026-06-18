@@ -7,6 +7,19 @@ import sample from "../data/posts.json" with { type: "json" };
 
 export const config = { maxDuration: 30 };
 
+// PostgREST caps any single query at 1000 rows, so page through to get them all.
+async function fetchAllPosts(sb, cap = 8000) {
+  const all = [];
+  for (let from = 0; from < cap; from += 1000) {
+    const { data, error } = await sb.from("posts").select("*")
+      .order("posted_at", { ascending: false }).range(from, from + 999);
+    if (error) throw error;
+    all.push(...data);
+    if (data.length < 1000) break;
+  }
+  return all;
+}
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=120, stale-while-revalidate=600");
 
@@ -14,17 +27,16 @@ export default async function handler(req, res) {
   if (!sb) return res.status(200).json(sample);
 
   try {
-    const [postsRes, series, games, accounts, keywords, settings] = await Promise.all([
-      sb.from("posts").select("*").order("posted_at", { ascending: false }).limit(8000),
+    const [postRows, series, games, accounts, keywords, settings] = await Promise.all([
+      fetchAllPosts(sb),
       sb.from("series").select("*").order("sort"),
       sb.from("games").select("*").order("sort"),
       sb.from("accounts").select("*").eq("active", true),
       sb.from("keywords").select("*").eq("active", true),
       sb.from("settings").select("*"),
     ]);
-    if (postsRes.error) throw postsRes.error;
 
-    const posts = (postsRes.data || []).map(rowToPost);
+    const posts = postRows.map(rowToPost);
     if (!posts.length) return res.status(200).json(sample);
 
     const S = Object.fromEntries((settings.data || []).map((r) => [r.key, r.value]));

@@ -74,11 +74,26 @@
     el.celeb.innerHTML = `<option value="">Anyone</option>` +
       (d.celebrities || []).map((c) => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("");
 
+    // Count posts per account, keyed by platform+author so an account whose X and
+    // IG handles match (e.g. NBA) isn't double-counted. Mirrors the filter logic.
+    const byPlatformAuthor = {};
+    for (const p of d.posts || []) {
+      const k = p.platform + ":" + (p.author || "").toLowerCase();
+      byPlatformAuthor[k] = (byPlatformAuthor[k] || 0) + 1;
+    }
+    const acctCount = (a) =>
+      (a.x_handle ? byPlatformAuthor["x:" + a.x_handle.toLowerCase()] || 0 : 0) +
+      (a.ig_handle ? byPlatformAuthor["instagram:" + a.ig_handle.toLowerCase()] || 0 : 0);
+    // Replace state.data.accounts with a count-annotated, count-sorted copy so the
+    // option indices stay in sync with applyFilters' lookup.
+    d.accounts = (d.accounts || [])
+      .map((a) => ({ ...a, _count: acctCount(a) }))
+      .sort((x, y) => y._count - x._count || (x.name || "").localeCompare(y.name || ""));
     el.account.innerHTML = `<option value="">All accounts</option>` +
-      (d.accounts || []).map((a, i) => {
+      d.accounts.map((a, i) => {
         const icons = [a.x_handle ? "𝕏" : "", a.ig_handle ? "📸" : ""].filter(Boolean).join("");
         const label = a.name || a.x_handle || a.ig_handle || "";
-        return `<option value="${i}">${esc(label)} ${icons}</option>`;
+        return `<option value="${i}">${esc(label)} ${icons} (${a._count})</option>`;
       }).join("");
 
     el.keyword.innerHTML = `<option value="">Any keyword</option>` +

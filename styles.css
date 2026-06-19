@@ -213,6 +213,33 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
 
 .chip .mini { display: none; }
 
+/* Floating "scroll for more" cue — shows when results run past the fold. */
+.scroll-more {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 60;
+  font-family: "VT323", monospace;
+  font-size: 1.05rem;
+  letter-spacing: 1px;
+  padding: 8px 18px;
+  background: var(--knicks-orange);
+  color: #fff;
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer;
+  animation: scroll-bob 1.3s ease-in-out infinite;
+}
+.scroll-more:active { box-shadow: var(--shadow-sm); }
+@keyframes scroll-bob {
+  0%, 100% { transform: translate(-50%, 0); }
+  50%      { transform: translate(-50%, 4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-more { animation: none; }
+}
+
 /* Active-filter pills — show what's currently selected, click to clear. */
 .active-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
 .active-chips:empty { display: none; }

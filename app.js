@@ -4,7 +4,7 @@
 
   const $ = (sel) => document.querySelector(sel);
   const el = {
-    book: $("#book"), empty: $("#empty"), count: $("#count"), reset: $("#reset"),
+    book: $("#book"), empty: $("#empty"), count: $("#count"), reset: $("#reset"), scrollMore: $("#scrollMore"),
     q: $("#q"), suggest: $("#suggest"), series: $("#series"), game: $("#game"), player: $("#player"),
     celeb: $("#celeb"), account: $("#account"), keyword: $("#keyword"), ptype: $("#ptype"),
     category: $("#category"), sort: $("#sort"),
@@ -250,6 +250,7 @@
       state.ptype !== "all" || state.category !== "all" || state.q;
     el.reset.hidden = !filtersActive;
     renderActiveChips();
+    updateScrollMore();
 
     el.book.querySelectorAll(".card").forEach((c) =>
       c.addEventListener("click", () => openLightbox(Number(c.dataset.i))));
@@ -308,6 +309,16 @@
   function renderActiveChips() {
     el.activeChips.innerHTML = activeChipList().map((c) =>
       `<button type="button" class="active-chip" data-kind="${c.kind}" title="${esc(c.label)} — tap to clear"><span class="lbl">${esc(c.label)}</span><span class="x" aria-hidden="true">✕</span></button>`).join("");
+  }
+
+  // Floating "scroll for more" cue — visible only while there's a meaningful
+  // amount of results still below the bottom of the viewport.
+  function updateScrollMore() {
+    if (!el.scrollMore) return;
+    const hasResults = (state.view || []).length > 0;
+    const doc = document.documentElement;
+    const remaining = doc.scrollHeight - window.scrollY - window.innerHeight;
+    el.scrollMore.hidden = !(hasResults && remaining > 240);
   }
 
   /* ---------- lightbox ---------- */
@@ -442,7 +453,18 @@
     window.addEventListener("resize", () => {
       clearTimeout(rt);
       rt = setTimeout(() => { if (colCount() !== cols) { cols = colCount(); render(); } }, 150);
+      updateScrollMore();
     });
+
+    // Show/hide the "scroll for more" cue as the user scrolls.
+    let smTick = false;
+    window.addEventListener("scroll", () => {
+      if (smTick) return;
+      smTick = true;
+      requestAnimationFrame(() => { smTick = false; updateScrollMore(); });
+    }, { passive: true });
+    el.scrollMore.addEventListener("click", () =>
+      window.scrollBy({ top: Math.round(window.innerHeight * 0.85), behavior: "smooth" }));
 
     el.platformChips.querySelectorAll(".chip[data-platform]").forEach((chip) =>
       chip.addEventListener("click", () => {

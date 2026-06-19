@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=VT323&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=13" />
+  <link rel="stylesheet" href="styles.css?v=14" />
 </head>
 <body>
   <a class="skip" href="#book">Skip to the pictures</a>
@@ -24,11 +24,15 @@
 
     <div class="hero-inner">
       <p class="kicker">◆ ◆ ◆ &nbsp; A FAN-MADE PICTURE BOOK &nbsp; ◆ ◆ ◆</p>
-      <h1>
-        <span class="line-1">NEW YORK KNICKS</span>
-        <span class="line-2">2026 NBA <em>CHAMPIONS</em></span>
-      </h1>
-      <p class="stamp">🏀 Two months. Four series. One trophy.&nbsp;🏆<br />The whole run sorted into a searchable picture book.</p>
+      <div class="title-row">
+        <span class="title-trophy" aria-hidden="true">🏆</span>
+        <h1>
+          <span class="line-1">NEW YORK KNICKS</span>
+          <span class="line-2">2026 NBA <em>CHAMPIONS</em></span>
+        </h1>
+        <span class="title-trophy" aria-hidden="true">🏆</span>
+      </div>
+      <p class="stamp">🏀 Two months. Four series. One trophy. 🏆 The whole championship run sorted into a searchable picture book.</p>
     </div>
   </header>
 
@@ -123,6 +127,11 @@
     <div class="lb-stage" id="lbStage"></div>
   </div>
 
-  <script src="app.js?v=14"></script>
+  <!-- Background music (optional) — drop an MP3 at assets/anthem.mp3 -->
+  <audio id="bgm" src="assets/anthem.mp3" loop preload="none"></audio>
+  <button id="musicToggle" class="music-toggle" type="button" aria-label="Toggle music" title="Play music">🔇</button>
+
+  <script src="extras.js?v=1"></script>
+  <script src="app.js?v=15"></script>
 </body>
 </html>

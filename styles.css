@@ -277,6 +277,8 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
   .chip[data-platform="x"] .mini, .chip[data-platform="instagram"] .mini { display: inline; }
   .chip-filters { margin-left: 0; }            /* the pill strip fills the gap instead */
   .active-chips { flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; overflow: hidden; }
+  /* Keep the strip as a flex spacer even when empty so Filters stays pinned right. */
+  .active-chips:empty { display: block; }
   .active-chip { font-size: 0.82rem; border-width: 2px; padding: 4px 7px; }
 }
 

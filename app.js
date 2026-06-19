@@ -79,10 +79,15 @@
     // Count posts per account, keyed by platform+author so an account whose X and
     // IG handles match (e.g. NBA) isn't double-counted. Mirrors the filter logic.
     const byPlatformAuthor = {};
+    const playerCounts = {}, celebCounts = {};
     for (const p of d.posts || []) {
       const k = p.platform + ":" + (p.author || "").toLowerCase();
       byPlatformAuthor[k] = (byPlatformAuthor[k] || 0) + 1;
+      (p.tags.players || []).forEach((x) => (playerCounts[x] = (playerCounts[x] || 0) + 1));
+      (p.tags.celebrities || []).forEach((x) => (celebCounts[x] = (celebCounts[x] || 0) + 1));
     }
+    state.playerCounts = playerCounts;
+    state.celebCounts = celebCounts;
     const acctCount = (a) =>
       (a.x_handle ? byPlatformAuthor["x:" + a.x_handle.toLowerCase()] || 0 : 0) +
       (a.ig_handle ? byPlatformAuthor["instagram:" + a.ig_handle.toLowerCase()] || 0 : 0);
@@ -300,15 +305,17 @@
     const inc = (s) => (s || "").toLowerCase().includes(q);
     const rank = (s) => ((s || "").toLowerCase().startsWith(q) ? 0 : 1); // prefix matches first
     const items = [];
-    (d.players || []).filter((p) => inc(p.name)).sort((a, b) => rank(a.name) - rank(b.name)).slice(0, 6)
+    (d.players || []).filter((p) => inc(p.name) && (state.playerCounts?.[p.name] || 0) > 0)
+      .sort((a, b) => rank(a.name) - rank(b.name)).slice(0, 6)
       .forEach((p) => items.push({ kind: "player", label: p.name + (p.number ? " #" + p.number : ""), value: p.name }));
     (d.accounts || []).map((a, i) => ({ a, i }))
-      .filter(({ a }) => inc(a.name) || inc(a.x_handle) || inc(a.ig_handle))
+      .filter(({ a }) => (a._count || 0) > 0 && (inc(a.name) || inc(a.x_handle) || inc(a.ig_handle)))
       .sort((x, y) => rank(x.a.name || x.a.x_handle) - rank(y.a.name || y.a.x_handle)).slice(0, 6)
       .forEach(({ a, i }) => items.push({ kind: "account", value: String(i),
         label: a.name || a.x_handle || a.ig_handle,
         icons: [a.x_handle ? "𝕏" : "", a.ig_handle ? "📸" : ""].filter(Boolean).join("") }));
-    (d.celebrities || []).filter((c) => inc(c.name)).sort((a, b) => rank(a.name) - rank(b.name)).slice(0, 6)
+    (d.celebrities || []).filter((c) => inc(c.name) && (state.celebCounts?.[c.name] || 0) > 0)
+      .sort((a, b) => rank(a.name) - rank(b.name)).slice(0, 6)
       .forEach((c) => items.push({ kind: "celeb", label: c.name, value: c.name }));
     (d.keywords || []).filter((k) => inc(k.term)).sort((a, b) => rank(a.term) - rank(b.term)).slice(0, 6)
       .forEach((k) => items.push({ kind: "keyword", label: "#" + k.term, value: k.term }));
@@ -346,9 +353,10 @@
       else if (it.kind === "account") { state.account = it.value; el.account.value = it.value; }
       else if (it.kind === "celeb") { state.celeb = it.value; el.celeb.value = it.value; }
       else if (it.kind === "keyword") { state.keyword = it.value; el.keyword.value = it.value; }
-      setFiltersOpen(true);
     }
     hideSuggest();
+    el.q.blur();            // dismiss the mobile keyboard
+    setFiltersOpen(false);  // collapse the filters panel — land on the results
     render();
   }
 

@@ -5,7 +5,7 @@
   const $ = (sel) => document.querySelector(sel);
   const el = {
     book: $("#book"), empty: $("#empty"), count: $("#count"), reset: $("#reset"),
-    q: $("#q"), series: $("#series"), game: $("#game"), player: $("#player"),
+    q: $("#q"), suggest: $("#suggest"), series: $("#series"), game: $("#game"), player: $("#player"),
     celeb: $("#celeb"), account: $("#account"), keyword: $("#keyword"), ptype: $("#ptype"),
     category: $("#category"), sort: $("#sort"),
     platformChips: $("#platformChips"), generated: $("#generated"),
@@ -283,6 +283,83 @@
     openLightbox((state.lbIndex + dir + n) % n);
   }
 
+  /* ---------- search autocomplete ---------- */
+  const KIND = { player: "PLAYER", account: "ACCT", celeb: "CELEB", keyword: "TAG" };
+
+  function setFiltersOpen(open) {
+    el.filterSelects.hidden = !open;
+    el.filtersToggle.classList.toggle("is-open", open);
+    el.filtersToggle.setAttribute("aria-expanded", String(open));
+    el.filtersToggle.textContent = (open ? "▴" : "▾") + " Filters";
+  }
+
+  function buildSuggest(qRaw) {
+    const q = qRaw.trim().toLowerCase();
+    if (!q) return [];
+    const d = state.data;
+    const inc = (s) => (s || "").toLowerCase().includes(q);
+    const rank = (s) => ((s || "").toLowerCase().startsWith(q) ? 0 : 1); // prefix matches first
+    const items = [];
+    (d.players || []).filter((p) => inc(p.name)).sort((a, b) => rank(a.name) - rank(b.name)).slice(0, 6)
+      .forEach((p) => items.push({ kind: "player", label: p.name + (p.number ? " #" + p.number : ""), value: p.name }));
+    (d.accounts || []).map((a, i) => ({ a, i }))
+      .filter(({ a }) => inc(a.name) || inc(a.x_handle) || inc(a.ig_handle))
+      .sort((x, y) => rank(x.a.name || x.a.x_handle) - rank(y.a.name || y.a.x_handle)).slice(0, 6)
+      .forEach(({ a, i }) => items.push({ kind: "account", value: String(i),
+        label: a.name || a.x_handle || a.ig_handle,
+        icons: [a.x_handle ? "𝕏" : "", a.ig_handle ? "📸" : ""].filter(Boolean).join("") }));
+    (d.celebrities || []).filter((c) => inc(c.name)).sort((a, b) => rank(a.name) - rank(b.name)).slice(0, 6)
+      .forEach((c) => items.push({ kind: "celeb", label: c.name, value: c.name }));
+    (d.keywords || []).filter((k) => inc(k.term)).sort((a, b) => rank(a.term) - rank(b.term)).slice(0, 6)
+      .forEach((k) => items.push({ kind: "keyword", label: "#" + k.term, value: k.term }));
+    items.push({ kind: "text", label: `Search captions for “${qRaw.trim()}”`, value: qRaw.trim() });
+    return items;
+  }
+
+  function showSuggest() {
+    const items = buildSuggest(el.q.value);
+    state.sugItems = items;
+    state.sugIndex = -1;
+    if (!items.length) return hideSuggest();
+    el.suggest.innerHTML = items.map((it, i) =>
+      `<div class="suggest-item" data-i="${i}" role="option">
+        <span class="s-kind">${it.kind === "text" ? "🔎" : KIND[it.kind]}</span>
+        <span class="s-label">${esc(it.label)}${it.icons ? " " + it.icons : ""}</span>
+      </div>`).join("");
+    el.suggest.hidden = false;
+    el.q.setAttribute("aria-expanded", "true");
+  }
+
+  function hideSuggest() {
+    el.suggest.hidden = true;
+    el.q.setAttribute("aria-expanded", "false");
+    state.sugIndex = -1;
+  }
+
+  function applySuggest(it) {
+    if (!it) return;
+    if (it.kind === "text") {
+      state.q = it.value; el.q.value = it.value;
+    } else {
+      state.q = ""; el.q.value = "";
+      if (it.kind === "player") { state.player = it.value; el.player.value = it.value; }
+      else if (it.kind === "account") { state.account = it.value; el.account.value = it.value; }
+      else if (it.kind === "celeb") { state.celeb = it.value; el.celeb.value = it.value; }
+      else if (it.kind === "keyword") { state.keyword = it.value; el.keyword.value = it.value; }
+      setFiltersOpen(true);
+    }
+    hideSuggest();
+    render();
+  }
+
+  function moveSuggest(dir) {
+    const n = state.sugItems ? state.sugItems.length : 0;
+    if (!n) return;
+    state.sugIndex = (state.sugIndex + dir + n) % n;
+    el.suggest.querySelectorAll(".suggest-item").forEach((node, i) =>
+      node.classList.toggle("is-active", i === state.sugIndex));
+  }
+
   /* ---------- bind ---------- */
   function bind() {
     // Re-lay the grid when the column count changes (responsive).
@@ -302,18 +379,29 @@
       }));
 
     // Collapsible filters panel (hidden by default).
-    el.filtersToggle.addEventListener("click", () => {
-      const open = el.filterSelects.hidden;
-      el.filterSelects.hidden = !open;
-      el.filtersToggle.classList.toggle("is-open", open);
-      el.filtersToggle.setAttribute("aria-expanded", String(open));
-      el.filtersToggle.textContent = (open ? "▴" : "▾") + " Filters";
-    });
+    el.filtersToggle.addEventListener("click", () => setFiltersOpen(el.filterSelects.hidden));
 
     let qt;
     el.q.addEventListener("input", () => {
+      showSuggest();
       clearTimeout(qt);
-      qt = setTimeout(() => { state.q = el.q.value.trim(); render(); }, 160);
+      qt = setTimeout(() => { state.q = el.q.value.trim(); render(); }, 200);
+    });
+    el.q.addEventListener("focus", () => { if (el.q.value.trim()) showSuggest(); });
+    el.q.addEventListener("blur", () => setTimeout(hideSuggest, 150));
+    el.q.addEventListener("keydown", (e) => {
+      if (el.suggest.hidden) return;
+      if (e.key === "ArrowDown") { e.preventDefault(); moveSuggest(1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); moveSuggest(-1); }
+      else if (e.key === "Enter" && state.sugIndex >= 0) { e.preventDefault(); applySuggest(state.sugItems[state.sugIndex]); }
+      else if (e.key === "Escape") hideSuggest();
+    });
+    // mousedown (not click) so the selection registers before the input blurs.
+    el.suggest.addEventListener("mousedown", (e) => {
+      const item = e.target.closest(".suggest-item");
+      if (!item) return;
+      e.preventDefault();
+      applySuggest(state.sugItems[Number(item.dataset.i)]);
     });
 
     el.series.addEventListener("change", () => {

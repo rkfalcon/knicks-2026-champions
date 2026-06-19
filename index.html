@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=VT323&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=8" />
+  <link rel="stylesheet" href="styles.css?v=9" />
 </head>
 <body>
   <a class="skip" href="#book">Skip to the pictures</a>
@@ -34,7 +34,8 @@
 
   <nav class="filters" id="filters" aria-label="Filter the picture book">
     <div class="filters-row search-row">
-      <input type="search" id="q" placeholder="🔎 search captions, players, #hashtags…" autocomplete="off" />
+      <input type="search" id="q" placeholder="🔎 search captions, players, #hashtags…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="suggest" />
+      <div id="suggest" class="suggest" role="listbox" hidden></div>
     </div>
 
     <div class="filters-row chips" id="platformChips" role="group" aria-label="Platform">
@@ -119,6 +120,6 @@
     <div class="lb-stage" id="lbStage"></div>
   </div>
 
-  <script src="app.js?v=7"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>

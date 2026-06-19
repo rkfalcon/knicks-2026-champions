@@ -148,6 +148,7 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
 .filters-row { max-width: var(--maxw); margin: 0 auto; }
 .filters-row + .filters-row { margin-top: 8px; }
 
+.search-row { position: relative; }
 #q {
   width: 100%;
   font-family: "Space Grotesk", sans-serif;
@@ -158,6 +159,38 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
   box-shadow: var(--shadow-sm);
   background: var(--paper-2);
 }
+
+/* ---- search autocomplete ---- */
+.suggest {
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(100% + 4px);
+  z-index: 50;
+  background: var(--paper-2);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow);
+  max-height: 64vh;
+  overflow-y: auto;
+}
+.suggest-group {
+  font-family: "VT323", monospace;
+  font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase;
+  color: #fff; background: var(--knicks-blue);
+  padding: 4px 12px;
+}
+.suggest-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; cursor: pointer;
+  font-size: 0.98rem; border-top: 1px solid var(--silver);
+}
+.suggest-item:first-child { border-top: none; }
+.suggest-item.is-active, .suggest-item:hover { background: var(--knicks-orange); color: #fff; }
+.suggest-item .s-kind {
+  font-family: "VT323", monospace; font-size: 0.78rem; letter-spacing: .5px;
+  background: var(--ink); color: #fff; padding: 1px 6px; flex: none;
+}
+.suggest-item.is-active .s-kind, .suggest-item:hover .s-kind { background: rgba(0,0,0,0.35); }
+.suggest-item .s-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #q:focus { outline: 3px solid var(--knicks-orange); outline-offset: 1px; }
 
 .chips { display: flex; gap: 8px; flex-wrap: wrap; }

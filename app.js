@@ -68,11 +68,13 @@
       (d.series || []).map((s) => `<option value="${s.id}">${esc(s.label)}${s.result ? " — " + esc(s.result) : ""}</option>`).join("") +
       `<option value="festivities">🎉 Festivities</option>`;
 
+    const byName = (a, b) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" });
+
     el.player.innerHTML = `<option value="">Anyone</option>` +
-      (d.players || []).map((p) => `<option value="${esc(p.name)}">${esc(p.name)}${p.number ? " #" + p.number : ""}</option>`).join("");
+      (d.players || []).slice().sort(byName).map((p) => `<option value="${esc(p.name)}">${esc(p.name)}${p.number ? " #" + p.number : ""}</option>`).join("");
 
     el.celeb.innerHTML = `<option value="">Anyone</option>` +
-      (d.celebrities || []).map((c) => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("");
+      (d.celebrities || []).slice().sort(byName).map((c) => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("");
 
     // Count posts per account, keyed by platform+author so an account whose X and
     // IG handles match (e.g. NBA) isn't double-counted. Mirrors the filter logic.
@@ -84,11 +86,13 @@
     const acctCount = (a) =>
       (a.x_handle ? byPlatformAuthor["x:" + a.x_handle.toLowerCase()] || 0 : 0) +
       (a.ig_handle ? byPlatformAuthor["instagram:" + a.ig_handle.toLowerCase()] || 0 : 0);
-    // Replace state.data.accounts with a count-annotated, count-sorted copy so the
-    // option indices stay in sync with applyFilters' lookup.
+    // Annotate each account with its post count (shown in the label) and sort the
+    // dropdown alphabetically by name. Replace state.data.accounts so the option
+    // indices stay in sync with applyFilters' lookup.
     d.accounts = (d.accounts || [])
       .map((a) => ({ ...a, _count: acctCount(a) }))
-      .sort((x, y) => y._count - x._count || (x.name || "").localeCompare(y.name || ""));
+      .sort((x, y) => (x.name || x.x_handle || x.ig_handle || "")
+        .localeCompare(y.name || y.x_handle || y.ig_handle || "", undefined, { sensitivity: "base" }));
     el.account.innerHTML = `<option value="">All accounts</option>` +
       d.accounts.map((a, i) => {
         const icons = [a.x_handle ? "𝕏" : "", a.ig_handle ? "📸" : ""].filter(Boolean).join("");
@@ -209,11 +213,25 @@
     return ev ? ev.label : null;
   }
 
+  // Columns matched to the CSS breakpoints — used to lay cards out in row order.
+  function colCount() {
+    const w = window.innerWidth;
+    if (w >= 1180) return 4;
+    if (w >= 900) return 3;
+    if (w >= 560) return 2;
+    return 1;
+  }
+
   function render() {
     const posts = applyFilters();
     state.view = posts;
 
-    el.book.innerHTML = posts.map((p, i) => cardHTML(p, i)).join("");
+    // Distribute cards round-robin across columns so reading order is left-to-right,
+    // top-to-bottom (newest first across the top row) instead of column-by-column.
+    const n = colCount();
+    const cols = Array.from({ length: n }, () => []);
+    posts.forEach((p, i) => cols[i % n].push(cardHTML(p, i)));
+    el.book.innerHTML = cols.map((c) => `<div class="book-col">${c.join("")}</div>`).join("");
     el.empty.hidden = posts.length > 0;
     el.book.hidden = posts.length === 0;
 
@@ -267,6 +285,14 @@
 
   /* ---------- bind ---------- */
   function bind() {
+    // Re-lay the grid when the column count changes (responsive).
+    let cols = colCount();
+    let rt;
+    window.addEventListener("resize", () => {
+      clearTimeout(rt);
+      rt = setTimeout(() => { if (colCount() !== cols) { cols = colCount(); render(); } }, 150);
+    });
+
     el.platformChips.querySelectorAll(".chip[data-platform]").forEach((chip) =>
       chip.addEventListener("click", () => {
         el.platformChips.querySelectorAll(".chip[data-platform]").forEach((c) => c.classList.remove("is-on"));

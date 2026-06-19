@@ -227,17 +227,21 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
   text-decoration: underline; padding: 0;
 }
 
-/* ---------- BOOK (masonry) ---------- */
+/* ---------- BOOK (row-order masonry: columns filled left-to-right by JS) ---------- */
 .book {
   max-width: var(--maxw);
   margin: 0 auto;
   padding: 22px 14px 10px;
-  column-count: 1;
-  column-gap: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
 }
-@media (min-width: 560px) { .book { column-count: 2; } }
-@media (min-width: 900px) { .book { column-count: 3; } }
-@media (min-width: 1180px) { .book { column-count: 4; } }
+.book-col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
 
 .card {
   break-inside: avoid;

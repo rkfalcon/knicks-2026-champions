@@ -211,13 +211,39 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
 .chip-filters { margin-left: auto; background: var(--knicks-blue-dk); color: #fff; }
 .chip-filters.is-open { background: var(--knicks-orange); color: #fff; }
 
-/* On phones, keep all four buttons on one row by shrinking them to fit. */
+/* Active-filter pills — show what's currently selected, click to clear. */
+.active-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.active-chips:empty { display: none; }
+.active-chip {
+  font-family: "VT323", monospace;
+  font-size: 0.95rem;
+  letter-spacing: .5px;
+  padding: 4px 9px;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: transform .05s ease;
+}
+.active-chip:hover { background: var(--knicks-orange); color: #fff; }
+.active-chip .x { font-weight: 700; opacity: .75; }
+.active-chip:active { transform: translate(2px, 2px); box-shadow: none; }
+
+/* On phones, keep all four buttons on one row by shrinking them to fit;
+   the active-filter pills wrap to their own line right below. */
 @media (max-width: 560px) {
-  .chips { flex-wrap: nowrap; gap: 5px; }
+  .chips { flex-wrap: wrap; gap: 5px; }
   .chips .chip {
     font-size: 0.78rem; padding: 5px 6px; letter-spacing: 0;
     white-space: nowrap; border-width: 2px;
   }
+  .active-chips { order: 1; flex-basis: 100%; margin-top: 4px; }
+  .active-chip { font-size: 0.85rem; border-width: 2px; }
 }
 
 .selects {

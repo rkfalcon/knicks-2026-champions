@@ -8,7 +8,7 @@
     q: $("#q"), suggest: $("#suggest"), series: $("#series"), game: $("#game"), player: $("#player"),
     celeb: $("#celeb"), account: $("#account"), keyword: $("#keyword"), ptype: $("#ptype"),
     category: $("#category"), sort: $("#sort"),
-    platformChips: $("#platformChips"), generated: $("#generated"),
+    platformChips: $("#platformChips"), activeChips: $("#activeChips"), generated: $("#generated"),
     filtersToggle: $("#filtersToggle"), filterSelects: $("#filterSelects"),
     lightbox: $("#lightbox"), lbStage: $("#lbStage"),
     lbClose: $("#lbClose"), lbPrev: $("#lbPrev"), lbNext: $("#lbNext"),
@@ -249,9 +249,65 @@
       state.game || state.player || state.celeb || state.account || state.keyword ||
       state.ptype !== "all" || state.category !== "all" || state.q;
     el.reset.hidden = !filtersActive;
+    renderActiveChips();
 
     el.book.querySelectorAll(".card").forEach((c) =>
       c.addEventListener("click", () => openLightbox(Number(c.dataset.i))));
+  }
+
+  /* ---------- active-filter chips (shown in the chips row) ---------- */
+  function activeChipList() {
+    const d = state.data;
+    const chips = [];
+    if (state.q) chips.push({ kind: "q", label: `🔎 “${state.q}”` });
+    if (state.series !== "all") {
+      const s = (d.series || []).find((x) => x.id === state.series);
+      chips.push({ kind: "series", label: "Series: " + (s ? s.label : (state.series === "festivities" ? "Festivities 🎉" : state.series)) });
+    }
+    if (state.game) {
+      const s = (d.series || []).find((x) => x.id === state.series);
+      const g = s && s.games.find((x) => x.id === state.game);
+      chips.push({ kind: "game", label: "Game: " + (g ? g.label : state.game) });
+    }
+    if (state.player) {
+      const p = (d.players || []).find((x) => x.name === state.player);
+      chips.push({ kind: "player", label: "Player: " + state.player + (p && p.number ? " #" + p.number : "") });
+    }
+    if (state.celeb) chips.push({ kind: "celeb", label: "Celeb: " + state.celeb });
+    if (state.account !== "") {
+      const a = (d.accounts || [])[Number(state.account)];
+      chips.push({ kind: "account", label: "Account: " + (a ? (a.name || a.x_handle || a.ig_handle || "") : "") });
+    }
+    if (state.keyword) {
+      const k = (d.keywords || []).find((x) => x.term === state.keyword);
+      chips.push({ kind: "keyword", label: "Tag: " + (k ? (k.label || k.term) : state.keyword) });
+    }
+    if (state.ptype !== "all") {
+      chips.push({ kind: "ptype", label: "Type: " + ({ post: "Posts", story: "Stories", highlight: "Highlights" }[state.ptype] || state.ptype) });
+    }
+    if (state.category !== "all") {
+      chips.push({ kind: "category", label: "View: " + ({ game: "Game days", festivities: "Festivities 🎉" }[state.category] || state.category) });
+    }
+    return chips;
+  }
+
+  function clearOne(kind) {
+    switch (kind) {
+      case "q": state.q = ""; el.q.value = ""; break;
+      case "series": state.series = "all"; el.series.value = "all"; state.game = ""; rebuildGames(); break;
+      case "game": state.game = ""; el.game.value = ""; break;
+      case "player": state.player = ""; el.player.value = ""; break;
+      case "celeb": state.celeb = ""; el.celeb.value = ""; break;
+      case "account": state.account = ""; el.account.value = ""; break;
+      case "keyword": state.keyword = ""; el.keyword.value = ""; break;
+      case "ptype": state.ptype = "all"; el.ptype.value = "all"; break;
+      case "category": state.category = "all"; el.category.value = "all"; break;
+    }
+  }
+
+  function renderActiveChips() {
+    el.activeChips.innerHTML = activeChipList().map((c) =>
+      `<button type="button" class="active-chip" data-kind="${c.kind}" title="Clear this filter">${esc(c.label)} <span class="x" aria-hidden="true">✕</span></button>`).join("");
   }
 
   /* ---------- lightbox ---------- */
@@ -388,6 +444,13 @@
 
     // Collapsible filters panel (hidden by default).
     el.filtersToggle.addEventListener("click", () => setFiltersOpen(el.filterSelects.hidden));
+
+    el.activeChips.addEventListener("click", (e) => {
+      const btn = e.target.closest(".active-chip");
+      if (!btn) return;
+      clearOne(btn.dataset.kind);
+      render();
+    });
 
     let qt;
     el.q.addEventListener("input", () => {

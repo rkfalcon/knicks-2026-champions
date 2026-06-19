@@ -507,17 +507,20 @@
       applySuggest(state.sugItems[Number(item.dataset.i)]);
     });
 
+    // After picking any filter option, collapse the panel and drop the user onto
+    // the results — same UX as choosing a search suggestion.
+    const commitPick = () => { render(); setFiltersOpen(false); scrollToResults(); };
     el.series.addEventListener("change", () => {
-      state.series = el.series.value; state.game = ""; rebuildGames(); render();
+      state.series = el.series.value; state.game = ""; rebuildGames(); commitPick();
     });
-    el.game.addEventListener("change", () => { state.game = el.game.value; render(); });
-    el.player.addEventListener("change", () => { state.player = el.player.value; render(); });
-    el.celeb.addEventListener("change", () => { state.celeb = el.celeb.value; render(); });
-    el.account.addEventListener("change", () => { state.account = el.account.value; render(); });
-    el.keyword.addEventListener("change", () => { state.keyword = el.keyword.value; render(); });
-    el.ptype.addEventListener("change", () => { state.ptype = el.ptype.value; render(); });
-    el.category.addEventListener("change", () => { state.category = el.category.value; render(); });
-    el.sort.addEventListener("change", () => { state.sort = el.sort.value; render(); });
+    el.game.addEventListener("change", () => { state.game = el.game.value; commitPick(); });
+    el.player.addEventListener("change", () => { state.player = el.player.value; commitPick(); });
+    el.celeb.addEventListener("change", () => { state.celeb = el.celeb.value; commitPick(); });
+    el.account.addEventListener("change", () => { state.account = el.account.value; commitPick(); });
+    el.keyword.addEventListener("change", () => { state.keyword = el.keyword.value; commitPick(); });
+    el.ptype.addEventListener("change", () => { state.ptype = el.ptype.value; commitPick(); });
+    el.category.addEventListener("change", () => { state.category = el.category.value; commitPick(); });
+    el.sort.addEventListener("change", () => { state.sort = el.sort.value; commitPick(); });
 
     el.reset.addEventListener("click", () => {
       Object.assign(state, {

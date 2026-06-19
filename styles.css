@@ -211,8 +211,10 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
 .chip-filters { margin-left: auto; background: var(--knicks-blue-dk); color: #fff; }
 .chip-filters.is-open { background: var(--knicks-orange); color: #fff; }
 
+.chip .mini { display: none; }
+
 /* Active-filter pills — show what's currently selected, click to clear. */
-.active-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.active-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
 .active-chips:empty { display: none; }
 .active-chip {
   font-family: "VT323", monospace;
@@ -227,23 +229,28 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  max-width: 100%;
   white-space: nowrap;
   transition: transform .05s ease;
 }
+.active-chip .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .active-chip:hover { background: var(--knicks-orange); color: #fff; }
-.active-chip .x { font-weight: 700; opacity: .75; }
+.active-chip .x { font-weight: 700; opacity: .75; flex: none; }
 .active-chip:active { transform: translate(2px, 2px); box-shadow: none; }
 
-/* On phones, keep all four buttons on one row by shrinking them to fit;
-   the active-filter pills wrap to their own line right below. */
+/* On phones, shrink X/Instagram to just their logos so the active-filter
+   pill fits on the same row, between Instagram and the Filters button. */
 @media (max-width: 560px) {
-  .chips { flex-wrap: wrap; gap: 5px; }
+  .chips { flex-wrap: nowrap; gap: 5px; align-items: center; }
   .chips .chip {
-    font-size: 0.78rem; padding: 5px 6px; letter-spacing: 0;
+    font-size: 0.82rem; padding: 5px 8px; letter-spacing: 0;
     white-space: nowrap; border-width: 2px;
   }
-  .active-chips { order: 1; flex-basis: 100%; margin-top: 4px; }
-  .active-chip { font-size: 0.85rem; border-width: 2px; }
+  .chip[data-platform="x"] .full, .chip[data-platform="instagram"] .full { display: none; }
+  .chip[data-platform="x"] .mini, .chip[data-platform="instagram"] .mini { display: inline; }
+  .chip-filters { margin-left: 0; }            /* the pill strip fills the gap instead */
+  .active-chips { flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; overflow: hidden; }
+  .active-chip { font-size: 0.82rem; border-width: 2px; padding: 4px 7px; }
 }
 
 .selects {

@@ -9,7 +9,7 @@
     celeb: $("#celeb"), account: $("#account"), keyword: $("#keyword"), ptype: $("#ptype"),
     category: $("#category"), sort: $("#sort"),
     platformChips: $("#platformChips"), activeChips: $("#activeChips"), generated: $("#generated"),
-    filtersToggle: $("#filtersToggle"), filterSelects: $("#filterSelects"),
+    filters: $("#filters"), filtersToggle: $("#filtersToggle"), filterSelects: $("#filterSelects"),
     lightbox: $("#lightbox"), lbStage: $("#lbStage"),
     lbClose: $("#lbClose"), lbPrev: $("#lbPrev"), lbNext: $("#lbNext"),
   };
@@ -307,7 +307,7 @@
 
   function renderActiveChips() {
     el.activeChips.innerHTML = activeChipList().map((c) =>
-      `<button type="button" class="active-chip" data-kind="${c.kind}" title="Clear this filter">${esc(c.label)} <span class="x" aria-hidden="true">✕</span></button>`).join("");
+      `<button type="button" class="active-chip" data-kind="${c.kind}" title="${esc(c.label)} — tap to clear"><span class="lbl">${esc(c.label)}</span><span class="x" aria-hidden="true">✕</span></button>`).join("");
   }
 
   /* ---------- lightbox ---------- */
@@ -414,6 +414,16 @@
     el.q.blur();            // dismiss the mobile keyboard
     setFiltersOpen(false);  // collapse the filters panel — land on the results
     render();
+    scrollToResults();      // move past the header to the filter bar + first result
+  }
+
+  // Scroll so the (collapsed) filter bar sits at the top of the viewport and the
+  // first results are visible — past the big hero header. Delayed so it runs
+  // after the iOS keyboard finishes dismissing (which itself shifts the layout).
+  function scrollToResults() {
+    setTimeout(() => {
+      if (el.filters) el.filters.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 300);
   }
 
   function moveSuggest(dir) {

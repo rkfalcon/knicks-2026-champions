@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=VT323&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=10" />
+  <link rel="stylesheet" href="styles.css?v=11" />
 </head>
 <body>
   <a class="skip" href="#book">Skip to the pictures</a>
@@ -40,8 +40,8 @@
 
     <div class="filters-row chips" id="platformChips" role="group" aria-label="Platform">
       <button class="chip is-on" data-platform="all">ALL</button>
-      <button class="chip" data-platform="x">𝕏 / Twitter</button>
-      <button class="chip" data-platform="instagram">Instagram</button>
+      <button class="chip" data-platform="x" aria-label="X / Twitter"><span class="full">𝕏 / Twitter</span><span class="mini">𝕏</span></button>
+      <button class="chip" data-platform="instagram" aria-label="Instagram"><span class="full">Instagram</span><span class="mini">📸</span></button>
       <span id="activeChips" class="active-chips" aria-live="polite"></span>
       <button class="chip chip-filters" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filterSelects">▾ Filters</button>
     </div>
@@ -121,6 +121,6 @@
     <div class="lb-stage" id="lbStage"></div>
   </div>
 
-  <script src="app.js?v=11"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>

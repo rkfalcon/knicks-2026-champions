@@ -464,6 +464,26 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-blue); }
   .lb-prev { left: 14px; } .lb-next { right: 14px; }
 }
 
+/* Page-load confetti — GPU-composited (transform/opacity only), so it never
+   blocks the main thread on load. */
+.confetti-burst { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
+.confetti-burst i {
+  position: absolute;
+  left: 50%;
+  top: 32%;
+  width: var(--w);
+  height: calc(var(--w) * 0.6);
+  background: var(--c);
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  animation: confetti-fly var(--d) cubic-bezier(.18, .7, .3, 1) var(--delay) forwards;
+}
+@keyframes confetti-fly {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate3d(var(--tx), var(--ty), 0) rotate(var(--r)); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .confetti-burst { display: none; } }
+
 /* Tiny background-music toggle, pinned bottom-left. */
 .music-toggle {
   position: fixed;

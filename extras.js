@@ -5,87 +5,44 @@
 (function () {
   "use strict";
 
-  /* ---------- confetti explosion on page load ---------- */
+  /* ---------- confetti explosion on page load ----------
+     Pure CSS/DOM: each piece is animated by the compositor (GPU), so the burst
+     never touches the main thread — no per-frame JS, no load-time hang. */
   function confetti() {
     const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
 
     const COLORS = ["#f58426", "#006bb6", "#ffffff", "#ffd54a", "#e06a0a", "#00477a"];
-    const canvas = document.createElement("canvas");
-    canvas.setAttribute("aria-hidden", "true");
-    canvas.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:9999";
-    document.body.appendChild(canvas);
-    const ctx = canvas.getContext("2d");
+    const wrap = document.createElement("div");
+    wrap.className = "confetti-burst";
+    wrap.setAttribute("aria-hidden", "true");
 
-    // Cap the backing store so big/hi-dpi screens don't blow up the per-frame
-    // fill cost — keeps the burst smooth instead of janking the load.
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    const W = (canvas.width = window.innerWidth * dpr);
-    const H = (canvas.height = window.innerHeight * dpr);
-    canvas.style.width = window.innerWidth + "px";
-    canvas.style.height = window.innerHeight + "px";
-
-    const parts = [];
-    function burst(cx, cy, count) {
-      for (let i = 0; i < count; i++) {
-        const a = Math.random() * Math.PI * 2;
-        const sp = (4 + Math.random() * 9) * dpr;
-        parts.push({
-          x: cx, y: cy,
-          vx: Math.cos(a) * sp,
-          vy: Math.sin(a) * sp - 6 * dpr,
-          g: 0.3 * dpr,
-          size: (5 + Math.random() * 7) * dpr,
-          rot: Math.random() * Math.PI,
-          vr: (Math.random() - 0.5) * 0.3,
-          color: COLORS[(Math.random() * COLORS.length) | 0],
-          life: 0,
-          ttl: 60 + Math.random() * 40,
-        });
-      }
+    const N = window.innerWidth < 560 ? 70 : 100;
+    let html = "";
+    for (let i = 0; i < N; i++) {
+      const tx = (Math.random() * 2 - 1) * 60;        // vw spread, left/right
+      const ty = Math.random() * 100 - 28;            // vh, mostly downward
+      const r = Math.random() * 720 - 360;            // deg spin
+      const size = 6 + Math.random() * 8;             // px
+      const color = COLORS[(Math.random() * COLORS.length) | 0];
+      const delay = Math.random() * 0.12;             // s
+      const dur = 1.7 + Math.random() * 1.4;          // s
+      html +=
+        '<i style="--tx:' + tx.toFixed(1) + "vw;--ty:" + ty.toFixed(1) +
+        "vh;--r:" + r.toFixed(0) + "deg;--w:" + size.toFixed(1) +
+        "px;--c:" + color + ";--d:" + dur.toFixed(2) + "s;--delay:" +
+        delay.toFixed(2) + 's;"></i>';
     }
-    // A central pop plus two flanking bursts → a full-width explosion (lighter
-    // particle budget so it stays a quick, smooth burst).
-    burst(W * 0.5, H * 0.34, 70);
-    burst(W * 0.2, H * 0.30, 35);
-    burst(W * 0.8, H * 0.30, 35);
-
-    let frame = 0;
-    function tick() {
-      frame++;
-      ctx.clearRect(0, 0, W, H);
-      let alive = 0;
-      for (const p of parts) {
-        if (p.life > p.ttl) continue;
-        alive++;
-        p.life++;
-        p.vy += p.g;
-        p.vx *= 0.99;
-        p.x += p.vx;
-        p.y += p.vy;
-        p.rot += p.vr;
-        ctx.save();
-        ctx.globalAlpha = Math.max(0, 1 - p.life / p.ttl);
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.62);
-        ctx.restore();
-      }
-      if (alive > 0 && frame < 150) requestAnimationFrame(tick);
-      else canvas.remove();
-    }
-    requestAnimationFrame(tick);
+    wrap.innerHTML = html;
+    document.body.appendChild(wrap);
+    // Clean up once the longest piece has finished (max delay + max dur + buffer).
+    setTimeout(function () { wrap.remove(); }, 3600);
   }
 
-  // Defer the burst until the browser has painted + gone idle once, so it never
-  // competes with the initial render or data fetch (the cause of the "hang").
-  function startConfetti() {
-    if (window.requestIdleCallback) window.requestIdleCallback(confetti, { timeout: 600 });
-    else setTimeout(confetti, 250);
-  }
-  if (document.readyState === "complete") startConfetti();
-  else window.addEventListener("load", startConfetti, { once: true });
+  // Kick it off after the first paint so the page shows instantly; the animation
+  // itself is GPU-composited and won't block anything.
+  if (document.readyState === "complete") requestAnimationFrame(confetti);
+  else window.addEventListener("load", function () { requestAnimationFrame(confetti); }, { once: true });
 
   /* ---------- background music toggle ---------- */
   (function music() {

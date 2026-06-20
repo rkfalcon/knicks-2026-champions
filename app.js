@@ -4,7 +4,7 @@
 
   const $ = (sel) => document.querySelector(sel);
   const el = {
-    book: $("#book"), empty: $("#empty"), count: $("#count"), reset: $("#reset"), scrollMore: $("#scrollMore"),
+    book: $("#book"), empty: $("#empty"), count: $("#count"), reset: $("#reset"), share: $("#share"), scrollMore: $("#scrollMore"),
     q: $("#q"), suggest: $("#suggest"), series: $("#series"), game: $("#game"), player: $("#player"),
     celeb: $("#celeb"), account: $("#account"), keyword: $("#keyword"), ptype: $("#ptype"),
     category: $("#category"), sort: $("#sort"),
@@ -60,6 +60,7 @@
     state.data = payload;
     buildFilters();
     bind();
+    applyUrlParams(); // pre-populate filters from a shared deep link
     render();
     if (state.data.generatedAt) {
       el.generated.textContent =
@@ -127,6 +128,71 @@
     el.game.disabled = false;
     el.game.innerHTML = `<option value="">All ${esc(s.label)} games</option>` +
       s.games.map((g) => `<option value="${g.id}">${esc(g.label)} (${fmtDate(g.date)})${g.result ? " " + g.result : ""}</option>`).join("");
+  }
+
+  /* ---------- shareable URL state ----------
+     Filters are mirrored in the query string so the address bar is always a
+     shareable deep link, and a link with ?account=jalenbrunson1 (etc.) opens
+     pre-filtered. Accounts use their handle (stable) rather than the array
+     index. */
+  function setPlatformChips() {
+    el.platformChips.querySelectorAll(".chip[data-platform]").forEach((c) =>
+      c.classList.toggle("is-on", c.dataset.platform === state.platform));
+  }
+
+  function syncUrl() {
+    const d = state.data;
+    const p = new URLSearchParams();
+    if (state.platform !== "all") p.set("platform", state.platform);
+    if (state.q) p.set("q", state.q);
+    if (state.series !== "all") p.set("series", state.series);
+    if (state.game) p.set("game", state.game);
+    if (state.player) p.set("player", state.player);
+    if (state.celeb) p.set("celeb", state.celeb);
+    if (state.account !== "") {
+      const a = (d.accounts || [])[Number(state.account)];
+      if (a) p.set("account", a.ig_handle || a.x_handle || a.name);
+    }
+    if (state.keyword) p.set("keyword", state.keyword);
+    if (state.ptype !== "all") p.set("type", state.ptype);
+    if (state.category !== "all") p.set("view", state.category);
+    if (state.sort !== "desc") p.set("sort", state.sort);
+    const qs = p.toString();
+    history.replaceState(null, "", qs ? `${location.pathname}?${qs}` : location.pathname);
+  }
+
+  function applyUrlParams() {
+    const p = new URLSearchParams(location.search);
+    if (![...p].length) return;
+    const d = state.data;
+    const canon = (list, val) => {
+      const v = (val || "").toLowerCase();
+      const m = (list || []).find((x) => (x.name || "").toLowerCase() === v);
+      return m ? m.name : null;
+    };
+    if (p.has("platform")) { state.platform = p.get("platform"); setPlatformChips(); }
+    if (p.has("q")) { state.q = p.get("q"); el.q.value = state.q; }
+    if (p.has("series")) { state.series = p.get("series"); el.series.value = state.series; rebuildGames(); }
+    if (p.has("game")) { state.game = p.get("game"); el.game.value = state.game; }
+    if (p.has("player")) { const m = canon(d.players, p.get("player")); if (m) { state.player = m; el.player.value = m; } }
+    if (p.has("celeb")) { const m = canon(d.celebrities, p.get("celeb")); if (m) { state.celeb = m; el.celeb.value = m; } }
+    if (p.has("account")) {
+      const key = (p.get("account") || "").toLowerCase().replace(/^@/, "");
+      const idx = (d.accounts || []).findIndex((a) =>
+        [a.name, a.x_handle, a.ig_handle].some((v) => (v || "").toLowerCase() === key));
+      if (idx >= 0) { state.account = String(idx); el.account.value = state.account; }
+    }
+    if (p.has("keyword") || p.has("tag")) { state.keyword = p.get("keyword") || p.get("tag"); el.keyword.value = state.keyword; }
+    if (p.has("type")) { state.ptype = p.get("type"); el.ptype.value = state.ptype; }
+    if (p.has("view")) { state.category = p.get("view"); el.category.value = state.category; }
+    if (p.has("sort")) { state.sort = p.get("sort"); el.sort.value = state.sort; }
+  }
+
+  let shareTimer;
+  function flashShare(msg) {
+    el.share.textContent = msg;
+    clearTimeout(shareTimer);
+    shareTimer = setTimeout(() => { el.share.textContent = "🔗 Share"; }, 1900);
   }
 
   /* ---------- filtering ---------- */
@@ -256,6 +322,7 @@
       state.ptype !== "all" || state.category !== "all" || state.q;
     el.reset.hidden = !filtersActive;
     renderActiveChips();
+    syncUrl();
 
     appendMore(); // first page (also calls updateScrollMore)
   }
@@ -564,6 +631,18 @@
       el.account.value = ""; el.keyword.value = ""; el.ptype.value = "all"; el.category.value = "all";
       el.platformChips.querySelectorAll(".chip[data-platform]").forEach((c) => c.classList.toggle("is-on", c.dataset.platform === "all"));
       rebuildGames(); render();
+    });
+
+    // Share the current (filtered) view — native share sheet on mobile, copy to
+    // clipboard elsewhere. The URL already reflects the active filters.
+    el.share.addEventListener("click", async () => {
+      const url = location.href;
+      if (navigator.share) {
+        try { await navigator.share({ title: document.title, url }); return; }
+        catch (e) { if (e && e.name === "AbortError") return; }
+      }
+      try { await navigator.clipboard.writeText(url); flashShare("✓ Link copied!"); }
+      catch { flashShare("Copy from the address bar"); }
     });
 
     el.lbClose.addEventListener("click", closeLightbox);

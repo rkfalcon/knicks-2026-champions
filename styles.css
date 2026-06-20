@@ -323,10 +323,11 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
   color: #fff;
   letter-spacing: 1px;
 }
+.statusbar-actions { display: inline-flex; gap: 16px; align-items: center; }
 .link-btn {
   background: none; border: none; color: var(--knicks-orange);
   font-family: "VT323", monospace; font-size: 1.1rem; cursor: pointer;
-  text-decoration: underline; padding: 0;
+  text-decoration: underline; padding: 0; white-space: nowrap;
 }
 
 /* Loading state: a row of little bouncing basketballs. */

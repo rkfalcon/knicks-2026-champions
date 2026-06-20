@@ -227,33 +227,49 @@
     return 1;
   }
 
-  function render() {
-    const posts = applyFilters();
-    state.view = posts;
+  const PAGE_SIZE = 60; // cards rendered per batch (windowed — the rest append on scroll)
 
-    // Distribute cards round-robin across columns so reading order is left-to-right,
-    // top-to-bottom (newest first across the top row) instead of column-by-column.
+  function render() {
+    state.view = applyFilters();
+    state.rendered = 0;
+
+    // Empty columns up front; cards stream in (round-robin) in batches so a big
+    // result set never rebuilds thousands of DOM nodes at once — that synchronous
+    // work was blocking typing in the search box on mobile.
     const n = colCount();
-    const cols = Array.from({ length: n }, () => []);
-    posts.forEach((p, i) => cols[i % n].push(cardHTML(p, i)));
-    el.book.innerHTML = cols.map((c) => `<div class="book-col">${c.join("")}</div>`).join("");
-    el.empty.hidden = posts.length > 0;
-    el.book.hidden = posts.length === 0;
+    el.book.innerHTML = Array.from({ length: n }, () => `<div class="book-col"></div>`).join("");
+    state.cols = [...el.book.querySelectorAll(".book-col")];
+    el.empty.hidden = state.view.length > 0;
+    el.book.hidden = state.view.length === 0;
 
     const total = state.data.count || state.data.posts.length;
-    el.count.textContent = posts.length === total
+    el.count.textContent = state.view.length === total
       ? `📖 ${total} moments`
-      : `📖 ${posts.length} of ${total} moments`;
+      : `📖 ${state.view.length} of ${total} moments`;
 
     const filtersActive = state.platform !== "all" || state.series !== "all" ||
       state.game || state.player || state.celeb || state.account || state.keyword ||
       state.ptype !== "all" || state.category !== "all" || state.q;
     el.reset.hidden = !filtersActive;
     renderActiveChips();
-    updateScrollMore();
 
-    el.book.querySelectorAll(".card").forEach((c) =>
-      c.addEventListener("click", () => openLightbox(Number(c.dataset.i))));
+    appendMore(); // first page (also calls updateScrollMore)
+  }
+
+  // Append the next batch of cards into the existing columns, continuing the
+  // round-robin index so reading order (left-to-right, top-to-bottom) holds.
+  function appendMore() {
+    const cols = state.cols || [];
+    const n = cols.length;
+    if (!n) return;
+    const start = state.rendered || 0;
+    const end = Math.min(start + PAGE_SIZE, state.view.length);
+    if (end <= start) { updateScrollMore(); return; }
+    const buckets = Array.from({ length: n }, () => []);
+    for (let i = start; i < end; i++) buckets[i % n].push(cardHTML(state.view[i], i));
+    for (let c = 0; c < n; c++) if (buckets[c].length) cols[c].insertAdjacentHTML("beforeend", buckets[c].join(""));
+    state.rendered = end;
+    updateScrollMore();
   }
 
   /* ---------- active-filter chips (shown in the chips row) ---------- */
@@ -316,9 +332,10 @@
   function updateScrollMore() {
     if (!el.scrollMore) return;
     const hasResults = (state.view || []).length > 0;
+    const moreToRender = (state.rendered || 0) < (state.view ? state.view.length : 0);
     const doc = document.documentElement;
     const remaining = doc.scrollHeight - window.scrollY - window.innerHeight;
-    el.scrollMore.hidden = !(hasResults && remaining > 240);
+    el.scrollMore.hidden = !(hasResults && (moreToRender || remaining > 240));
   }
 
   /* ---------- lightbox ---------- */
@@ -456,9 +473,18 @@
       updateScrollMore();
     });
 
-    // Show/hide the "scroll for more" cue as the user scrolls.
+    // Open the lightbox from any card (event delegation — survives windowed
+    // appends without re-binding per card).
+    el.book.addEventListener("click", (e) => {
+      const card = e.target.closest(".card");
+      if (card) openLightbox(Number(card.dataset.i));
+    });
+
+    // As the user nears the bottom, stream in more cards; also update the cue.
     let smTick = false;
     window.addEventListener("scroll", () => {
+      const doc = document.documentElement;
+      if (doc.scrollHeight - window.scrollY - window.innerHeight < 1200) appendMore();
       if (smTick) return;
       smTick = true;
       requestAnimationFrame(() => { smTick = false; updateScrollMore(); });
@@ -484,9 +510,12 @@
       render();
     });
 
-    let qt;
+    let qt, qs;
     el.q.addEventListener("input", () => {
-      showSuggest();
+      // Defer both the suggestions and the grid filter off the keystroke so the
+      // typed character paints immediately (no per-letter lag on mobile).
+      clearTimeout(qs);
+      qs = setTimeout(showSuggest, 50);
       clearTimeout(qt);
       qt = setTimeout(() => { state.q = el.q.value.trim(); render(); }, 200);
     });

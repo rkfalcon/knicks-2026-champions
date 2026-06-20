@@ -403,10 +403,15 @@
   function updateScrollMore() {
     if (!el.scrollMore) return;
     const hasResults = (state.view || []).length > 0;
-    const moreToRender = (state.rendered || 0) < (state.view ? state.view.length : 0);
     const doc = document.documentElement;
+    const scrollable = doc.scrollHeight > window.innerHeight + 240;
+    if (!hasResults || !scrollable) { el.scrollMore.hidden = true; return; }
     const remaining = doc.scrollHeight - window.scrollY - window.innerHeight;
-    el.scrollMore.hidden = !(hasResults && (moreToRender || remaining > 240));
+    const moreBelow = (state.rendered || 0) < state.view.length || remaining > 240;
+    el.scrollMore.hidden = false;
+    // At the bottom the cue flips to a "back to top" control.
+    el.scrollMore.dataset.mode = moreBelow ? "down" : "top";
+    el.scrollMore.textContent = moreBelow ? "↓ Scroll for more" : "↑ Back to top";
   }
 
   /* ---------- lightbox ---------- */
@@ -560,8 +565,10 @@
       smTick = true;
       requestAnimationFrame(() => { smTick = false; updateScrollMore(); });
     }, { passive: true });
-    el.scrollMore.addEventListener("click", () =>
-      window.scrollBy({ top: Math.round(window.innerHeight * 0.85), behavior: "smooth" }));
+    el.scrollMore.addEventListener("click", () => {
+      if (el.scrollMore.dataset.mode === "top") window.scrollTo({ top: 0, behavior: "smooth" });
+      else window.scrollBy({ top: Math.round(window.innerHeight * 0.85), behavior: "smooth" });
+    });
 
     el.platformChips.querySelectorAll(".chip[data-platform]").forEach((chip) =>
       chip.addEventListener("click", () => {

@@ -323,12 +323,23 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
   color: #fff;
   letter-spacing: 1px;
 }
-.statusbar-actions { display: inline-flex; gap: 16px; align-items: center; }
+.statusbar-actions { display: inline-flex; gap: 14px; align-items: center; }
 .link-btn {
   background: none; border: none; color: var(--knicks-orange);
   font-family: "VT323", monospace; font-size: 1.1rem; cursor: pointer;
   text-decoration: underline; padding: 0; white-space: nowrap;
 }
+/* Share is a button, not a link — visually distinct from "clear filters". */
+#share {
+  text-decoration: none;
+  color: #fff;
+  background: var(--knicks-orange);
+  border: 2px solid var(--ink);
+  box-shadow: var(--shadow-sm);
+  padding: 2px 11px;
+  letter-spacing: 1px;
+}
+#share:active { transform: translate(2px, 2px); box-shadow: none; }
 
 /* Loading state: a row of little bouncing basketballs. */
 #count.is-loading { display: inline-flex; align-items: flex-end; gap: 2px; }

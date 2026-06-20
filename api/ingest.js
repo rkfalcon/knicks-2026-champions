@@ -24,6 +24,7 @@ export default async function handler(req, res) {
     const days = Number(req.query?.days) || 4;
     const result = await runIngest({
       uploadMedia: true, sinceDays: days, maxImages: 120, record: true, trigger: "cron",
+      incrementalOnly: true, // never a full all-accounts scrape — it can't fit 300s
       log: (m) => console.log(m),
     });
     return res.status(200).json({ ok: true, ...result });

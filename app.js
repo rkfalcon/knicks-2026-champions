@@ -192,7 +192,7 @@
   function flashShare(msg) {
     el.share.textContent = msg;
     clearTimeout(shareTimer);
-    shareTimer = setTimeout(() => { el.share.textContent = "🔗 Share"; }, 1900);
+    shareTimer = setTimeout(() => { el.share.textContent = "Share"; }, 1900);
   }
 
   /* ---------- filtering ---------- */

@@ -316,13 +316,15 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
 .statusbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 6px 14px;
   font-family: "VT323", monospace;
   font-size: 1.1rem;
   color: #fff;
   letter-spacing: 1px;
 }
+#count { white-space: nowrap; }            /* never break "X of Y moments" */
+.statusbar-actions { margin-left: auto; }  /* push actions right; wrap as a unit */
 .statusbar-actions { display: inline-flex; gap: 14px; align-items: center; }
 .link-btn {
   background: none; border: none; color: var(--knicks-orange);
@@ -340,6 +342,11 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
   letter-spacing: 1px;
 }
 #share:active { transform: translate(2px, 2px); box-shadow: none; }
+@media (max-width: 560px) {
+  .statusbar { font-size: 1rem; }
+  .statusbar-actions { gap: 12px; }
+  #share { padding: 2px 9px; }
+}
 
 /* Loading state: a row of little bouncing basketballs. */
 #count.is-loading { display: inline-flex; align-items: flex-end; gap: 2px; }

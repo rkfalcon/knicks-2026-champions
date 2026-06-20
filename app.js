@@ -255,6 +255,8 @@
       ? `<span class="fest-tag">🎉 ${esc(festLabel(p) || "PARTY")}</span>` : "";
     const story = p.postType === "story" ? `<span class="type-tag">⏱ STORY</span>`
       : p.postType === "highlight" ? `<span class="type-tag">★ HIGHLIGHT</span>` : "";
+    const multi = (p.images && p.images.length > 1)
+      ? `<span class="multi-tag" aria-label="${p.images.length} photos">▣ ${p.images.length}</span>` : "";
 
     const tags = []
       .concat((p.tags.players || []).map((x) => `<span class="tag player">🏀 ${esc(x)}</span>`))
@@ -269,6 +271,7 @@
         <span class="badge ${platformClass}">${pIcon(p.platform)} @${esc(p.author)}</span>
         ${story}
         ${fest}
+        ${multi}
       </div>
       <div class="card-body">
         <div class="card-handle">${pIcon(p.platform)} @${esc(p.author)}</div>
@@ -419,8 +422,17 @@
     state.lbIndex = i;
     const p = state.view[i];
     if (!p) return;
-    const media = p.image
-      ? `<img src="${esc(p.image)}" alt="" onerror="this.style.display='none'">` : "";
+    const imgs = (p.images && p.images.length) ? p.images : (p.image ? [p.image] : []);
+    let media = "";
+    if (imgs.length > 1) {
+      media = `<div class="lb-gallery" id="lbGallery">${imgs.map((u) =>
+        `<div class="lb-slide"><img src="${esc(u)}" alt="" loading="lazy" onerror="this.style.display='none'"></div>`).join("")}</div>
+        <button class="lb-g-nav lb-g-prev" id="lbGPrev" type="button" aria-label="Previous image">‹</button>
+        <button class="lb-g-nav lb-g-next" id="lbGNext" type="button" aria-label="Next image">›</button>
+        <div class="lb-dots" id="lbDots">${imgs.map((_, k) => `<span class="lb-dot${k === 0 ? " is-on" : ""}"></span>`).join("")}</div>`;
+    } else if (imgs.length === 1) {
+      media = `<img src="${esc(imgs[0])}" alt="" onerror="this.style.display='none'">`;
+    }
     const tags = []
       .concat((p.tags.players || []).map((x) => `<span class="tag player">🏀 ${esc(x)}</span>`))
       .concat((p.tags.celebrities || []).map((x) => `<span class="tag celeb">⭐ ${esc(x)}</span>`))
@@ -437,6 +449,28 @@
     el.lightbox.hidden = false;
     el.lbStage.scrollTop = 0;
     document.body.style.overflow = "hidden";
+    wireGallery();
+  }
+
+  // Swipe/click through a multi-image post inside the lightbox.
+  function wireGallery() {
+    const gal = document.getElementById("lbGallery");
+    if (!gal) return;
+    const dots = [...document.querySelectorAll("#lbDots .lb-dot")];
+    const w = () => gal.clientWidth || 1;
+    const cur = () => Math.round(gal.scrollLeft / w());
+    const go = (dir) => gal.scrollTo({ left: (cur() + dir) * w(), behavior: "smooth" });
+    const prev = document.getElementById("lbGPrev");
+    const next = document.getElementById("lbGNext");
+    prev.addEventListener("click", (e) => { e.stopPropagation(); go(-1); });
+    next.addEventListener("click", (e) => { e.stopPropagation(); go(1); });
+    gal.addEventListener("scroll", () => {
+      const k = cur();
+      dots.forEach((d, j) => d.classList.toggle("is-on", j === k));
+      prev.style.visibility = k <= 0 ? "hidden" : "visible";
+      next.style.visibility = k >= dots.length - 1 ? "hidden" : "visible";
+    }, { passive: true });
+    prev.style.visibility = "hidden"; // start on the first slide
   }
   function closeLightbox() {
     el.lightbox.hidden = true;

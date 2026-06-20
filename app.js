@@ -106,9 +106,8 @@
         .localeCompare(y.name || y.x_handle || y.ig_handle || "", undefined, { sensitivity: "base" }));
     el.account.innerHTML = `<option value="">All accounts</option>` +
       d.accounts.map((a, i) => {
-        const icons = [a.x_handle ? "𝕏" : "", a.ig_handle ? "📸" : ""].filter(Boolean).join("");
         const label = a.name || a.x_handle || a.ig_handle || "";
-        return `<option value="${i}">${esc(label)} ${icons} (${a._count})</option>`;
+        return `<option value="${i}">${esc(label)} (${a._count})</option>`;
       }).join("");
 
     el.keyword.innerHTML = `<option value="">Any keyword</option>` +

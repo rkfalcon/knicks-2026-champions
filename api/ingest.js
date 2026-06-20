@@ -23,7 +23,10 @@ export default async function handler(req, res) {
     // self-heal on later runs. Full historical backfills use the CLI: `npm run ingest`.
     const days = Number(req.query?.days) || 4;
     const result = await runIngest({
-      uploadMedia: true, sinceDays: days, maxImages: 120, record: true, trigger: "cron",
+      // 250 image budget: comfortably covers the (now-low) daily volume plus some
+      // catch-up of any un-mirrored backlog, while the incremental scrape keeps
+      // the run well under the 300s budget.
+      uploadMedia: true, sinceDays: days, maxImages: 250, record: true, trigger: "cron",
       incrementalOnly: true, // never a full all-accounts scrape — it can't fit 300s
       log: (m) => console.log(m),
     });

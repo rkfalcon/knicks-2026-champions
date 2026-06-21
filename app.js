@@ -62,6 +62,7 @@
     bind();
     applyUrlParams(); // pre-populate filters from a shared deep link
     render();
+    initAdmin();      // enable admin remove controls if signed in (no-op otherwise)
     if (state.data.generatedAt) {
       el.generated.textContent =
         `Last updated ${new Date(state.data.generatedAt).toLocaleString("en-US")} · ${state.data.count} posts in the book`;
@@ -265,13 +266,14 @@
       .concat(p.tags.gameLabel ? [`<span class="tag game">${esc(p.tags.gameLabel)}</span>`] : [])
       .join("");
 
-    return `<article class="card" data-i="${i}">
+    return `<article class="card" data-i="${i}" data-id="${esc(p.id)}">
       <div class="card-media${p.image ? "" : " no-img"}">
         ${inner}
         <span class="badge ${platformClass}">${pIcon(p.platform)} @${esc(p.author)}</span>
         ${story}
         ${fest}
         ${multi}
+        <button class="card-remove" type="button" data-id="${esc(p.id)}" title="Remove — not Knicks (admin)" aria-label="Remove post">✕</button>
       </div>
       <div class="card-body">
         <div class="card-handle">${pIcon(p.platform)} @${esc(p.author)}</div>
@@ -445,6 +447,7 @@
         ${p.text ? `<p class="lb-text">${esc(p.text)}</p>` : ""}
         ${tags ? `<div class="taglist" style="margin-top:12px">${tags}</div>` : ""}
         ${p.url ? `<a class="lb-source" href="${esc(p.url)}" target="_blank" rel="noopener">↗ See it on ${p.platform === "x" ? "X" : "Instagram"}</a>` : ""}
+        <button class="lb-remove" type="button" data-id="${esc(p.id)}">🗑 Remove — not Knicks</button>
       </div>`;
     el.lightbox.hidden = false;
     el.lbStage.scrollTop = 0;
@@ -475,6 +478,51 @@
   function closeLightbox() {
     el.lightbox.hidden = true;
     document.body.style.overflow = "";
+  }
+
+  /* ---------- admin: remove non-Knicks posts ---------- */
+  // Cheap check first — only the admin's browser has a Supabase session, so
+  // normal visitors never load the auth library.
+  function maybeAdmin() {
+    try { return Object.keys(localStorage).some((k) => /^sb-.*-auth-token$/.test(k)); }
+    catch { return false; }
+  }
+  async function initAdmin() {
+    if (!maybeAdmin()) return;
+    try {
+      const mod = await import("https://esm.sh/@supabase/supabase-js@2.45.0")
+        .catch(() => import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"));
+      const cfg = await fetch("/api/config").then((r) => r.json());
+      if (!cfg?.supabaseUrl || !cfg?.supabaseAnonKey) return;
+      const sb = mod.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+      const { data } = await sb.auth.getSession();
+      const token = data.session?.access_token;
+      if (!token) return;
+      const ok = await fetch("/api/admin/hide", { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.ok).catch(() => false);
+      if (!ok) return; // logged in but not an admin
+      state.adminToken = token;
+      document.body.classList.add("is-admin");
+      sb.auth.onAuthStateChange((_e, s) => { state.adminToken = s?.access_token || null; });
+    } catch { /* not admin / offline — stay in normal mode */ }
+  }
+  async function hidePost(id) {
+    if (!state.adminToken || !id) return;
+    if (!confirm("Remove this post from the site? It will stay hidden across re-scrapes.")) return;
+    try {
+      const res = await fetch("/api/admin/hide", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.adminToken}` },
+        body: JSON.stringify({ id, hidden: true }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      state.data.posts = state.data.posts.filter((p) => p.id !== id);
+      if (typeof state.data.count === "number") state.data.count = Math.max(0, state.data.count - 1);
+      if (!el.lightbox.hidden) closeLightbox();
+      render();
+    } catch {
+      alert("Couldn't remove the post — try signing in again at /admin.");
+    }
   }
   function step(dir) {
     const n = state.view.length;
@@ -586,8 +634,14 @@
     // Open the lightbox from any card (event delegation — survives windowed
     // appends without re-binding per card).
     el.book.addEventListener("click", (e) => {
+      const rm = e.target.closest(".card-remove");
+      if (rm) { e.stopPropagation(); hidePost(rm.dataset.id); return; }
       const card = e.target.closest(".card");
       if (card) openLightbox(Number(card.dataset.i));
+    });
+    el.lbStage.addEventListener("click", (e) => {
+      const rm = e.target.closest(".lb-remove");
+      if (rm) { e.stopPropagation(); hidePost(rm.dataset.id); }
     });
 
     // As the user nears the bottom, stream in more cards; also update the cue.

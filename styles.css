@@ -530,6 +530,22 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
   background: rgba(13,27,42,0.82); color: #fff; border: 2px solid #fff; padding: 1px 7px;
 }
 
+/* Admin-only "remove non-Knicks post" controls (shown only when signed in). */
+.card-remove {
+  position: absolute; top: 6px; right: 6px; z-index: 5;
+  display: none; width: 26px; height: 26px; padding: 0; line-height: 1;
+  align-items: center; justify-content: center; cursor: pointer;
+  background: #c0142c; color: #fff; border: 2px solid #fff; font-size: 0.95rem;
+}
+.is-admin .card-remove { display: inline-flex; }
+.lb-remove {
+  display: none; margin: 14px 0 0 12px; cursor: pointer;
+  font-family: "VT323", monospace; font-size: 1.05rem; letter-spacing: 1px;
+  background: #c0142c; color: #fff; border: 3px solid var(--ink);
+  box-shadow: var(--shadow-sm); padding: 7px 14px;
+}
+.is-admin .lb-remove { display: inline-block; }
+
 @media (max-width: 560px) {
   .lb-nav { top: auto; bottom: 14px; transform: none; height: 48px; }
   .lb-prev { left: 14px; } .lb-next { right: 14px; }

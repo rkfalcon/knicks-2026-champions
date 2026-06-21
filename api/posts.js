@@ -12,6 +12,7 @@ async function fetchAllPosts(sb, cap = 8000) {
   const all = [];
   for (let from = 0; from < cap; from += 1000) {
     const { data, error } = await sb.from("posts").select("*")
+      .or("hidden.is.null,hidden.eq.false") // admin-hidden posts are excluded
       .order("posted_at", { ascending: false }).range(from, from + 999);
     if (error) throw error;
     all.push(...data);

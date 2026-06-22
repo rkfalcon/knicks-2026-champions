@@ -26,6 +26,7 @@ export default async function handler(req, res) {
       uploadMedia: true, sinceDays: days, maxImages: 150, record: true, trigger: "cron",
       incrementalOnly: true, // never a full all-accounts scrape — it can't fit 300s
       deadlineMs: 250000,    // stop slow work ~250s in so the run always reaches finish()
+      backfillNew: true, backfillLimit: 2, // auto-backfill up to 2 new accounts/run
       log: (m) => console.log(m),
     });
     return res.status(200).json({ ok: true, ...result });

@@ -12,7 +12,9 @@
     "serve": "cd . && python3 -m http.server 8080"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.0"
+    "@supabase/supabase-js": "^2.45.0",
+    "@vercel/edge": "^1.2.1",
+    "@vercel/og": "^0.6.4"
   },
   "engines": { "node": ">=18" }
 }

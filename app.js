@@ -85,10 +85,10 @@
 
     const byName = (a, b) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" });
 
-    el.player.innerHTML = `<option value="">Anyone</option>` +
+    el.player.innerHTML = `<option value="">Anyone</option><option value="__all__">All players</option>` +
       (d.players || []).slice().sort(byName).map((p) => `<option value="${esc(p.name)}">${esc(p.name)}${p.number ? " #" + p.number : ""}</option>`).join("");
 
-    el.celeb.innerHTML = `<option value="">Anyone</option>` +
+    el.celeb.innerHTML = `<option value="">Anyone</option><option value="__all__">All celebs</option>` +
       (d.celebrities || []).slice().sort(byName).map((c) => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("");
 
     // Count posts per account, keyed by platform+author so an account whose X and
@@ -183,8 +183,8 @@
     if (p.has("q")) { state.q = p.get("q"); el.q.value = state.q; }
     if (p.has("series")) { state.series = p.get("series"); el.series.value = state.series; rebuildGames(); }
     if (p.has("game")) { state.game = p.get("game"); el.game.value = state.game; }
-    if (p.has("player")) { const m = canon(d.players, p.get("player")); if (m) { state.player = m; el.player.value = m; } }
-    if (p.has("celeb")) { const m = canon(d.celebrities, p.get("celeb")); if (m) { state.celeb = m; el.celeb.value = m; } }
+    if (p.has("player")) { const v = p.get("player"); const m = v === "__all__" ? "__all__" : canon(d.players, v); if (m) { state.player = m; el.player.value = m; } }
+    if (p.has("celeb")) { const v = p.get("celeb"); const m = v === "__all__" ? "__all__" : canon(d.celebrities, v); if (m) { state.celeb = m; el.celeb.value = m; } }
     if (p.has("account")) {
       const key = (p.get("account") || "").toLowerCase().replace(/^@/, "");
       const idx = (d.accounts || []).findIndex((a) =>
@@ -214,8 +214,10 @@
     if (state.platform !== "all") posts = posts.filter((p) => p.platform === state.platform);
     if (state.series !== "all") posts = posts.filter((p) => p.tags.series === state.series);
     if (state.game) posts = posts.filter((p) => p.tags.game === state.game);
-    if (state.player) posts = posts.filter((p) => (p.tags.players || []).includes(state.player));
-    if (state.celeb) posts = posts.filter((p) => (p.tags.celebrities || []).includes(state.celeb));
+    if (state.player === "__all__") posts = posts.filter((p) => (p.tags.players || []).length > 0);
+    else if (state.player) posts = posts.filter((p) => (p.tags.players || []).includes(state.player));
+    if (state.celeb === "__all__") posts = posts.filter((p) => (p.tags.celebrities || []).length > 0);
+    else if (state.celeb) posts = posts.filter((p) => (p.tags.celebrities || []).includes(state.celeb));
     if (state.category !== "all") posts = posts.filter((p) => p.tags.category === state.category);
     if (state.ptype !== "all") posts = posts.filter((p) => (p.postType || "post") === state.ptype);
 
@@ -372,11 +374,13 @@
       const g = s && s.games.find((x) => x.id === state.game);
       chips.push({ kind: "game", label: "Game: " + (g ? g.label : state.game) });
     }
-    if (state.player) {
+    if (state.player === "__all__") chips.push({ kind: "player", label: "Player: All players" });
+    else if (state.player) {
       const p = (d.players || []).find((x) => x.name === state.player);
       chips.push({ kind: "player", label: "Player: " + state.player + (p && p.number ? " #" + p.number : "") });
     }
-    if (state.celeb) chips.push({ kind: "celeb", label: "Celeb: " + state.celeb });
+    if (state.celeb === "__all__") chips.push({ kind: "celeb", label: "Celeb: All celebs" });
+    else if (state.celeb) chips.push({ kind: "celeb", label: "Celeb: " + state.celeb });
     if (state.account !== "") {
       const a = (d.accounts || [])[Number(state.account)];
       chips.push({ kind: "account", label: "Account: " + (a ? (a.name || a.x_handle || a.ig_handle || "") : "") });

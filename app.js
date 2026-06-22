@@ -525,6 +525,16 @@
     }
   }
   function step(dir) {
+    // Inside a multi-image post, step through its frames first; only move to the
+    // next/previous post once you're at the end (or start) of the carousel.
+    const gal = document.getElementById("lbGallery");
+    if (gal) {
+      const w = gal.clientWidth || 1;
+      const cur = Math.round(gal.scrollLeft / w);
+      const last = gal.querySelectorAll(".lb-slide").length - 1;
+      const target = cur + dir;
+      if (target >= 0 && target <= last) { gal.scrollTo({ left: target * w, behavior: "smooth" }); return; }
+    }
     const n = state.view.length;
     if (!n) return;
     openLightbox((state.lbIndex + dir + n) % n);

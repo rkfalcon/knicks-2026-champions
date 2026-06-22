@@ -50,25 +50,35 @@ config.stories = { ...(config.stories || {}), include_highlights: true };
 
 await ensureBucket(sb);
 
-// Bounded image mirroring — skip anything already on Storage.
+// Bounded image mirroring — every frame of each post (incl. carousels).
 let mirrored = 0;
+const srcImages = (p) => (p.images && p.images.length ? p.images : (p.image ? [p.image] : []));
 async function mirrorBatch(items) {
   if (!items.length || mirrored >= MAX_IMAGES) return;
   const existing = new Map();
   const ids = items.map((p) => p.id);
   for (let i = 0; i < ids.length; i += 500) {
-    const { data } = await sb.from("posts").select("id,image").in("id", ids.slice(i, i + 500));
-    (data || []).forEach((r) => existing.set(r.id, r.image));
+    const { data } = await sb.from("posts").select("id,image,images").in("id", ids.slice(i, i + 500));
+    (data || []).forEach((r) => existing.set(r.id, r));
   }
   const changed = [];
   for (const p of items) {
     if (mirrored >= MAX_IMAGES) break;
     const ex = existing.get(p.id);
-    if (ex && ex.includes("/storage/")) continue;
-    if (p.image && /^https?:/.test(p.image)) {
-      const url = await uploadImage(sb, p.id, p.image);
-      if (url) { p.remoteImage = p.image; p.image = url; mirrored++; changed.push(p); }
+    const exImgs = (ex && Array.isArray(ex.images) && ex.images.length) ? ex.images : (ex?.image ? [ex.image] : []);
+    const src = srcImages(p);
+    if (exImgs.length === src.length && exImgs.length > 0 && exImgs.every((u) => u && u.includes("/storage/"))) {
+      p.images = exImgs; p.image = exImgs[0]; continue;
     }
+    const out = []; let uploaded = false;
+    for (let idx = 0; idx < src.length; idx++) {
+      const u = src[idx];
+      if ((mirrored >= MAX_IMAGES) || !u || u.includes("/storage/") || !/^https?:/.test(u)) { out.push(u); continue; }
+      const up = await uploadImage(sb, p.id, u, src.length > 1 ? `-${idx}` : "");
+      if (up) { out.push(up); mirrored++; uploaded = true; } else out.push(u);
+    }
+    p.images = out; p.image = out[0] || p.image;
+    if (uploaded) { p.remoteImage = src[0]; changed.push(p); }
   }
   if (changed.length) await upsertPosts(sb, changed);
 }

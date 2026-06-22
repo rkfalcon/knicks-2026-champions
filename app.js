@@ -32,6 +32,8 @@
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
   };
   const fmtNum = (n) => (n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, "") + "k" : `${n}`);
+  // Instagram lets accounts hide like counts; the scraper returns -1 for those.
+  const likesHtml = (n) => (typeof n === "number" && n < 0 ? "" : `♥ ${fmtNum(n || 0)}`);
   const esc = (s) => (s || "").replace(/[&<>"]/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
@@ -281,7 +283,7 @@
         ${p.text ? `<p class="card-text">${esc(p.text)}</p>` : ""}
         <div class="card-meta">
           <span>${fmtDate(p.date)}</span>
-          <span>♥ ${fmtNum(p.likes || 0)}</span>
+          <span>${likesHtml(p.likes)}</span>
         </div>
         ${tags ? `<div class="taglist">${tags}</div>` : ""}
       </div>
@@ -446,7 +448,7 @@
       .join("");
     el.lbStage.innerHTML = `${media}
       <div class="lb-body">
-        <div class="card-handle">${pIcon(p.platform)} @${esc(p.author)} · ${fmtDate(p.date)} · ♥ ${fmtNum(p.likes || 0)}</div>
+        <div class="card-handle">${pIcon(p.platform)} @${esc(p.author)} · ${fmtDate(p.date)}${likesHtml(p.likes) ? " · " + likesHtml(p.likes) : ""}</div>
         ${p.text ? `<p class="lb-text">${esc(p.text)}</p>` : ""}
         ${tags ? `<div class="taglist" style="margin-top:12px">${tags}</div>` : ""}
         ${p.url ? `<a class="lb-source" href="${esc(p.url)}" target="_blank" rel="noopener">↗ See it on ${p.platform === "x" ? "X" : "Instagram"}</a>` : ""}

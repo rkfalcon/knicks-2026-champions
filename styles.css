@@ -473,12 +473,14 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
 /* ---------- LIGHTBOX ---------- */
 .lightbox {
   position: fixed; inset: 0; z-index: 100;
+  height: 100vh; height: 100dvh; /* dvh = the *visible* viewport (iOS toolbar aware) */
   background: rgba(7,12,20,0.94);
   display: flex; align-items: center; justify-content: center;
   padding: 16px;
 }
 .lb-stage {
-  max-width: 760px; width: 100%; max-height: 92vh; overflow-y: auto;
+  max-width: 760px; width: 100%;
+  max-height: 92vh; max-height: 92dvh; overflow-y: auto;
   background: var(--paper-2); border: 4px solid var(--ink); box-shadow: 8px 8px 0 #000;
 }
 .lb-stage img { width: 100%; display: block; border-bottom: 4px solid var(--ink); }
@@ -492,7 +494,7 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
   padding: 7px 16px; border: 3px solid var(--ink); box-shadow: var(--shadow-sm);
 }
 .lb-close, .lb-nav {
-  position: fixed; z-index: 101;
+  position: absolute; z-index: 101; /* anchored to the .lightbox (= visible viewport) */
   background: var(--knicks-orange); color: #fff; border: 3px solid #fff;
   font-size: 1.6rem; line-height: 1; width: 48px; height: 48px; cursor: pointer;
 }
@@ -509,7 +511,8 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
 }
 .lb-gallery::-webkit-scrollbar { display: none; }
 .lb-slide { flex: 0 0 100%; scroll-snap-align: center; display: flex; align-items: center; justify-content: center; }
-.lb-slide img { width: 100%; max-height: 72vh; object-fit: contain; border-bottom: none; }
+.lb-slide img { width: 100%; max-height: 72vh; max-height: 72dvh; object-fit: contain; border-bottom: none; }
+.lb-stage > img { max-height: 80vh; max-height: 80dvh; object-fit: contain; }
 .lb-g-nav {
   position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
   width: 38px; height: 54px; cursor: pointer; line-height: 1; font-size: 1.8rem;
@@ -547,8 +550,13 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
 .is-admin .lb-remove { display: inline-block; }
 
 @media (max-width: 560px) {
-  .lb-nav { top: auto; bottom: 14px; transform: none; height: 48px; }
-  .lb-prev { left: 14px; } .lb-next { right: 14px; }
+  .lb-nav { top: auto; bottom: 12px; transform: none; height: 46px; }
+  .lb-prev { left: 12px; } .lb-next { right: 12px; }
+  .lightbox { padding: 10px; align-items: flex-start; }
+  /* Cap the image so the close, caption, dots and nav all fit the first screen. */
+  .lb-slide img, .lb-stage > img { max-height: 52vh; max-height: 52dvh; }
+  .lb-stage { max-height: 88dvh; }
+  .lb-body { padding: 12px 14px 64px; } /* room above the pinned bottom arrows */
 }
 
 /* Page-load confetti — GPU-composited (transform/opacity only), so it never

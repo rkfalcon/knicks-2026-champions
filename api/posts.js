@@ -37,7 +37,15 @@ export default async function handler(req, res) {
       sb.from("settings").select("*"),
     ]);
 
-    const posts = postRows.map(rowToPost);
+    // A picture book needs a picture: drop image-less story/highlight items.
+    // Ephemeral highlights are often video/reshares the scraper can't grab a
+    // still from, and they'd otherwise render as empty placeholder cards.
+    // Feed posts (e.g. text-only tweets) are kept regardless.
+    const posts = postRows.map(rowToPost).filter((p) => {
+      const ephemeral = p.postType === "story" || p.postType === "highlight";
+      const hasImage = !!(p.image || (p.images && p.images.length));
+      return !(ephemeral && !hasImage);
+    });
     if (!posts.length) return res.status(200).json(sample);
 
     const S = Object.fromEntries((settings.data || []).map((r) => [r.key, r.value]));

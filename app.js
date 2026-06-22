@@ -427,13 +427,13 @@
     const imgs = (p.images && p.images.length) ? p.images : (p.image ? [p.image] : []);
     let media = "";
     if (imgs.length > 1) {
-      media = `<div class="lb-gallery" id="lbGallery">${imgs.map((u) =>
+      media = `<div class="lb-media"><div class="lb-gallery" id="lbGallery">${imgs.map((u) =>
         `<div class="lb-slide"><img src="${esc(u)}" alt="" loading="lazy" onerror="this.style.display='none'"></div>`).join("")}</div>
         <button class="lb-g-nav lb-g-prev" id="lbGPrev" type="button" aria-label="Previous image">‹</button>
         <button class="lb-g-nav lb-g-next" id="lbGNext" type="button" aria-label="Next image">›</button>
-        <div class="lb-dots" id="lbDots">${imgs.map((_, k) => `<span class="lb-dot${k === 0 ? " is-on" : ""}"></span>`).join("")}</div>`;
+        <div class="lb-dots" id="lbDots">${imgs.map((_, k) => `<span class="lb-dot${k === 0 ? " is-on" : ""}"></span>`).join("")}</div></div>`;
     } else if (imgs.length === 1) {
-      media = `<img src="${esc(imgs[0])}" alt="" onerror="this.style.display='none'">`;
+      media = `<div class="lb-media"><img src="${esc(imgs[0])}" alt="" onerror="this.style.display='none'"></div>`;
     }
     const tags = []
       .concat((p.tags.players || []).map((x) => `<span class="tag player">🏀 ${esc(x)}</span>`))

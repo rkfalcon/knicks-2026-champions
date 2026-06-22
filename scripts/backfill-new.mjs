@@ -43,9 +43,12 @@ for (const a of newAccounts) {
 console.log(`   window: ${config.dateRange.since} → ${config.dateRange.until}\n`);
 
 // Scope every source to just the new accounts; force highlights on for this run.
+// Deep per-profile fetch (full history) so we don't miss older keyword matches.
 config.accounts = newAccounts;
 config.twitter.handles = newAccounts.filter((a) => a.x_handle).map((a) => a.x_handle);
+config.twitter.maxPagesPerQuery = Math.max(config.twitter.maxPagesPerQuery || 0, 5);
 config.instagram.profileHandles = newAccounts.filter((a) => a.ig_handle).map((a) => a.ig_handle);
+config.instagram.resultsLimitPerSource = 200;
 config.stories = { ...(config.stories || {}), include_highlights: true };
 
 await ensureBucket(sb);
@@ -92,7 +95,7 @@ if (posts.length) { await upsertPosts(sb, posts); await mirrorBatch(posts); }
 
 // Mark these accounts scraped now so the nightly cron treats them as known
 // (and doesn't trigger a full-window re-scrape of everyone).
-await sb.from("accounts").update({ last_scraped_at: new Date().toISOString() })
+await sb.from("accounts").update({ last_scraped_at: new Date().toISOString(), backfilled_at: new Date().toISOString() })
   .in("id", newAccounts.map((a) => a.id));
 
 // Phase 2 — Instagram stories + highlights (fault-isolated).

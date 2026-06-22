@@ -642,9 +642,15 @@
   // first results are visible — past the big hero header. Delayed so it runs
   // after the iOS keyboard finishes dismissing (which itself shifts the layout).
   function scrollToResults() {
+    // Land on the feed: header scrolled out, sticky filter bar pinned at top,
+    // newest results right below. Computed directly because scrollIntoView()
+    // no-ops once the sticky bar is already pinned.
     setTimeout(() => {
-      if (el.filters) el.filters.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 300);
+      if (!el.filters || !el.book) return;
+      const filterH = el.filters.getBoundingClientRect().height;
+      const bookTop = el.book.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: Math.max(0, bookTop - filterH), behavior: "smooth" });
+    }, 60);
   }
 
   function moveSuggest(dir) {
@@ -734,7 +740,12 @@
       clearTimeout(qs);
       qs = setTimeout(showSuggest, 50);
       clearTimeout(qt);
-      qt = setTimeout(() => { state.q = el.q.value.trim(); render(); }, 200);
+      qt = setTimeout(() => {
+        const changed = state.q !== el.q.value.trim();
+        state.q = el.q.value.trim();
+        render();
+        if (changed) scrollToResults(); // jump to the top of the (newest) results
+      }, 200);
     });
     el.q.addEventListener("focus", () => { if (el.q.value.trim()) showSuggest(); });
     el.q.addEventListener("blur", () => setTimeout(hideSuggest, 150));
@@ -776,7 +787,7 @@
       el.q.value = ""; el.series.value = "all"; el.player.value = ""; el.celeb.value = "";
       el.account.value = ""; el.keyword.value = ""; el.ptype.value = "all"; el.category.value = "all";
       el.platformChips.querySelectorAll(".chip[data-platform]").forEach((c) => c.classList.toggle("is-on", c.dataset.platform === "all"));
-      rebuildGames(); render();
+      rebuildGames(); render(); scrollToResults(); // back to the top of the full feed
     });
 
     // Share the current (filtered) view — native share sheet on mobile, copy to

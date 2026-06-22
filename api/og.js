@@ -14,7 +14,7 @@ export default function handler(req) {
 
   const children = [
     div({ display: "flex", whiteSpace: "nowrap", fontSize: 34, letterSpacing: 2, color: "#cfe6ff", marginBottom: 16 }, "knicks.run"),
-    div({ display: "flex", whiteSpace: "nowrap", fontSize: 56, fontWeight: 800, color: "#ffffff", lineHeight: 1.05 }, "A Fan-Made Championship Picture Book"),
+    div({ display: "flex", whiteSpace: "nowrap", fontSize: 56, fontWeight: 800, color: "#ffffff", lineHeight: 1.05 }, "Relive the run of the"),
     div({ display: "flex", whiteSpace: "nowrap", fontSize: 62, fontWeight: 800, color: "#fc7b26", lineHeight: 1.15, marginTop: 8 }, "2026 NBA Champions"),
   ];
   if (label) {

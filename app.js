@@ -451,8 +451,33 @@
       </div>`;
     el.lightbox.hidden = false;
     el.lbStage.scrollTop = 0;
-    document.body.style.overflow = "hidden";
+    lockScroll();
     wireGallery();
+  }
+
+  // Fully lock the page behind the lightbox (iOS-safe) so no grid content peeks
+  // through and the background can't scroll under the modal.
+  function lockScroll() {
+    if (document.body.dataset.locked) return;
+    state.scrollY = window.scrollY;
+    document.body.dataset.locked = "1";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${state.scrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
+  }
+  function unlockScroll() {
+    if (!document.body.dataset.locked) return;
+    delete document.body.dataset.locked;
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    document.body.style.overflow = "";
+    window.scrollTo(0, state.scrollY || 0);
   }
 
   // Swipe/click through a multi-image post inside the lightbox.
@@ -477,7 +502,7 @@
   }
   function closeLightbox() {
     el.lightbox.hidden = true;
-    document.body.style.overflow = "";
+    unlockScroll();
   }
 
   /* ---------- admin: remove non-Knicks posts ---------- */

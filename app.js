@@ -4,7 +4,8 @@
 
   const $ = (sel) => document.querySelector(sel);
   const el = {
-    book: $("#book"), empty: $("#empty"), count: $("#count"), reset: $("#reset"), share: $("#share"), scrollMore: $("#scrollMore"),
+    book: $("#book"), empty: $("#empty"), count: $("#count"), reset: $("#reset"), share: $("#share"),
+    scrollMore: $("#scrollMore"), homeBtn: $("#homeBtn"),
     q: $("#q"), suggest: $("#suggest"), series: $("#series"), game: $("#game"), player: $("#player"),
     celeb: $("#celeb"), account: $("#account"), keyword: $("#keyword"), ptype: $("#ptype"),
     category: $("#category"), sort: $("#sort"),
@@ -406,6 +407,8 @@
   // Floating "scroll for more" cue — visible only while there's a meaningful
   // amount of results still below the bottom of the viewport.
   function updateScrollMore() {
+    // The Home button is available the moment you've scrolled down at all.
+    if (el.homeBtn) el.homeBtn.hidden = window.scrollY < 300;
     if (!el.scrollMore) return;
     const hasResults = (state.view || []).length > 0;
     const doc = document.documentElement;
@@ -714,6 +717,7 @@
         window.scrollBy({ top: Math.round(window.innerHeight * 0.85), behavior: "smooth" });
       }
     });
+    el.homeBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
     el.platformChips.querySelectorAll(".chip[data-platform]").forEach((chip) =>
       chip.addEventListener("click", () => {

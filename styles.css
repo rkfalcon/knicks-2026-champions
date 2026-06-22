@@ -246,6 +246,26 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
   .scroll-more { animation: none; }
 }
 
+/* Always-available "Home" button — returns to the top of the feed; visible
+   whenever the page is scrolled down. Pinned bottom-right, clear of the
+   bottom-centre "scroll for more" cue and the bottom-left music toggle. */
+.home-btn {
+  position: fixed;
+  right: 12px;
+  bottom: 14px;
+  z-index: 61;
+  font-family: "VT323", monospace;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  padding: 7px 12px;
+  background: var(--knicks-blue);
+  color: #fff;
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer;
+}
+.home-btn:active { box-shadow: var(--shadow-sm); transform: translate(2px, 2px); }
+
 /* Active-filter pills — show what's currently selected, click to clear. */
 .active-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
 .active-chips:empty { display: none; }

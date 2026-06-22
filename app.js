@@ -8,7 +8,7 @@
     scrollMore: $("#scrollMore"), homeBtn: $("#homeBtn"),
     q: $("#q"), suggest: $("#suggest"), series: $("#series"), game: $("#game"), player: $("#player"),
     celeb: $("#celeb"), account: $("#account"), keyword: $("#keyword"), ptype: $("#ptype"),
-    category: $("#category"), sort: $("#sort"),
+    category: $("#category"), sort: $("#sort"), media: $("#media"),
     platformChips: $("#platformChips"), activeChips: $("#activeChips"), generated: $("#generated"),
     filters: $("#filters"), filtersToggle: $("#filtersToggle"), filterSelects: $("#filterSelects"),
     lightbox: $("#lightbox"), lbStage: $("#lbStage"),
@@ -21,6 +21,7 @@
     q: "", series: "all", game: "", player: "", celeb: "",
     account: "", keyword: "", ptype: "all",
     category: "all", sort: "desc",
+    media: "media",  // default: only posts that carry a photo/video (hide text-only)
     view: [],        // currently-rendered posts (for lightbox nav)
     lbIndex: -1,
   };
@@ -42,6 +43,9 @@
   const X_ICON = `<svg class="pi" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`;
   const IG_ICON = `<svg class="pi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>`;
   const pIcon = (platform) => (platform === "x" ? X_ICON : IG_ICON);
+  // A post "has media" if it carries a photo (single or carousel) or a video —
+  // used by the MEDIA filter, which by default hides text-only posts.
+  const hasMedia = (p) => !!(p.image || (p.images && p.images.length) || p.video);
 
   /* ---------- load ---------- */
   async function load() {
@@ -160,6 +164,7 @@
     if (state.keyword) p.set("keyword", state.keyword);
     if (state.ptype !== "all") p.set("type", state.ptype);
     if (state.category !== "all") p.set("view", state.category);
+    if (state.media !== "media") p.set("media", state.media);
     if (state.sort !== "desc") p.set("sort", state.sort);
     const qs = p.toString();
     history.replaceState(null, "", qs ? `${location.pathname}?${qs}` : location.pathname);
@@ -189,6 +194,7 @@
     if (p.has("keyword") || p.has("tag")) { state.keyword = p.get("keyword") || p.get("tag"); el.keyword.value = state.keyword; }
     if (p.has("type")) { state.ptype = p.get("type"); el.ptype.value = state.ptype; }
     if (p.has("view")) { state.category = p.get("view"); el.category.value = state.category; }
+    if (p.has("media")) { state.media = p.get("media"); el.media.value = state.media; }
     if (p.has("sort")) { state.sort = p.get("sort"); el.sort.value = state.sort; }
   }
 
@@ -204,6 +210,7 @@
     const d = state.data;
     let posts = d.posts.slice();
 
+    if (state.media === "media") posts = posts.filter(hasMedia);
     if (state.platform !== "all") posts = posts.filter((p) => p.platform === state.platform);
     if (state.series !== "all") posts = posts.filter((p) => p.tags.series === state.series);
     if (state.game) posts = posts.filter((p) => p.tags.game === state.game);
@@ -327,7 +334,7 @@
 
     const filtersActive = state.platform !== "all" || state.series !== "all" ||
       state.game || state.player || state.celeb || state.account || state.keyword ||
-      state.ptype !== "all" || state.category !== "all" || state.q;
+      state.ptype !== "all" || state.category !== "all" || state.media !== "media" || state.q;
     el.reset.hidden = !filtersActive;
     renderActiveChips();
     syncUrl();
@@ -384,6 +391,7 @@
     if (state.category !== "all") {
       chips.push({ kind: "category", label: "View: " + ({ game: "Game days", festivities: "Festivities 🎉" }[state.category] || state.category) });
     }
+    if (state.media !== "media") chips.push({ kind: "media", label: "Incl. text-only" });
     return chips;
   }
 
@@ -398,6 +406,7 @@
       case "keyword": state.keyword = ""; el.keyword.value = ""; break;
       case "ptype": state.ptype = "all"; el.ptype.value = "all"; break;
       case "category": state.category = "all"; el.category.value = "all"; break;
+      case "media": state.media = "media"; el.media.value = "media"; break;
     }
   }
 
@@ -781,6 +790,7 @@
     el.celeb.addEventListener("change", () => { state.celeb = el.celeb.value; commitPick(); });
     el.account.addEventListener("change", () => { state.account = el.account.value; commitPick(); });
     el.keyword.addEventListener("change", () => { state.keyword = el.keyword.value; commitPick(); });
+    el.media.addEventListener("change", () => { state.media = el.media.value; commitPick(); });
     el.ptype.addEventListener("change", () => { state.ptype = el.ptype.value; commitPick(); });
     el.category.addEventListener("change", () => { state.category = el.category.value; commitPick(); });
     el.sort.addEventListener("change", () => { state.sort = el.sort.value; commitPick(); });
@@ -788,10 +798,11 @@
     el.reset.addEventListener("click", () => {
       Object.assign(state, {
         platform: "all", q: "", series: "all", game: "", player: "", celeb: "",
-        account: "", keyword: "", ptype: "all", category: "all",
+        account: "", keyword: "", ptype: "all", category: "all", media: "media",
       });
       el.q.value = ""; el.series.value = "all"; el.player.value = ""; el.celeb.value = "";
       el.account.value = ""; el.keyword.value = ""; el.ptype.value = "all"; el.category.value = "all";
+      el.media.value = "media";
       el.platformChips.querySelectorAll(".chip[data-platform]").forEach((c) => c.classList.toggle("is-on", c.dataset.platform === "all"));
       rebuildGames(); render(); scrollToResults(); // back to the top of the full feed
     });

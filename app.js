@@ -689,8 +689,24 @@
       requestAnimationFrame(() => { smTick = false; updateScrollMore(); });
     }, { passive: true });
     el.scrollMore.addEventListener("click", () => {
-      if (el.scrollMore.dataset.mode === "top") window.scrollTo({ top: 0, behavior: "smooth" });
-      else window.scrollBy({ top: Math.round(window.innerHeight * 0.85), behavior: "smooth" });
+      if (el.scrollMore.dataset.mode === "top") { window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+      // Snap to the top of the NEXT post (just below the sticky filter bar) so
+      // you land on a fresh post, not a sliver of the previous one.
+      const sticky = getComputedStyle(el.filters).position === "sticky"
+        ? el.filters.getBoundingClientRect().height : 0;
+      const contentTop = window.scrollY + sticky;
+      let target = null;
+      for (const c of el.book.querySelectorAll(".card")) {
+        const docTop = window.scrollY + c.getBoundingClientRect().top;
+        if (docTop > contentTop + 8) { target = c; break; }
+      }
+      if (target) {
+        const y = window.scrollY + target.getBoundingClientRect().top - sticky - 2;
+        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+        setTimeout(appendMore, 60); // keep the windowed grid ahead of the jump
+      } else {
+        window.scrollBy({ top: Math.round(window.innerHeight * 0.85), behavior: "smooth" });
+      }
     });
 
     el.platformChips.querySelectorAll(".chip[data-platform]").forEach((chip) =>

@@ -288,9 +288,15 @@ $("#panel").addEventListener("click", async (e) => {
   }
   const schema = ENTITIES[tab];
 
-  // Add a blank row WITHOUT re-rendering (preserves unsaved input in other rows).
+  // Add a blank row at the TOP (just under the column headings) WITHOUT
+  // re-rendering — preserves unsaved input in other rows. Scroll up so the
+  // headings + new row are visible and focus its first field.
   if (e.target.matches("[data-add]")) {
-    $("#panel tbody").insertAdjacentHTML("beforeend", rowHTML(tab, schema, {}));
+    const tbody = $("#panel tbody");
+    tbody.insertAdjacentHTML("afterbegin", rowHTML(tab, schema, {}));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    const firstField = tbody.querySelector("tr:first-child input, tr:first-child select");
+    if (firstField) firstField.focus({ preventScroll: true });
     return;
   }
 

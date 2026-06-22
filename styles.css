@@ -513,7 +513,10 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
   background: var(--paper-2); border: 4px solid var(--ink); box-shadow: 8px 8px 0 #000;
 }
 .lb-stage img { width: 100%; display: block; border-bottom: 4px solid var(--ink); }
-.lb-body { padding: 16px 18px 20px; }
+/* Always the light "paper" caption (desktop & mobile): on mobile the stage
+   goes dark for image letterboxing, so the body needs its own light bg or the
+   text becomes unreadable on black. */
+.lb-body { padding: 16px 18px 20px; background: var(--paper-2); color: var(--ink); }
 .lb-body .card-handle { font-size: 1.05rem; }
 .lb-body .lb-text { font-size: 1.02rem; line-height: 1.55; white-space: pre-wrap; }
 .lb-source {

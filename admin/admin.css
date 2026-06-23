@@ -82,3 +82,18 @@ fieldset input { padding: 8px; border: 3px solid var(--ink); font-size: 1rem; }
   font-family: "VT323", monospace; font-size: 1.1rem; padding: 8px 18px; z-index: 50;
 }
 .toast.bad { background: #c0392b; }
+
+/* ---------------- Add-a-post tab ---------------- */
+.addpost { max-width: 760px; }
+.addpost > label { display: flex; flex-direction: column; gap: 4px; font-family: "VT323", monospace; font-size: 1.1rem; margin-bottom: 10px; }
+.addpost > label input { padding: 8px; border: 3px solid var(--ink); font-size: 0.95rem; }
+.ap-card { margin-top: 18px; border: 3px solid var(--ink); box-shadow: var(--shadow); background: var(--paper, #fffdf8); padding: 16px; }
+.ap-imgs { display: flex; flex-wrap: wrap; gap: 8px; }
+.ap-imgs img { max-height: 320px; max-width: 100%; border: 3px solid var(--ink); object-fit: contain; background: #0b0f16; }
+.ap-head { margin-top: 12px; font-family: "VT323", monospace; font-size: 1.1rem; }
+.ap-text { white-space: pre-wrap; margin: 6px 0 14px; line-height: 1.45; }
+.ap-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+.ap-fields label { display: flex; flex-direction: column; gap: 4px; font-family: "VT323", monospace; font-size: 1.05rem; }
+.ap-fields input, .ap-fields select { padding: 7px; border: 3px solid var(--ink); font-size: 0.95rem; }
+.ap-card .btn { margin-top: 16px; }
+@media (max-width: 560px) { .ap-fields { grid-template-columns: 1fr; } }

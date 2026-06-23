@@ -124,6 +124,7 @@ const acctFilter = { q: "", type: "all", focus: false };
 function renderTab(tab) {
   if (tab === "settings") return renderSettings();
   if (tab === "runs") return renderRuns();
+  if (tab === "addpost") return renderAddPost();
   const schema = ENTITIES[tab];
   const all = DATA[tab] || [];
 
@@ -407,6 +408,81 @@ function renderSettings() {
       toast("Stories config saved ✓"); await loadData();
     } catch (e) { toast(e.message, true); }
   });
+}
+
+/* ---------------- add a single post by URL ---------------- */
+function renderAddPost() {
+  $("#panel").innerHTML = `
+    <div class="panel-head"><h2>Add a post <small>(paste a link — no account needed)</small></h2></div>
+    <div class="addpost">
+      <label>Post URL (X or Instagram)
+        <input id="ap-url" type="url" placeholder="https://x.com/…/status/…  or  https://instagram.com/p/…">
+      </label>
+      <button class="btn" id="ap-fetch">Fetch preview</button>
+      <p class="hint">Pulls the post's image(s) + caption, auto-detects players/keywords from the caption, and lets you add your own tags before saving. The account does <em>not</em> need to be tracked.</p>
+      <div id="ap-preview"></div>
+    </div>`;
+  $("#ap-fetch").addEventListener("click", apFetch);
+  $("#ap-url").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); apFetch(); } });
+}
+
+async function apFetch() {
+  const url = $("#ap-url").value.trim();
+  if (!url) return;
+  $("#ap-fetch").disabled = true;
+  toast("Fetching post…", false, true);
+  try {
+    const r = await api("POST", { op: "preview", url }, "/api/admin/add-post");
+    if (!r.ok) throw new Error(r.error || "couldn't fetch");
+    renderApPreview(r.post);
+    toast("Fetched ✓");
+  } catch (e) { toast(e.message, true); }
+  finally { $("#ap-fetch").disabled = false; }
+}
+
+function renderApPreview(p) {
+  const imgs = (p.images && p.images.length) ? p.images : (p.image ? [p.image] : []);
+  const t = p.tags || {};
+  $("#ap-preview").innerHTML = `
+    <div class="ap-card">
+      <div class="ap-imgs">${imgs.map((u) => `<img src="${esc(u)}" alt="">`).join("") || '<em class="hint">no image on this post</em>'}</div>
+      <div class="ap-head">
+        <strong>@${esc(p.author)}</strong> · ${esc((p.date || "").toString().slice(0, 16))} · ${p.platform === "x" ? "X" : "Instagram"}
+      </div>
+      <p class="ap-text">${esc(p.text || "")}</p>
+      <div class="ap-fields">
+        <label>Author display name <input id="ap-author" value="${esc(p.authorName || p.author)}"></label>
+        <label>Players <input id="ap-players" value="${esc((t.players || []).join(", "))}" placeholder="comma,separated"></label>
+        <label>Celebrities <input id="ap-celebs" value="${esc((t.celebrities || []).join(", "))}" placeholder="comma,separated"></label>
+        <label>Keywords / tags <input id="ap-keywords" value="${esc((t.keywords || []).join(", "))}" placeholder="knicks, parade, …"></label>
+        <label>Category <select id="ap-category">
+          ${["", "game", "festivities"].map((c) => `<option value="${c}" ${(t.category || "") === c ? "selected" : ""}>${c || "auto/none"}</option>`).join("")}
+        </select></label>
+      </div>
+      <button class="btn run" id="ap-add">＋ Add to site</button>
+    </div>`;
+  $("#ap-add").addEventListener("click", () => apAdd(p));
+}
+
+async function apAdd(p) {
+  const list = (sel) => $(sel).value.split(",").map((s) => s.trim()).filter(Boolean);
+  $("#ap-add").disabled = true;
+  toast("Adding to site…", false, true);
+  try {
+    const r = await api("POST", {
+      op: "add",
+      url: $("#ap-url").value.trim(),
+      authorName: $("#ap-author").value.trim(),
+      players: list("#ap-players"),
+      celebrities: list("#ap-celebs"),
+      keywords: list("#ap-keywords"),
+      category: $("#ap-category").value || null,
+    }, "/api/admin/add-post");
+    if (!r.ok) throw new Error(r.error || "couldn't add");
+    toast(`Added @${r.post.author}'s post ✓`);
+    $("#ap-preview").innerHTML = `<p class="hint">✅ Added <strong>@${esc(r.post.author)}</strong>'s post — it'll show on the site's next load. Paste another link to add more.</p>`;
+    $("#ap-url").value = "";
+  } catch (e) { toast(e.message, true); $("#ap-add").disabled = false; }
 }
 
 /* ---------------- go ---------------- */

@@ -14,7 +14,7 @@ import {
   getAdminClient, ensureBucket, uploadImage, upsertPosts,
 } from "../lib/supabase.mjs";
 
-const MAX_IMAGES = 1000; // generous safety cap on image mirroring
+const MAX_IMAGES = 8000; // safety cap on image mirroring (large multi-account backfills can exceed 1k)
 
 const sb = getAdminClient(process.env);
 if (!sb) {

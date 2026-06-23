@@ -105,3 +105,11 @@ fieldset input { padding: 8px; border: 3px solid var(--ink); font-size: 1rem; }
 .ap-thumb .ap-cover-badge { display: none; position: absolute; top: 6px; left: 6px; background: var(--knicks-orange); color: #fff; font-family: "VT323", monospace; font-size: 0.85rem; padding: 2px 8px; border: 2px solid #fff; }
 .ap-thumb.is-cover { border-color: var(--knicks-orange); box-shadow: 0 0 0 3px var(--knicks-orange); }
 .ap-thumb.is-cover .ap-cover-badge { display: block; }
+.ap-h-title { margin: 26px 0 8px; font-family: "Anton", sans-serif; letter-spacing: 1px; }
+.ap-h-table { width: 100%; }
+.ap-h-table th { text-align: left; font-size: 0.8rem; text-transform: uppercase; }
+.ap-h-table td { vertical-align: top; padding: 8px 10px; border-bottom: 2px solid #e7e2d6; font-size: 0.9rem; }
+.ap-h-thumb { width: 56px; height: 56px; object-fit: cover; border: 2px solid var(--ink); display: block; }
+.ap-h-multi { font-family: "VT323", monospace; font-size: 0.8rem; }
+.ap-h-date { white-space: nowrap; font-family: "VT323", monospace; }
+.ap-h-text { max-width: 320px; color: #333; }

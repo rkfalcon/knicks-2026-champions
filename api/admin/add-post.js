@@ -3,7 +3,7 @@
 //   body: { op: "add", url, authorName?, players?, celebrities?, keywords?, category? }
 //                                            → fetch + tag + mirror + upsert
 import { requireAdmin } from "../../lib/admin-auth.mjs";
-import { fetchPost, addPost } from "../../lib/add-post.mjs";
+import { fetchPost, addPost, listManualPosts, removeManualPost } from "../../lib/add-post.mjs";
 
 export const config = { maxDuration: 60 };
 
@@ -14,6 +14,15 @@ export default async function handler(req, res) {
 
   const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
   try {
+    if (body.op === "list") {
+      const posts = await listManualPosts(process.env);
+      return res.status(200).json({ ok: true, posts });
+    }
+    if (body.op === "remove") {
+      if (!body.id) return res.status(400).json({ ok: false, error: "id required" });
+      await removeManualPost(body.id, process.env);
+      return res.status(200).json({ ok: true });
+    }
     if (body.op === "add") {
       const post = await addPost(body.url, body, process.env);
       return res.status(200).json({ ok: true, post });

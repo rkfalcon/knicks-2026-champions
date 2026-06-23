@@ -424,9 +424,66 @@ function renderAddPost() {
       <button class="btn" id="ap-fetch">Fetch preview</button>
       <p class="hint">Pulls the post's image(s) + caption, auto-detects players/keywords from the caption, and lets you add your own tags before saving. The account does <em>not</em> need to be tracked.</p>
       <div id="ap-preview"></div>
+      <div id="ap-history"><p class="hint">Loading history…</p></div>
     </div>`;
   $("#ap-fetch").addEventListener("click", apFetch);
   $("#ap-url").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); apFetch(); } });
+  loadApHistory();
+}
+
+async function loadApHistory() {
+  const box = $("#ap-history");
+  if (!box) return;
+  try {
+    const r = await api("POST", { op: "list" }, "/api/admin/add-post");
+    if (!r.ok) throw new Error(r.error || "couldn't load");
+    renderApHistory(r.posts || []);
+  } catch (e) { box.innerHTML = `<p class="hint">Couldn't load history: ${esc(e.message)}</p>`; }
+}
+
+function renderApHistory(posts) {
+  const box = $("#ap-history");
+  if (!box) return;
+  const fmt = (iso) => { const d = new Date(iso); return isNaN(d) ? "—" : d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }); };
+  if (!posts.length) {
+    box.innerHTML = `<h3 class="ap-h-title">Manually added posts</h3><p class="hint">None yet — added posts will show here.</p>`;
+    return;
+  }
+  const rows = posts.map((p) => {
+    const img = p.image || (p.images && p.images[0]) || "";
+    const tags = [
+      ...(p.players || []).map((x) => `🏀 ${x}`),
+      ...(p.celebrities || []).map((x) => `⭐ ${x}`),
+      ...(p.keywords || []).map((x) => `#${x}`),
+    ].map(esc).join(" ") || '<span class="hint">—</span>';
+    const n = (p.images || []).length;
+    return `<tr data-id="${esc(p.id)}">
+      <td>${img ? `<img class="ap-h-thumb" src="${esc(img)}" alt="">${n > 1 ? `<span class="ap-h-multi">▣${n}</span>` : ""}` : ""}</td>
+      <td class="ap-h-date">${fmt(p.created_at)}</td>
+      <td>${p.platform === "x" ? "𝕏" : "📸"} @${esc(p.author)}${p.author_name ? `<br><small>${esc(p.author_name)}</small>` : ""}</td>
+      <td class="ap-h-text">${esc((p.text || "").replace(/\s+/g, " ").slice(0, 120))}</td>
+      <td>${tags}${p.hidden ? ' <em class="hint">(hidden)</em>' : ""}</td>
+      <td>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">source ↗</a>` : ""}</td>
+      <td><button class="btn sm danger" data-ap-remove="${esc(p.id)}" title="Remove this post">✕</button></td>
+    </tr>`;
+  }).join("");
+  box.innerHTML = `
+    <h3 class="ap-h-title">Manually added posts <small>(${posts.length})</small></h3>
+    <div class="table-wrap"><table class="ap-h-table"><thead><tr>
+      <th></th><th>added</th><th>account</th><th>caption</th><th>tags</th><th>link</th><th></th>
+    </tr></thead><tbody>${rows}</tbody></table></div>`;
+  box.querySelectorAll("[data-ap-remove]").forEach((b) =>
+    b.addEventListener("click", () => apRemove(b.dataset.apRemove)));
+}
+
+async function apRemove(id) {
+  if (!confirm("Remove this manually added post from the site?")) return;
+  try {
+    const r = await api("POST", { op: "remove", id }, "/api/admin/add-post");
+    if (!r.ok) throw new Error(r.error || "couldn't remove");
+    toast("Removed ✓");
+    loadApHistory();
+  } catch (e) { toast(e.message, true); }
 }
 
 async function apFetch() {
@@ -510,6 +567,7 @@ async function apAdd(p) {
     toast(`Added @${r.post.author}'s post ✓`);
     $("#ap-preview").innerHTML = `<p class="hint">✅ Added <strong>@${esc(r.post.author)}</strong>'s post — it'll show on the site's next load. Paste another link to add more.</p>`;
     $("#ap-url").value = "";
+    loadApHistory(); // show it in the history below
   } catch (e) { toast(e.message, true); $("#ap-add").disabled = false; }
 }
 

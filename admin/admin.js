@@ -506,11 +506,13 @@ function renderApPreview(p) {
   const t = p.tags || {};
   apCoverIdx = 0;
   const multi = imgs.length > 1;
+  // Raw source URLs (esp. Instagram) block hotlinking, so display via our proxy.
+  const apImg = (u) => (u && !u.includes("/storage/")) ? `/api/img?url=${encodeURIComponent(u)}` : u;
   $("#ap-preview").innerHTML = `
     <div class="ap-card">
       <div class="ap-imgs">${imgs.map((u, i) =>
         `<button type="button" class="ap-thumb${i === 0 ? " is-cover" : ""}" data-idx="${i}" title="Make this the cover">
-          <img src="${esc(u)}" alt=""><span class="ap-cover-badge">★ cover</span></button>`).join("") || '<em class="hint">no image on this post</em>'}</div>
+          <img src="${esc(apImg(u))}" alt=""><span class="ap-cover-badge">★ cover</span></button>`).join("") || '<em class="hint">no image on this post</em>'}</div>
       ${multi ? '<p class="hint">Click an image to make it the default (cover) shown on the site.</p>' : ""}
       <div class="ap-head">
         <strong>@${esc(p.author)}</strong> · ${esc((p.date || "").toString().slice(0, 16))} · ${p.platform === "x" ? "X" : "Instagram"}

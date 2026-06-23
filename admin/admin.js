@@ -543,6 +543,68 @@ function renderApPreview(p) {
     $("#ap-preview").querySelectorAll(".ap-thumb").forEach((x) =>
       x.classList.toggle("is-cover", Number(x.dataset.idx) === apCoverIdx));
   }));
+
+  // Typeahead from existing system values (multi-value, comma-separated).
+  attachTypeahead($("#ap-players"), (DATA.players || []).map((x) => x.name).filter(Boolean));
+  attachTypeahead($("#ap-celebs"), (DATA.celebrities || []).map((x) => x.name).filter(Boolean));
+  attachTypeahead($("#ap-keywords"), (DATA.keywords || []).map((x) => x.term).filter(Boolean));
+}
+
+// Lightweight multi-value autocomplete: suggests existing options matching the
+// token after the last comma; you can still type new values freely.
+function attachTypeahead(input, options) {
+  if (!input) return;
+  const label = input.closest("label") || input.parentElement;
+  label.style.position = "relative";
+  const menu = document.createElement("div");
+  menu.className = "ap-typeahead";
+  menu.hidden = true;
+  label.appendChild(menu);
+  let matches = [], active = -1;
+
+  const parts = () => input.value.split(",");
+  const curToken = () => parts().pop().trim();
+  const close = () => { menu.hidden = true; active = -1; };
+
+  const refresh = () => {
+    const q = curToken().toLowerCase();
+    const chosen = new Set(parts().slice(0, -1).map((s) => s.trim().toLowerCase()));
+    matches = !q ? [] : options
+      .filter((o) => o.toLowerCase().includes(q) && !chosen.has(o.toLowerCase()))
+      .sort((a, b) => (a.toLowerCase().startsWith(q) ? 0 : 1) - (b.toLowerCase().startsWith(q) ? 0 : 1))
+      .slice(0, 8);
+    active = -1;
+    if (!matches.length) return close();
+    menu.innerHTML = matches.map((m, i) => `<div class="ap-ta-item" data-i="${i}">${esc(m)}</div>`).join("");
+    menu.hidden = false;
+  };
+
+  const highlight = () => menu.querySelectorAll(".ap-ta-item").forEach((d, i) => d.classList.toggle("is-on", i === active));
+
+  const pick = (val) => {
+    const p = parts();
+    p[p.length - 1] = " " + val;
+    input.value = p.join(",").replace(/^\s+/, "") + ", ";
+    close();
+    input.focus();
+  };
+
+  input.addEventListener("input", refresh);
+  input.addEventListener("focus", refresh);
+  input.addEventListener("blur", () => setTimeout(close, 150));
+  input.addEventListener("keydown", (e) => {
+    if (menu.hidden) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); active = (active + 1) % matches.length; highlight(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); active = (active - 1 + matches.length) % matches.length; highlight(); }
+    else if (e.key === "Enter" && active >= 0) { e.preventDefault(); pick(matches[active]); }
+    else if (e.key === "Escape") close();
+  });
+  menu.addEventListener("mousedown", (e) => {
+    const it = e.target.closest(".ap-ta-item");
+    if (!it) return;
+    e.preventDefault();
+    pick(matches[Number(it.dataset.i)]);
+  });
 }
 
 async function apAdd(p) {

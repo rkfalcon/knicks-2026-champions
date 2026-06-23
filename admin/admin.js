@@ -81,6 +81,7 @@ const ENTITIES = {
     { k: "account_type", t: "select", opts: ["none", "player", "team", "celebrity", "fan"] },
     { k: "show_all", t: "bool" },
     { k: "posts_only", t: "bool" },
+    { k: "cron_enabled", t: "bool" },
     { k: "active", t: "bool" },
   ]},
   keywords: { pk: "id", singular: "keyword", cols: [
@@ -294,7 +295,9 @@ $("#panel").addEventListener("click", async (e) => {
   // headings + new row are visible and focus its first field.
   if (e.target.matches("[data-add]")) {
     const tbody = $("#panel tbody");
-    tbody.insertAdjacentHTML("afterbegin", rowHTML(tab, schema, {}));
+    // New accounts default to active + cron_enabled (scraped like before).
+    const blank = tab === "accounts" ? { active: true, cron_enabled: true } : {};
+    tbody.insertAdjacentHTML("afterbegin", rowHTML(tab, schema, blank));
     window.scrollTo({ top: 0, behavior: "smooth" });
     const firstField = tbody.querySelector("tr:first-child input, tr:first-child select");
     if (firstField) firstField.focus({ preventScroll: true });
@@ -459,6 +462,16 @@ function renderApPreview(p) {
           ${["", "game", "festivities"].map((c) => `<option value="${c}" ${(t.category || "") === c ? "selected" : ""}>${c || "auto/none"}</option>`).join("")}
         </select></label>
       </div>
+      <fieldset class="ap-acct">
+        <legend><label><input type="checkbox" id="ap-mkacct" checked> Make @${esc(p.author)} a filterable account</label></legend>
+        <div class="ap-fields">
+          <label>Account display name <input id="ap-acctname" value="${esc(p.authorName || p.author)}"></label>
+          <label>Account type <select id="ap-accttype">
+            ${["none", "player", "team", "celebrity", "fan"].map((o) => `<option>${o}</option>`).join("")}
+          </select></label>
+        </div>
+        <p class="hint">Lets users filter the site by this account. It is <strong>excluded from the daily scrape</strong> (cron_enabled=false) until you enable it on the Accounts tab. If the account already exists, it's left unchanged.</p>
+      </fieldset>
       <button class="btn run" id="ap-add">＋ Add to site</button>
     </div>`;
   $("#ap-add").addEventListener("click", () => apAdd(p));
@@ -477,6 +490,9 @@ async function apAdd(p) {
       celebrities: list("#ap-celebs"),
       keywords: list("#ap-keywords"),
       category: $("#ap-category").value || null,
+      createAccount: $("#ap-mkacct").checked,
+      accountName: $("#ap-acctname").value.trim(),
+      accountType: $("#ap-accttype").value,
     }, "/api/admin/add-post");
     if (!r.ok) throw new Error(r.error || "couldn't add");
     toast(`Added @${r.post.author}'s post ✓`);

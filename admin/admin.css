@@ -97,3 +97,6 @@ fieldset input { padding: 8px; border: 3px solid var(--ink); font-size: 1rem; }
 .ap-fields input, .ap-fields select { padding: 7px; border: 3px solid var(--ink); font-size: 0.95rem; }
 .ap-card .btn { margin-top: 16px; }
 @media (max-width: 560px) { .ap-fields { grid-template-columns: 1fr; } }
+.ap-acct { margin-top: 16px; border: 3px solid var(--ink); padding: 12px 14px; }
+.ap-acct legend { font-family: "VT323", monospace; font-size: 1.05rem; padding: 0 6px; }
+.ap-acct legend label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }

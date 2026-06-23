@@ -28,7 +28,9 @@ const countPosts = async () => {
 };
 
 const config = await loadConfigFromDb(sb);
-const newAccounts = (config.accounts || []).filter((a) => !a.last_scraped_at);
+// Skip manual-only accounts (cron_enabled=false) — they hold hand-added posts
+// and shouldn't be scraped until enabled.
+const newAccounts = (config.accounts || []).filter((a) => !a.last_scraped_at && a.cron_enabled !== false);
 
 if (!newAccounts.length) {
   console.log("✅ No new accounts found (every active account already has last_scraped_at). Nothing to backfill.");

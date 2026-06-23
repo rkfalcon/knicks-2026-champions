@@ -100,3 +100,8 @@ fieldset input { padding: 8px; border: 3px solid var(--ink); font-size: 1rem; }
 .ap-acct { margin-top: 16px; border: 3px solid var(--ink); padding: 12px 14px; }
 .ap-acct legend { font-family: "VT323", monospace; font-size: 1.05rem; padding: 0 6px; }
 .ap-acct legend label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.ap-thumb { position: relative; padding: 0; border: 3px solid var(--ink); background: #0b0f16; cursor: pointer; line-height: 0; }
+.ap-thumb img { max-height: 320px; max-width: 100%; object-fit: contain; display: block; }
+.ap-thumb .ap-cover-badge { display: none; position: absolute; top: 6px; left: 6px; background: var(--knicks-orange); color: #fff; font-family: "VT323", monospace; font-size: 0.85rem; padding: 2px 8px; border: 2px solid #fff; }
+.ap-thumb.is-cover { border-color: var(--knicks-orange); box-shadow: 0 0 0 3px var(--knicks-orange); }
+.ap-thumb.is-cover .ap-cover-badge { display: block; }

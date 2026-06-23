@@ -443,12 +443,18 @@ async function apFetch() {
   finally { $("#ap-fetch").disabled = false; }
 }
 
+let apCoverIdx = 0;
 function renderApPreview(p) {
   const imgs = (p.images && p.images.length) ? p.images : (p.image ? [p.image] : []);
   const t = p.tags || {};
+  apCoverIdx = 0;
+  const multi = imgs.length > 1;
   $("#ap-preview").innerHTML = `
     <div class="ap-card">
-      <div class="ap-imgs">${imgs.map((u) => `<img src="${esc(u)}" alt="">`).join("") || '<em class="hint">no image on this post</em>'}</div>
+      <div class="ap-imgs">${imgs.map((u, i) =>
+        `<button type="button" class="ap-thumb${i === 0 ? " is-cover" : ""}" data-idx="${i}" title="Make this the cover">
+          <img src="${esc(u)}" alt=""><span class="ap-cover-badge">★ cover</span></button>`).join("") || '<em class="hint">no image on this post</em>'}</div>
+      ${multi ? '<p class="hint">Click an image to make it the default (cover) shown on the site.</p>' : ""}
       <div class="ap-head">
         <strong>@${esc(p.author)}</strong> · ${esc((p.date || "").toString().slice(0, 16))} · ${p.platform === "x" ? "X" : "Instagram"}
       </div>
@@ -475,6 +481,11 @@ function renderApPreview(p) {
       <button class="btn run" id="ap-add">＋ Add to site</button>
     </div>`;
   $("#ap-add").addEventListener("click", () => apAdd(p));
+  $("#ap-preview").querySelectorAll(".ap-thumb").forEach((b) => b.addEventListener("click", () => {
+    apCoverIdx = Number(b.dataset.idx);
+    $("#ap-preview").querySelectorAll(".ap-thumb").forEach((x) =>
+      x.classList.toggle("is-cover", Number(x.dataset.idx) === apCoverIdx));
+  }));
 }
 
 async function apAdd(p) {
@@ -493,6 +504,7 @@ async function apAdd(p) {
       createAccount: $("#ap-mkacct").checked,
       accountName: $("#ap-acctname").value.trim(),
       accountType: $("#ap-accttype").value,
+      coverIndex: apCoverIdx,
     }, "/api/admin/add-post");
     if (!r.ok) throw new Error(r.error || "couldn't add");
     toast(`Added @${r.post.author}'s post ✓`);

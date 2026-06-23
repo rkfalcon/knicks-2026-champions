@@ -18,6 +18,10 @@ export default async function handler(req, res) {
       accountId: body.accountId || null,
       uploadMedia: true,
       maxImages: 250,
+      // Deep per-profile fetch so a manual Run actually reaches a high-volume
+      // account's full window (the default of 20 posts/profile only covers the
+      // last few days for accounts that post often).
+      resultsLimit: 200,
       record: true,
       trigger: "manual",
       log: (m) => console.log(m),

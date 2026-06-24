@@ -517,6 +517,16 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
    goes dark for image letterboxing, so the body needs its own light bg or the
    text becomes unreadable on black. */
 .lb-body { padding: 16px 18px 20px; background: var(--paper-2); color: var(--ink); }
+/* Handle + per-post Share on one row at the very top of the caption, so the
+   Share button is always above the fold (incl. mobile, where the body is short). */
+.lb-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.lb-share {
+  flex: 0 0 auto; cursor: pointer; white-space: nowrap;
+  font-family: "VT323", monospace; font-size: 1.05rem; letter-spacing: 1px;
+  background: var(--knicks-blue); color: #fff; border: 3px solid var(--ink);
+  box-shadow: var(--shadow-sm); padding: 5px 14px;
+}
+.lb-share:active { transform: translate(2px, 2px); box-shadow: none; }
 .lb-body .card-handle { font-size: 1.05rem; }
 .lb-body .lb-text { font-size: 1.02rem; line-height: 1.55; white-space: pre-wrap; }
 .lb-source {

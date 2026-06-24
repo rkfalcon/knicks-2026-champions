@@ -70,6 +70,11 @@
     applyUrlParams(); // pre-populate filters from a shared deep link
     render();
     initAdmin();      // enable admin remove controls if signed in (no-op otherwise)
+    if (state.pendingPost) {   // a shared post link — open it on top of the feed
+      const idx = state.view.findIndex((x) => x.id === state.pendingPost);
+      if (idx >= 0) openLightbox(idx, state.pendingFrame || 0);
+      state.pendingPost = null;
+    }
     if (state.data.generatedAt) {
       el.generated.textContent =
         `Last updated ${new Date(state.data.generatedAt).toLocaleString("en-US")} · ${state.data.count} posts in the book`;
@@ -196,6 +201,8 @@
     if (p.has("view")) { state.category = p.get("view"); el.category.value = state.category; }
     if (p.has("media")) { state.media = p.get("media"); el.media.value = state.media; }
     if (p.has("sort")) { state.sort = p.get("sort"); el.sort.value = state.sort; }
+    // Per-post deep link: open this post (at this carousel frame) after render.
+    if (p.has("post")) { state.pendingPost = p.get("post"); state.pendingFrame = Number(p.get("frame")) || 0; }
   }
 
   let shareTimer;
@@ -438,7 +445,7 @@
   }
 
   /* ---------- lightbox ---------- */
-  function openLightbox(i) {
+  function openLightbox(i, startFrame = 0) {
     state.lbIndex = i;
     const p = state.view[i];
     if (!p) return;
@@ -461,7 +468,10 @@
       .join("");
     el.lbStage.innerHTML = `${media}
       <div class="lb-body">
-        <div class="card-handle">${pIcon(p.platform)} @${esc(p.author)} · ${fmtDate(p.date)}${likesHtml(p.likes) ? " · " + likesHtml(p.likes) : ""}</div>
+        <div class="lb-top">
+          <div class="card-handle">${pIcon(p.platform)} @${esc(p.author)} · ${fmtDate(p.date)}${likesHtml(p.likes) ? " · " + likesHtml(p.likes) : ""}</div>
+          <button class="lb-share" type="button" title="Share this post">⤴ Share</button>
+        </div>
         ${p.text ? `<p class="lb-text">${esc(p.text)}</p>` : ""}
         ${tags ? `<div class="taglist" style="margin-top:12px">${tags}</div>` : ""}
         ${p.url ? `<a class="lb-source" href="${esc(p.url)}" target="_blank" rel="noopener">↗ See it on ${p.platform === "x" ? "X" : "Instagram"}</a>` : ""}
@@ -471,6 +481,33 @@
     el.lbStage.scrollTop = 0;
     lockScroll();
     wireGallery();
+    // Open on a specific carousel frame (from a shared deep link).
+    if (startFrame > 0) {
+      const gal = document.getElementById("lbGallery");
+      if (gal) requestAnimationFrame(() => { gal.scrollLeft = startFrame * (gal.clientWidth || 1); });
+    }
+  }
+
+  // Share THIS post — a clean deep link that reopens it (at the current carousel
+  // frame) on the recipient's visit. Native share sheet on mobile, copy elsewhere.
+  async function sharePost() {
+    const p = state.view[state.lbIndex];
+    if (!p) return;
+    const gal = document.getElementById("lbGallery");
+    const frame = gal ? Math.round(gal.scrollLeft / (gal.clientWidth || 1)) : 0;
+    const u = new URL(location.origin + location.pathname);
+    u.searchParams.set("post", p.id);
+    if (frame > 0) u.searchParams.set("frame", String(frame));
+    const url = u.toString();
+    if (navigator.share) {
+      try { await navigator.share({ title: document.title, url }); return; }
+      catch (e) { if (e && e.name === "AbortError") return; }
+    }
+    const btn = el.lbStage.querySelector(".lb-share");
+    try {
+      await navigator.clipboard.writeText(url);
+      if (btn) { btn.textContent = "✓ Link copied!"; setTimeout(() => { btn.textContent = "⤴ Share"; }, 1800); }
+    } catch { if (btn) btn.textContent = "Copy from address bar"; }
   }
 
   // Fully lock the page behind the lightbox (iOS-safe) so no grid content peeks
@@ -700,7 +737,9 @@
     });
     el.lbStage.addEventListener("click", (e) => {
       const rm = e.target.closest(".lb-remove");
-      if (rm) { e.stopPropagation(); hidePost(rm.dataset.id); }
+      if (rm) { e.stopPropagation(); hidePost(rm.dataset.id); return; }
+      const sh = e.target.closest(".lb-share");
+      if (sh) { e.stopPropagation(); sharePost(); }
     });
 
     // As the user nears the bottom, stream in more cards; also update the cue.

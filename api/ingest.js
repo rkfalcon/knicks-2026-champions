@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     // self-heal on later runs. Full historical backfills use the CLI: `npm run ingest`.
     const days = Number(req.query?.days) || 4;
     const result = await runIngest({
-      uploadMedia: true, sinceDays: days, maxImages: 150, record: true, trigger: "cron",
+      uploadMedia: true, sinceDays: days, maxImages: 400, record: true, trigger: "cron",
       incrementalOnly: true, // never a full all-accounts scrape — it can't fit 300s
       deadlineMs: 250000,    // stop slow work ~250s in so the run always reaches finish()
       backfillNew: true, backfillLimit: 2, // auto-backfill up to 2 new accounts/run

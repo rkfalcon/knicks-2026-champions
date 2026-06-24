@@ -78,7 +78,10 @@ export default async function middleware(req) {
       const meta = await postMeta(url.searchParams.get("post"));
       if (!meta) return next();
       const acct = meta.author || "";
-      const cover = meta.image || (meta.images && meta.images[0]) || "";
+      // Use the exact carousel frame that was shared, if any.
+      const frame = Number(url.searchParams.get("frame")) || 0;
+      const imgs = Array.isArray(meta.images) ? meta.images : [];
+      const cover = imgs[frame] || meta.image || imgs[0] || "";
       const ogImg = cover
         ? `${url.origin}/api/og?img=${encodeURIComponent(cover)}&acct=${encodeURIComponent(acct)}&plat=${encodeURIComponent(meta.platform || "")}`
         : `${url.origin}/api/og?label=${encodeURIComponent("@" + acct)}`;

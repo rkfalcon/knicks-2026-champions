@@ -29,7 +29,7 @@ export default function handler(req) {
         style: { width: "100%", height: "100%", display: "flex", position: "relative", backgroundColor: "#0c65ab", fontFamily: "sans-serif" },
         children: [
           { type: "img", props: { src: img, style: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover" } } },
-          div({ position: "absolute", left: 0, right: 0, bottom: 0, display: "flex", flexDirection: "column", padding: "40px 54px", backgroundImage: "linear-gradient(to top, rgba(8,70,120,0.97) 14%, rgba(8,70,120,0))" }, overlay),
+          div({ position: "absolute", left: 0, right: 0, bottom: 0, display: "flex", flexDirection: "column", padding: "40px 54px", backgroundImage: "linear-gradient(to top, rgba(0,107,182,0.98) 16%, rgba(0,107,182,0))" }, overlay),
         ],
       },
     };

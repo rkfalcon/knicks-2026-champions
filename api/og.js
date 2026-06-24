@@ -22,7 +22,7 @@ export default function handler(req) {
       div({ display: "flex", fontSize: 30, color: "#cfe6ff", letterSpacing: 1, marginBottom: 8 }, "knicks.run · A Championship Picture Book"),
       div({ display: "flex", fontSize: 62, fontWeight: 800, color: "#ffffff" }, acct ? `@${acct}` : "A shared moment"),
     ];
-    if (platLabel) overlay.push(div({ display: "flex", fontSize: 30, color: "#fc7b26", marginTop: 4 }, `on ${platLabel}`));
+    if (platLabel) overlay.push(div({ display: "flex", fontSize: 30, color: "#fc7b26", marginTop: 4 }, `from ${platLabel}`));
     const card = {
       type: "div",
       props: {

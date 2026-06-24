@@ -10,6 +10,32 @@ const div = (style, children) => ({ type: "div", props: { style, children } });
 
 export default function handler(req) {
   const { searchParams } = new URL(req.url);
+
+  // Post-share card: the post's own image as the hero, with the originating
+  // account + branding in a gradient bar along the bottom.
+  const img = searchParams.get("img");
+  if (img) {
+    const acct = (searchParams.get("acct") || "").replace(/^@/, "").slice(0, 40);
+    const plat = searchParams.get("plat") || "";
+    const platLabel = plat === "x" ? "X" : plat === "instagram" ? "Instagram" : "";
+    const overlay = [
+      div({ display: "flex", fontSize: 30, color: "#cfe6ff", letterSpacing: 1, marginBottom: 8 }, "knicks.run · A Championship Picture Book"),
+      div({ display: "flex", fontSize: 62, fontWeight: 800, color: "#ffffff" }, acct ? `@${acct}` : "A shared moment"),
+    ];
+    if (platLabel) overlay.push(div({ display: "flex", fontSize: 30, color: "#fc7b26", marginTop: 4 }, `on ${platLabel}`));
+    const card = {
+      type: "div",
+      props: {
+        style: { width: "100%", height: "100%", display: "flex", position: "relative", backgroundColor: "#0c65ab", fontFamily: "sans-serif" },
+        children: [
+          { type: "img", props: { src: img, style: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover" } } },
+          div({ position: "absolute", left: 0, right: 0, bottom: 0, display: "flex", flexDirection: "column", padding: "40px 54px", backgroundImage: "linear-gradient(to top, rgba(8,70,120,0.97) 14%, rgba(8,70,120,0))" }, overlay),
+        ],
+      },
+    };
+    return new ImageResponse(card, { width: 1200, height: 630, headers: { "cache-control": "public, immutable, no-transform, max-age=86400" } });
+  }
+
   const label = (searchParams.get("label") || "").slice(0, 90);
 
   const children = [

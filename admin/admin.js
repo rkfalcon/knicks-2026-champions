@@ -78,7 +78,7 @@ const ENTITIES = {
   accounts: { pk: "id", singular: "account", cols: [
     { k: "name", t: "text" },
     { k: "x_handle", t: "text" }, { k: "ig_handle", t: "text" },
-    { k: "account_type", t: "select", opts: ["none", "player", "team", "celebrity", "fan"] },
+    { k: "account_type", t: "select", opts: ["none", "player", "team", "celebrity", "photographer", "fan"] },
     { k: "show_all", t: "bool" },
     { k: "posts_only", t: "bool" },
     { k: "cron_enabled", t: "bool" },
@@ -145,7 +145,7 @@ function renderTab(tab) {
     <div class="tab-tools">
       <input id="acctSearch" type="search" placeholder="🔎 search name / handle" value="${esc(acctFilter.q)}" />
       <select id="acctType">
-        ${["all", "player", "team", "celebrity", "fan", "none"].map((t) =>
+        ${["all", "player", "team", "celebrity", "photographer", "fan", "none"].map((t) =>
           `<option value="${t}" ${acctFilter.type === t ? "selected" : ""}>${t === "all" ? "All types" : t}</option>`).join("")}
       </select>
     </div>` : "";
@@ -532,7 +532,7 @@ function renderApPreview(p) {
         <div class="ap-fields">
           <label>Account display name <input id="ap-acctname" value="${esc(p.authorName || p.author)}"></label>
           <label>Account type <select id="ap-accttype">
-            ${["none", "player", "team", "celebrity", "fan"].map((o) => `<option>${o}</option>`).join("")}
+            ${["none", "player", "team", "celebrity", "photographer", "fan"].map((o) => `<option>${o}</option>`).join("")}
           </select></label>
         </div>
         <p class="hint">Lets users filter the site by this account. It is <strong>excluded from the daily scrape</strong> (cron_enabled=false) until you enable it on the Accounts tab. If the account already exists, it's left unchanged.</p>

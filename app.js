@@ -6,7 +6,7 @@
   const el = {
     book: $("#book"), empty: $("#empty"), count: $("#count"), reset: $("#reset"), share: $("#share"),
     scrollMore: $("#scrollMore"), homeBtn: $("#homeBtn"),
-    q: $("#q"), suggest: $("#suggest"), series: $("#series"), game: $("#game"), player: $("#player"),
+    q: $("#q"), suggest: $("#suggest"), series: $("#series"), atype: $("#atype"), player: $("#player"),
     celeb: $("#celeb"), account: $("#account"), keyword: $("#keyword"), ptype: $("#ptype"),
     category: $("#category"), sort: $("#sort"), media: $("#media"),
     platformChips: $("#platformChips"), activeChips: $("#activeChips"), generated: $("#generated"),
@@ -18,7 +18,7 @@
   const state = {
     data: null,
     platform: "all",
-    q: "", series: "all", game: "", player: "", celeb: "",
+    q: "", series: "all", atype: "all", player: "", celeb: "",
     account: "", keyword: "", ptype: "all",
     category: "all", sort: "desc",
     media: "media",  // default: only posts that carry a photo/video (hide text-only)
@@ -46,6 +46,12 @@
   // A post "has media" if it carries a photo (single or carousel) or a video —
   // used by the MEDIA filter, which by default hides text-only posts.
   const hasMedia = (p) => !!(p.image || (p.images && p.images.length) || p.video);
+
+  // Account-type filter: friendly labels + display order for the TYPE dropdown.
+  const TYPE_LABELS = { player: "Players", team: "Team / Legends", celebrity: "Celebrities", photographer: "Photographers", fan: "Fans", none: "Other accounts" };
+  const TYPE_ORDER = ["player", "team", "celebrity", "photographer", "fan", "none"];
+  // The account_type of a post's author (via the account that owns its handle).
+  const acctTypeOf = (p) => (state.acctType && state.acctType.get(p.platform + ":" + (p.author || "").toLowerCase())) || "none";
 
   /* ---------- load ---------- */
   async function load() {
@@ -127,20 +133,20 @@
     el.keyword.innerHTML = `<option value="">Any keyword</option>` +
       (d.keywords || []).map((k) => `<option value="${esc(k.term)}">${esc(k.label || k.term)}</option>`).join("");
 
-    // Hide the type filter entirely if no stories/highlights exist yet.
+    // Hide the format filter entirely if no stories/highlights exist yet.
     const hasStories = (d.posts || []).some((p) => p.postType && p.postType !== "post");
     if (el.ptype) el.ptype.closest("label").style.display = hasStories ? "" : "none";
 
-    rebuildGames();
-  }
-
-  function rebuildGames() {
-    const d = state.data;
-    const s = (d.series || []).find((x) => x.id === state.series);
-    if (!s) { el.game.innerHTML = `<option value="">All games</option>`; el.game.disabled = true; return; }
-    el.game.disabled = false;
-    el.game.innerHTML = `<option value="">All ${esc(s.label)} games</option>` +
-      s.games.map((g) => `<option value="${g.id}">${esc(g.label)} (${fmtDate(g.date)})${g.result ? " " + g.result : ""}</option>`).join("");
+    // Map each account handle → its account_type, and build the TYPE dropdown
+    // from the types actually present.
+    state.acctType = new Map();
+    for (const a of d.accounts || []) {
+      if (a.x_handle) state.acctType.set("x:" + a.x_handle.toLowerCase(), a.type || "none");
+      if (a.ig_handle) state.acctType.set("instagram:" + a.ig_handle.toLowerCase(), a.type || "none");
+    }
+    const present = new Set((d.accounts || []).map((a) => a.type || "none"));
+    el.atype.innerHTML = `<option value="all">All types</option>` +
+      TYPE_ORDER.filter((t) => present.has(t)).map((t) => `<option value="${t}">${TYPE_LABELS[t] || t}</option>`).join("");
   }
 
   /* ---------- shareable URL state ----------
@@ -159,7 +165,7 @@
     if (state.platform !== "all") p.set("platform", state.platform);
     if (state.q) p.set("q", state.q);
     if (state.series !== "all") p.set("series", state.series);
-    if (state.game) p.set("game", state.game);
+    if (state.atype !== "all") p.set("atype", state.atype);
     if (state.player) p.set("player", state.player);
     if (state.celeb) p.set("celeb", state.celeb);
     if (state.account !== "") {
@@ -186,8 +192,8 @@
     };
     if (p.has("platform")) { state.platform = p.get("platform"); setPlatformChips(); }
     if (p.has("q")) { state.q = p.get("q"); el.q.value = state.q; }
-    if (p.has("series")) { state.series = p.get("series"); el.series.value = state.series; rebuildGames(); }
-    if (p.has("game")) { state.game = p.get("game"); el.game.value = state.game; }
+    if (p.has("series")) { state.series = p.get("series"); el.series.value = state.series; }
+    if (p.has("atype")) { state.atype = p.get("atype"); el.atype.value = state.atype; }
     if (p.has("player")) { const v = p.get("player"); const m = v === "__all__" ? "__all__" : canon(d.players, v); if (m) { state.player = m; el.player.value = m; } }
     if (p.has("celeb")) { const v = p.get("celeb"); const m = v === "__all__" ? "__all__" : canon(d.celebrities, v); if (m) { state.celeb = m; el.celeb.value = m; } }
     if (p.has("account")) {
@@ -220,7 +226,7 @@
     if (state.media === "media") posts = posts.filter(hasMedia);
     if (state.platform !== "all") posts = posts.filter((p) => p.platform === state.platform);
     if (state.series !== "all") posts = posts.filter((p) => p.tags.series === state.series);
-    if (state.game) posts = posts.filter((p) => p.tags.game === state.game);
+    if (state.atype !== "all") posts = posts.filter((p) => acctTypeOf(p) === state.atype);
     if (state.player === "__all__") posts = posts.filter((p) => (p.tags.players || []).length > 0);
     else if (state.player) posts = posts.filter((p) => (p.tags.players || []).includes(state.player));
     if (state.celeb === "__all__") posts = posts.filter((p) => (p.tags.celebrities || []).length > 0);
@@ -342,7 +348,7 @@
       : `📖 ${state.view.length} of ${total} moments`;
 
     const filtersActive = state.platform !== "all" || state.series !== "all" ||
-      state.game || state.player || state.celeb || state.account || state.keyword ||
+      state.atype !== "all" || state.player || state.celeb || state.account || state.keyword ||
       state.ptype !== "all" || state.category !== "all" || state.media !== "media" || state.q;
     el.reset.hidden = !filtersActive;
     renderActiveChips();
@@ -376,11 +382,7 @@
       const s = (d.series || []).find((x) => x.id === state.series);
       chips.push({ kind: "series", label: "Series: " + (s ? s.label : (state.series === "festivities" ? "Festivities 🎉" : state.series)) });
     }
-    if (state.game) {
-      const s = (d.series || []).find((x) => x.id === state.series);
-      const g = s && s.games.find((x) => x.id === state.game);
-      chips.push({ kind: "game", label: "Game: " + (g ? g.label : state.game) });
-    }
+    if (state.atype !== "all") chips.push({ kind: "atype", label: "Type: " + (TYPE_LABELS[state.atype] || state.atype) });
     if (state.player === "__all__") chips.push({ kind: "player", label: "Player: All players" });
     else if (state.player) {
       const p = (d.players || []).find((x) => x.name === state.player);
@@ -397,7 +399,7 @@
       chips.push({ kind: "keyword", label: "Tag: " + (k ? (k.label || k.term) : state.keyword) });
     }
     if (state.ptype !== "all") {
-      chips.push({ kind: "ptype", label: "Type: " + ({ post: "Posts", story: "Stories", highlight: "Highlights" }[state.ptype] || state.ptype) });
+      chips.push({ kind: "ptype", label: "Format: " + ({ post: "Posts", story: "Stories", highlight: "Highlights" }[state.ptype] || state.ptype) });
     }
     if (state.category !== "all") {
       chips.push({ kind: "category", label: "View: " + ({ game: "Game days", festivities: "Festivities 🎉" }[state.category] || state.category) });
@@ -409,8 +411,8 @@
   function clearOne(kind) {
     switch (kind) {
       case "q": state.q = ""; el.q.value = ""; break;
-      case "series": state.series = "all"; el.series.value = "all"; state.game = ""; rebuildGames(); break;
-      case "game": state.game = ""; el.game.value = ""; break;
+      case "series": state.series = "all"; el.series.value = "all"; break;
+      case "atype": state.atype = "all"; el.atype.value = "all"; break;
       case "player": state.player = ""; el.player.value = ""; break;
       case "celeb": state.celeb = ""; el.celeb.value = ""; break;
       case "account": state.account = ""; el.account.value = ""; break;
@@ -825,10 +827,8 @@
     // After picking any filter option, collapse the panel and drop the user onto
     // the results — same UX as choosing a search suggestion.
     const commitPick = () => { render(); setFiltersOpen(false); scrollToResults(); };
-    el.series.addEventListener("change", () => {
-      state.series = el.series.value; state.game = ""; rebuildGames(); commitPick();
-    });
-    el.game.addEventListener("change", () => { state.game = el.game.value; commitPick(); });
+    el.series.addEventListener("change", () => { state.series = el.series.value; commitPick(); });
+    el.atype.addEventListener("change", () => { state.atype = el.atype.value; commitPick(); });
     el.player.addEventListener("change", () => { state.player = el.player.value; commitPick(); });
     el.celeb.addEventListener("change", () => { state.celeb = el.celeb.value; commitPick(); });
     el.account.addEventListener("change", () => { state.account = el.account.value; commitPick(); });
@@ -840,14 +840,14 @@
 
     el.reset.addEventListener("click", () => {
       Object.assign(state, {
-        platform: "all", q: "", series: "all", game: "", player: "", celeb: "",
+        platform: "all", q: "", series: "all", atype: "all", player: "", celeb: "",
         account: "", keyword: "", ptype: "all", category: "all", media: "media",
       });
-      el.q.value = ""; el.series.value = "all"; el.player.value = ""; el.celeb.value = "";
+      el.q.value = ""; el.series.value = "all"; el.atype.value = "all"; el.player.value = ""; el.celeb.value = "";
       el.account.value = ""; el.keyword.value = ""; el.ptype.value = "all"; el.category.value = "all";
       el.media.value = "media";
       el.platformChips.querySelectorAll(".chip[data-platform]").forEach((c) => c.classList.toggle("is-on", c.dataset.platform === "all"));
-      rebuildGames(); render(); scrollToResults(); // back to the top of the full feed
+      render(); scrollToResults(); // back to the top of the full feed
     });
 
     // Share the current (filtered) view — native share sheet on mobile, copy to

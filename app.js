@@ -13,6 +13,7 @@
     filters: $("#filters"), filtersToggle: $("#filtersToggle"), filterSelects: $("#filterSelects"),
     lightbox: $("#lightbox"), lbStage: $("#lbStage"),
     lbClose: $("#lbClose"), lbPrev: $("#lbPrev"), lbNext: $("#lbNext"),
+    acctArea: $("#acctArea"), bookBanner: $("#bookBanner"), authModal: $("#authModal"),
   };
 
   const state = {
@@ -24,7 +25,17 @@
     media: "media",  // default: only posts that carry a photo/video (hide text-only)
     view: [],        // currently-rendered posts (for lightbox nav)
     lbIndex: -1,
+    // ---- personal photo book ----
+    sb: null,          // supabase client (loaded on demand)
+    user: null,        // logged-in user (or null)
+    profile: null,     // their public profile { username, display_name }
+    saved: new Set(),  // keys "<post_id>:<frame>" the user has saved
+    bookMode: null,    // null | "mine" | { username, name } when viewing a book
+    bookFrames: [],    // frame index per card when rendering a book view
   };
+
+  const savedKey = (postId, frame) => `${postId}:${frame || 0}`;
+  const isSaved = (postId, frame) => state.saved.has(savedKey(postId, frame));
 
   const fmtDate = (iso) => {
     const d = new Date(iso);
@@ -76,10 +87,15 @@
     applyUrlParams(); // pre-populate filters from a shared deep link
     render();
     initAdmin();      // enable admin remove controls if signed in (no-op otherwise)
+    initUser();       // load auth + this visitor's saved items (no-op if signed out)
     if (state.pendingPost) {   // a shared post link — open it on top of the feed
       const idx = state.view.findIndex((x) => x.id === state.pendingPost);
       if (idx >= 0) openLightbox(idx, state.pendingFrame || 0);
       state.pendingPost = null;
+    }
+    if (state.pendingBook) {   // a shared book link — show that book read-only
+      openSharedBook(state.pendingBook);
+      state.pendingBook = null;
     }
     if (state.data.generatedAt) {
       el.generated.textContent =
@@ -209,6 +225,8 @@
     if (p.has("sort")) { state.sort = p.get("sort"); el.sort.value = state.sort; }
     // Per-post deep link: open this post (at this carousel frame) after render.
     if (p.has("post")) { state.pendingPost = p.get("post"); state.pendingFrame = Number(p.get("frame")) || 0; }
+    // Shared photo book: /?book=<username>
+    if (p.has("book")) state.pendingBook = p.get("book");
   }
 
   let shareTimer;
@@ -472,7 +490,10 @@
       <div class="lb-body">
         <div class="lb-top">
           <div class="card-handle">${pIcon(p.platform)} @${esc(p.author)} · ${fmtDate(p.date)}${likesHtml(p.likes) ? " · " + likesHtml(p.likes) : ""}</div>
-          <button class="lb-share" type="button" title="Share this post">⤴ Share</button>
+          <div class="lb-actions">
+            <button class="lb-heart${isSaved(p.id, startFrame) ? " is-saved" : ""}" type="button" aria-pressed="${isSaved(p.id, startFrame)}" title="Save this image to your photo book">🧡</button>
+            <button class="lb-share" type="button" title="Share this post"><span class="lb-share-icon">⤴</span><span class="lb-share-text"> Share</span></button>
+          </div>
         </div>
         ${p.text ? `<p class="lb-text">${esc(p.text)}</p>` : ""}
         ${tags ? `<div class="taglist" style="margin-top:12px">${tags}</div>` : ""}
@@ -506,10 +527,11 @@
       catch (e) { if (e && e.name === "AbortError") return; }
     }
     const btn = el.lbStage.querySelector(".lb-share");
+    const txt = btn ? (btn.querySelector(".lb-share-text") || btn) : null;
     try {
       await navigator.clipboard.writeText(url);
-      if (btn) { btn.textContent = "✓ Link copied!"; setTimeout(() => { btn.textContent = "⤴ Share"; }, 1800); }
-    } catch { if (btn) btn.textContent = "Copy from address bar"; }
+      if (txt) { txt.textContent = " ✓ Copied!"; setTimeout(() => { txt.textContent = " Share"; }, 1800); }
+    } catch { if (txt) txt.textContent = " address bar ↑"; }
   }
 
   // Fully lock the page behind the lightbox (iOS-safe) so no grid content peeks
@@ -554,6 +576,7 @@
       dots.forEach((d, j) => d.classList.toggle("is-on", j === k));
       prev.style.visibility = k <= 0 ? "hidden" : "visible";
       next.style.visibility = k >= dots.length - 1 ? "hidden" : "visible";
+      refreshHeart(); // the heart tracks the frame now in view
     }, { passive: true });
     prev.style.visibility = "hidden"; // start on the first slide
   }
@@ -572,11 +595,8 @@
   async function initAdmin() {
     if (!maybeAdmin()) return;
     try {
-      const mod = await import("https://esm.sh/@supabase/supabase-js@2.45.0")
-        .catch(() => import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"));
-      const cfg = await fetch("/api/config").then((r) => r.json());
-      if (!cfg?.supabaseUrl || !cfg?.supabaseAnonKey) return;
-      const sb = mod.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+      const sb = await getSupabase();
+      if (!sb) return;
       const { data } = await sb.auth.getSession();
       const token = data.session?.access_token;
       if (!token) return;
@@ -605,6 +625,201 @@
     } catch {
       alert("Couldn't remove the post — try signing in again at /admin.");
     }
+  }
+
+  /* ---------- personal photo book: auth + save ---------- */
+  async function getSupabase() {
+    if (state.sb) return state.sb;
+    try {
+      const mod = await import("https://esm.sh/@supabase/supabase-js@2.45.0")
+        .catch(() => import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"));
+      const cfg = await fetch("/api/config").then((r) => r.json());
+      if (!cfg?.supabaseUrl || !cfg?.supabaseAnonKey) return null;
+      state.sb = mod.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+      return state.sb;
+    } catch { return null; }
+  }
+
+  async function initUser() {
+    const sb = await getSupabase();
+    if (!sb) { renderAcct(); return; }
+    const { data } = await sb.auth.getSession();
+    await onSession(data.session);
+    sb.auth.onAuthStateChange((_e, s) => { onSession(s); });
+  }
+
+  async function onSession(session) {
+    state.user = session?.user || null;
+    if (state.user) {
+      await loadProfileAndSaved();
+      if (state.pendingSave) { const ps = state.pendingSave; state.pendingSave = null; await setSaved(ps.postId, ps.frame, true); }
+    } else { state.profile = null; state.saved = new Set(); }
+    renderAcct();
+    refreshHeart();
+  }
+
+  async function loadProfileAndSaved() {
+    const sb = state.sb, uid = state.user.id;
+    let { data: prof } = await sb.from("profiles").select("*").eq("user_id", uid).maybeSingle();
+    if (!prof) prof = await ensureProfile();
+    state.profile = prof;
+    const { data: items } = await sb.from("saved_items").select("post_id,frame_idx").eq("user_id", uid);
+    state.saved = new Set((items || []).map((r) => savedKey(r.post_id, r.frame_idx)));
+  }
+
+  async function ensureProfile() {
+    const sb = state.sb, u = state.user;
+    const base = (u.email || "fan").split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 14) || "fan";
+    for (let i = 0; i < 5; i++) {
+      const username = base + (i ? "-" + Math.floor(1000 + Math.random() * 8999) : "");
+      const { data, error } = await sb.from("profiles").insert({ user_id: u.id, username, display_name: base }).select().maybeSingle();
+      if (!error && data) return data;
+    }
+    return { user_id: u.id, username: null, display_name: base };
+  }
+
+  async function toggleSaveCurrent() {
+    const p = state.view[state.lbIndex];
+    if (!p) return;
+    const gal = document.getElementById("lbGallery");
+    const frame = gal ? Math.round(gal.scrollLeft / (gal.clientWidth || 1)) : 0;
+    if (!state.user) { state.pendingSave = { postId: p.id, frame }; openAuth(); return; }
+    await setSaved(p.id, frame, !isSaved(p.id, frame));
+  }
+
+  async function setSaved(postId, frame, on) {
+    const sb = state.sb;
+    if (!sb || !state.user) return;
+    const key = savedKey(postId, frame);
+    try {
+      if (on) {
+        await sb.from("saved_items").upsert({ user_id: state.user.id, post_id: postId, frame_idx: frame }, { onConflict: "user_id,post_id,frame_idx" });
+        state.saved.add(key);
+      } else {
+        await sb.from("saved_items").delete().eq("user_id", state.user.id).eq("post_id", postId).eq("frame_idx", frame);
+        state.saved.delete(key);
+      }
+    } catch { /* RLS / network — ignore */ }
+    refreshHeart();
+  }
+
+  // Sync the lightbox heart to the post + frame currently in view.
+  function refreshHeart() {
+    const btn = el.lbStage.querySelector(".lb-heart");
+    if (!btn || el.lightbox.hidden) return;
+    const p = state.view[state.lbIndex];
+    if (!p) return;
+    const gal = document.getElementById("lbGallery");
+    const frame = gal ? Math.round(gal.scrollLeft / (gal.clientWidth || 1)) : 0;
+    const on = isSaved(p.id, frame);
+    btn.classList.toggle("is-saved", on);
+    btn.setAttribute("aria-pressed", String(on));
+  }
+
+  /* ---------- auth modal ---------- */
+  function openAuth() { el.authModal.hidden = false; }
+  function closeAuth() { el.authModal.hidden = true; const m = $("#authMsg"); if (m) m.hidden = true; }
+  async function signInGoogle() {
+    const sb = await getSupabase(); if (!sb) return;
+    await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.href } });
+  }
+  async function signInEmail(email) {
+    const sb = await getSupabase(); if (!sb) return;
+    const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.href } });
+    const m = $("#authMsg");
+    if (m) { m.hidden = false; m.textContent = error ? ("Couldn't send: " + error.message) : "✓ Check your email for the magic link to finish signing in."; }
+  }
+  async function signOut() { const sb = state.sb; if (sb) await sb.auth.signOut(); if (state.bookMode === "mine") exitBook(); }
+
+  /* ---------- account UI ---------- */
+  function renderAcct() {
+    if (!el.acctArea) return;
+    if (state.user) {
+      const name = state.profile?.display_name || (state.user.email || "you").split("@")[0];
+      el.acctArea.innerHTML = `<button class="link-btn" id="myBookBtn">♥ My Book</button><span class="acct-name" title="${esc(state.user.email || "")}">${esc(name)}</span><button class="link-btn" id="signOutBtn">Sign out</button>`;
+    } else {
+      el.acctArea.innerHTML = `<button class="link-btn" id="signInBtn">♥ Sign in</button>`;
+    }
+  }
+
+  /* ---------- book view (mine or shared) ---------- */
+  function itemsFromSaved(savedSet) {
+    const byId = new Map((state.data.posts || []).map((p) => [p.id, p]));
+    const out = [];
+    for (const k of savedSet) {
+      const i = k.lastIndexOf(":");
+      const post = byId.get(k.slice(0, i));
+      if (post) out.push({ post, frame: Number(k.slice(i + 1)) || 0 });
+    }
+    return out;
+  }
+
+  function openMyBook() {
+    if (!state.user) { openAuth(); return; }
+    state.bookMode = "mine";
+    if (state.profile?.username) history.replaceState(null, "", "?book=" + encodeURIComponent(state.profile.username));
+    renderBook(itemsFromSaved(state.saved), `${state.profile?.display_name || "Your"} photo book`, true);
+  }
+
+  async function openSharedBook(username) {
+    const sb = await getSupabase();
+    if (!sb) return;
+    const { data: prof } = await sb.from("profiles").select("user_id,display_name,username").eq("username", username).maybeSingle();
+    if (!prof) { state.bookMode = { username }; renderBook([], `@${username}'s photo book`, false, "That book doesn't exist (or was renamed)."); return; }
+    const { data: items } = await sb.from("saved_items").select("post_id,frame_idx").eq("user_id", prof.user_id);
+    const set = new Set((items || []).map((r) => savedKey(r.post_id, r.frame_idx)));
+    state.bookMode = { username };
+    renderBook(itemsFromSaved(set), `${prof.display_name || "@" + username}'s photo book`, false);
+  }
+
+  function renderBook(items, title, mine, emptyMsg) {
+    state.bookFrames = items.map((it) => it.frame);
+    state.view = items.map((it) => it.post);
+    const shareBtn = mine && state.profile?.username ? `<button class="link-btn" id="bookShareBtn">⤴ Share my book</button>` : "";
+    el.bookBanner.hidden = false;
+    el.bookBanner.innerHTML = `<div class="bb-inner"><strong>🧡 ${esc(title)}</strong><span class="bb-count">${items.length} image${items.length === 1 ? "" : "s"}</span>${shareBtn}<button class="link-btn" id="bookBackBtn">✕ Back to the feed</button></div>`;
+    const n = colCount();
+    el.book.innerHTML = Array.from({ length: n }, () => `<div class="book-col"></div>`).join("");
+    const cols = [...el.book.querySelectorAll(".book-col")];
+    state.cols = cols; state.rendered = items.length;
+    el.empty.hidden = items.length > 0;
+    el.book.hidden = items.length === 0;
+    el.count.textContent = `📖 ${items.length} saved`;
+    el.reset.hidden = true; el.activeChips.innerHTML = "";
+    if (!items.length) el.empty.innerHTML = emptyMsg ? `<p>★ ${esc(emptyMsg)} ★</p>`
+      : (mine ? `<p>★ Your photo book is empty ★</p><p>Tap the 🧡 on any image to save it here.</p>` : `<p>★ This book is empty ★</p>`);
+    items.forEach((it, i) => {
+      const img = (it.post.images && it.post.images[it.frame]) || it.post.image || "";
+      cols[i % n].insertAdjacentHTML("beforeend", bookCardHTML(it.post, img, i));
+    });
+    el.scrollMore.hidden = true;
+    window.scrollTo({ top: 0 });
+  }
+
+  function bookCardHTML(p, img, i) {
+    const emoji = p.tags.category === "festivities" ? "🏆" : "🏀";
+    const inner = img ? `<img loading="lazy" src="${esc(img)}" alt="">` : `<span class="emoji">${emoji}</span>`;
+    return `<article class="card book-card" data-i="${i}">
+      <div class="card-media${img ? "" : " no-img"}">${inner}
+        <span class="badge ${p.platform === "x" ? "x" : "ig"}">${pIcon(p.platform)} @${esc(p.author)}</span>
+      </div></article>`;
+  }
+
+  function shareBook() {
+    if (!state.profile?.username) return;
+    const url = location.origin + "/?book=" + encodeURIComponent(state.profile.username);
+    if (navigator.share) { navigator.share({ title: "My Knicks photo book", url }).catch(() => {}); return; }
+    navigator.clipboard.writeText(url).then(() => {
+      const b = $("#bookShareBtn"); if (b) { b.textContent = "✓ Link copied!"; setTimeout(() => { b.textContent = "⤴ Share my book"; }, 1800); }
+    }).catch(() => {});
+  }
+
+  function exitBook() {
+    state.bookMode = null;
+    el.bookBanner.hidden = true;
+    el.empty.innerHTML = `<p>★ No posts match that combo. ★</p><p>Loosen a filter and the Garden will fill back up.</p>`;
+    history.replaceState(null, "", location.pathname);
+    render();
   }
   function step(dir) {
     // Inside a multi-image post, step through its frames first; only move to the
@@ -735,13 +950,36 @@
       const rm = e.target.closest(".card-remove");
       if (rm) { e.stopPropagation(); hidePost(rm.dataset.id); return; }
       const card = e.target.closest(".card");
-      if (card) openLightbox(Number(card.dataset.i));
+      if (card) { const i = Number(card.dataset.i); openLightbox(i, state.bookMode ? (state.bookFrames[i] || 0) : 0); }
     });
     el.lbStage.addEventListener("click", (e) => {
       const rm = e.target.closest(".lb-remove");
       if (rm) { e.stopPropagation(); hidePost(rm.dataset.id); return; }
       const sh = e.target.closest(".lb-share");
-      if (sh) { e.stopPropagation(); sharePost(); }
+      if (sh) { e.stopPropagation(); sharePost(); return; }
+      const ht = e.target.closest(".lb-heart");
+      if (ht) { e.stopPropagation(); toggleSaveCurrent(); }
+    });
+
+    // Account area (sign in / My Book / sign out), book banner, auth modal.
+    el.acctArea.addEventListener("click", (e) => {
+      if (e.target.closest("#signInBtn")) openAuth();
+      else if (e.target.closest("#myBookBtn")) openMyBook();
+      else if (e.target.closest("#signOutBtn")) signOut();
+    });
+    el.bookBanner.addEventListener("click", (e) => {
+      if (e.target.closest("#bookBackBtn")) exitBook();
+      else if (e.target.closest("#bookShareBtn")) shareBook();
+    });
+    el.authModal.addEventListener("click", (e) => {
+      if (e.target === el.authModal || e.target.closest("#authClose")) { closeAuth(); return; }
+      if (e.target.closest("#authGoogle")) signInGoogle();
+    });
+    const emailForm = document.getElementById("authEmailForm");
+    if (emailForm) emailForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const v = (document.getElementById("authEmail").value || "").trim();
+      if (v) signInEmail(v);
     });
 
     // As the user nears the bottom, stream in more cards; also update the cue.

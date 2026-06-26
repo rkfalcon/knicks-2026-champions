@@ -15,14 +15,17 @@ export default function handler(req) {
   // account + branding in a gradient bar along the bottom.
   const img = searchParams.get("img");
   if (img) {
+    const title = (searchParams.get("title") || "").slice(0, 60);
     const acct = (searchParams.get("acct") || "").replace(/^@/, "").slice(0, 40);
     const plat = searchParams.get("plat") || "";
     const platLabel = plat === "x" ? "X" : plat === "instagram" ? "Instagram" : "";
+    const headline = title || (acct ? `@${acct}` : "A shared moment");
     const overlay = [
       div({ display: "flex", fontSize: 30, color: "#cfe6ff", letterSpacing: 1, marginBottom: 8 }, "knicks.run · A Championship Picture Book"),
-      div({ display: "flex", fontSize: 62, fontWeight: 800, color: "#ffffff" }, acct ? `@${acct}` : "A shared moment"),
+      div({ display: "flex", fontSize: 62, fontWeight: 800, color: "#ffffff" }, headline),
     ];
-    if (platLabel) overlay.push(div({ display: "flex", fontSize: 30, color: "#fc7b26", marginTop: 4 }, `from ${platLabel}`));
+    if (title) overlay.push(div({ display: "flex", fontSize: 30, color: "#fc7b26", marginTop: 4 }, "a personal photo book"));
+    else if (platLabel) overlay.push(div({ display: "flex", fontSize: 30, color: "#fc7b26", marginTop: 4 }, `from ${platLabel}`));
     const card = {
       type: "div",
       props: {

@@ -47,6 +47,26 @@ async function postMeta(id) {
   } catch { return null; }
 }
 
+// Look up a public photo book by username (display name + a cover image).
+async function bookMeta(username) {
+  const base = process.env.SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!base || !key || !username) return null;
+  const h = { headers: { apikey: key, Authorization: `Bearer ${key}` } };
+  try {
+    const pr = await fetch(`${base}/rest/v1/profiles?username=eq.${encodeURIComponent(username)}&select=user_id,display_name,username&limit=1`, h);
+    if (!pr.ok) return null;
+    const prof = (await pr.json())[0];
+    if (!prof) return null;
+    let cover = "";
+    const sr = await fetch(`${base}/rest/v1/saved_items?user_id=eq.${prof.user_id}&select=frame_idx,posts(image,images)&order=created_at.desc&limit=1`, h);
+    if (sr.ok) {
+      const row = (await sr.json())[0];
+      if (row?.posts) { const imgs = Array.isArray(row.posts.images) ? row.posts.images : []; cover = imgs[row.frame_idx] || row.posts.image || imgs[0] || ""; }
+    }
+    return { name: prof.display_name || prof.username || username, cover };
+  } catch { return null; }
+}
+
 // Fetch the static HTML and rewrite the OG/Twitter tags to the given card.
 async function inject(origin, { img, title, shareUrl, alt }) {
   const html = await fetch(`${origin}/index.html`).then((r) => r.text());
@@ -72,6 +92,17 @@ async function inject(origin, { img, title, shareUrl, alt }) {
 export default async function middleware(req) {
   try {
     const url = new URL(req.url);
+
+    // --- shared photo book ---
+    if (url.searchParams.has("book")) {
+      const meta = await bookMeta(url.searchParams.get("book"));
+      if (!meta) return next();
+      const title = `${meta.name}'s photo book`;
+      const ogImg = meta.cover
+        ? `${url.origin}/api/og?img=${encodeURIComponent(meta.cover)}&title=${encodeURIComponent(title)}`
+        : `${url.origin}/api/og?label=${encodeURIComponent(title)}`;
+      return inject(url.origin, { img: ogImg, title: `${meta.name}'s Knicks photo book`, shareUrl: url.toString(), alt: title });
+    }
 
     // --- single-post share ---
     if (url.searchParams.has("post")) {

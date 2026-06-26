@@ -527,6 +527,16 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
   box-shadow: var(--shadow-sm); padding: 5px 14px;
 }
 .lb-share:active { transform: translate(2px, 2px); box-shadow: none; }
+/* Heart (save) + Share share one row, always on the same line. */
+.lb-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 9px; }
+.lb-heart {
+  flex: 0 0 auto; cursor: pointer; line-height: 1; font-size: 1.25rem;
+  background: var(--paper); border: 3px solid var(--ink); box-shadow: var(--shadow-sm);
+  padding: 4px 9px; filter: grayscale(1); opacity: 0.5;
+  transition: filter .12s, opacity .12s, transform .08s;
+}
+.lb-heart.is-saved { filter: none; opacity: 1; background: #fff1e2; border-color: var(--knicks-orange); }
+.lb-heart:active { transform: translate(2px, 2px); box-shadow: none; }
 .lb-body .card-handle { font-size: 1.05rem; }
 .lb-body .lb-text { font-size: 1.02rem; line-height: 1.55; white-space: pre-wrap; }
 .lb-source {
@@ -677,3 +687,64 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
   .marquee span { animation: none; }
   .card { transition: none; }
 }
+
+/* ===== Personal photo book: account UI, auth modal, book view ===== */
+.acct-area { display: inline-flex; align-items: center; gap: 10px; }
+.acct-name {
+  font-family: "VT323", monospace; font-size: 1rem; color: var(--ink); opacity: 0.7;
+  max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+@media (max-width: 560px) {
+  .acct-name { display: none; }              /* keep the statusbar tidy on phones */
+  .acct-area { gap: 8px; }
+  .lb-share-text { display: none; }          /* Share → icon-only so heart + Share fit one line */
+  .lb-share { padding: 5px 11px; }
+  .lb-top .card-handle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+/* Sign-in modal */
+.auth-modal {
+  position: fixed; inset: 0; z-index: 200; padding: 20px;
+  background: rgba(13,27,42,0.7); display: flex; align-items: center; justify-content: center;
+}
+.auth-card {
+  position: relative; width: min(380px, 100%);
+  background: var(--paper-2); border: 4px solid var(--ink); box-shadow: 8px 8px 0 #000;
+  padding: 26px 24px 24px;
+}
+.auth-close {
+  position: absolute; top: 8px; right: 8px; width: 36px; height: 36px;
+  background: var(--knicks-orange); color: #fff; border: 3px solid var(--ink);
+  cursor: pointer; font-size: 1.1rem; line-height: 1;
+}
+.auth-title { font-family: "Anton", sans-serif; font-size: 1.55rem; margin: 0 0 6px; color: var(--ink); letter-spacing: 0.5px; }
+.auth-sub { font-family: "Space Grotesk", sans-serif; font-size: 0.95rem; margin: 0 0 18px; color: var(--ink); }
+.auth-google, .auth-magic {
+  width: 100%; cursor: pointer; font-family: "VT323", monospace; font-size: 1.15rem; letter-spacing: 1px;
+  padding: 10px; border: 3px solid var(--ink); box-shadow: var(--shadow-sm);
+}
+.auth-google { background: #fff; color: var(--ink); }
+.auth-magic { background: var(--knicks-blue); color: #fff; margin-top: 8px; }
+.auth-google:active, .auth-magic:active { transform: translate(2px, 2px); box-shadow: none; }
+.auth-or {
+  display: flex; align-items: center; gap: 10px; margin: 16px 0 12px;
+  color: var(--ink); opacity: 0.6; font-family: "VT323", monospace;
+}
+.auth-or::before, .auth-or::after { content: ""; flex: 1; height: 2px; background: var(--silver); }
+.auth-email { display: flex; flex-direction: column; }
+.auth-email input {
+  font-family: "Space Grotesk", sans-serif; font-size: 1rem; padding: 9px 10px;
+  border: 3px solid var(--ink); background: #fff; color: var(--ink);
+}
+.auth-msg { margin: 12px 0 0; font-family: "VT323", monospace; font-size: 1.05rem; color: var(--knicks-blue-dk); }
+
+/* Book banner (above the grid when viewing a book) */
+.book-banner { max-width: var(--maxw); margin: 0 auto; padding: 6px 16px 0; }
+.bb-inner {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  background: #fff1e2; border: 3px solid var(--ink); box-shadow: var(--shadow-sm); padding: 10px 14px;
+}
+.bb-inner strong { font-family: "Anton", sans-serif; font-size: 1.15rem; letter-spacing: 0.5px; }
+.bb-count { font-family: "VT323", monospace; opacity: 0.7; }
+#bookBackBtn { margin-left: auto; }
+.book-card .card-media { border-bottom: none; }

@@ -25,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=VT323&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=28" />
+  <link rel="stylesheet" href="styles.css?v=29" />
 </head>
 <body>
   <a class="skip" href="#book">Skip to the pictures</a>
@@ -116,11 +116,14 @@
     <div class="filters-row statusbar">
       <span id="count" class="is-loading"><span class="lball">🏀</span><span class="lball">🏀</span><span class="lball">🏀</span>&nbsp;Loading run…</span>
       <span class="statusbar-actions">
+        <span id="acctArea" class="acct-area"></span>
         <button id="share" class="link-btn" type="button">Share</button>
         <button id="reset" class="link-btn" hidden>✕ clear filters</button>
       </span>
     </div>
   </nav>
+
+  <div id="bookBanner" class="book-banner" hidden></div>
 
   <main id="book" class="book" aria-live="polite"></main>
 
@@ -143,6 +146,22 @@
     <p class="admin-link"><a href="/admin">admin</a></p>
   </footer>
 
+  <!-- Sign-in modal (save to photo book) -->
+  <div id="authModal" class="auth-modal" hidden role="dialog" aria-modal="true" aria-label="Sign in">
+    <div class="auth-card">
+      <button class="auth-close" id="authClose" type="button" aria-label="Close">✕</button>
+      <h2 class="auth-title">🧡 Save to your photo book</h2>
+      <p class="auth-sub">Sign in to save images and build your own shareable Knicks photo book.</p>
+      <button class="auth-google" id="authGoogle" type="button">Continue with Google</button>
+      <div class="auth-or"><span>or</span></div>
+      <form id="authEmailForm" class="auth-email">
+        <input id="authEmail" type="email" placeholder="you@email.com" autocomplete="email" required />
+        <button type="submit" class="auth-magic">Email me a magic link</button>
+      </form>
+      <p id="authMsg" class="auth-msg" hidden></p>
+    </div>
+  </div>
+
   <!-- Lightbox -->
   <div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="Post detail">
     <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
@@ -156,6 +175,6 @@
   <button id="musicToggle" class="music-toggle" type="button" aria-label="Toggle music" title="Play music">🔇</button>
 
   <script src="extras.js?v=3"></script>
-  <script src="app.js?v=34"></script>
+  <script src="app.js?v=35"></script>
 </body>
 </html>

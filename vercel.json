@@ -1,7 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
-    { "path": "/api/ingest", "schedule": "0 9 * * *" }
+    { "path": "/api/ingest", "schedule": "0 9 * * *" },
+    { "path": "/api/ingest-watchdog", "schedule": "40 9 * * *" }
   ],
   "headers": [
     {

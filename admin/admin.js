@@ -207,20 +207,45 @@ const dur = (a, b) => {
   return s >= 60 ? `${Math.floor(s / 60)}m ${s % 60}s` : `${s}s`;
 };
 
+// Plain-language health verdict for one run.
+function runHealth(r) {
+  const ageMin = r.started_at ? (Date.now() - Date.parse(r.started_at)) / 60000 : 0;
+  if (r.status === "running") return ageMin > 10 ? { e: "🟠", label: `Stuck (${Math.round(ageMin)}m)`, cls: "bad" } : { e: "⏳", label: "Running…", cls: "run" };
+  if (r.status === "error") return { e: "❌", label: "Failed", cls: "bad" };
+  if (r.status === "done") return (r.upserted ?? 0) > 0 ? { e: "✅", label: "Healthy", cls: "ok" } : { e: "⚠️", label: "Captured nothing", cls: "warn" };
+  return { e: "•", label: r.status || "—", cls: "" };
+}
+function runMessage(r) {
+  const h = runHealth(r);
+  if (r.status === "done") return `${h.e} ${h.label} — ${r.upserted ?? 0} posts · ${r.mirrored ?? 0} images`;
+  if (r.status === "error") return `${h.e} ${h.label} — ${esc(r.error || "unknown error")}`;
+  return `${h.e} ${h.label}`;
+}
+
 function renderRuns() {
   const runs = DATA.runs || [];
+  // Top banner: health of the latest scheduled (cron/watchdog) run.
+  const sched = runs.find((r) => r.trigger === "cron" || r.trigger === "watchdog");
+  let banner = "";
+  if (sched) {
+    const h = runHealth(sched);
+    const detail = sched.status === "done"
+      ? `captured ${sched.upserted ?? 0} posts (${sched.mirrored ?? 0} images) · ${fmtTime(sched.started_at)}`
+      : sched.status === "error"
+        ? `${esc(sched.error || "failed")} — the watchdog re-runs ~40 min after the 9 AM job and will retry.`
+        : `${fmtTime(sched.started_at)}`;
+    banner = `<div class="run-banner ${h.cls}">${h.e} <strong>Latest nightly run: ${h.label}</strong> — ${detail}</div>`;
+  }
   const body = runs.map((r) => {
-    const badge = r.status === "done" ? "✅" : r.status === "error" ? "❌" : "⏳";
-    return `<tr>
-      <td>${badge} ${esc(r.status)}</td>
-      <td>${esc(r.scope || "all")}</td>
+    const h = runHealth(r);
+    return `<tr class="run-row run-${h.cls}">
+      <td class="run-status ${h.cls}">${runMessage(r)}</td>
       <td>${esc(r.trigger || "")}</td>
       <td>${fmtTime(r.started_at)}</td>
       <td>${dur(r.started_at, r.finished_at)}</td>
       <td>${r.scraped ?? 0}</td>
       <td>${r.upserted ?? 0}</td>
       <td>${r.mirrored ?? 0}</td>
-      <td class="run-err">${esc(r.error || "")}</td>
     </tr>`;
   }).join("");
   $("#panel").innerHTML = `
@@ -228,10 +253,11 @@ function renderRuns() {
       <h2>runs <small>(${runs.length})</small></h2>
       <button class="btn" data-refresh-runs>↻ Refresh</button>
     </div>
+    ${banner}
     <div class="table-wrap"><table><thead><tr>
-      <th>status</th><th>scope</th><th>trigger</th><th>started</th><th>took</th>
-      <th>scraped</th><th>upserted</th><th>images</th><th>error</th>
-    </tr></thead><tbody>${body || `<tr><td colspan="9" style="padding:14px">No runs yet — hit ▶ Run all on the Accounts tab.</td></tr>`}</tbody></table></div>`;
+      <th>status</th><th>trigger</th><th>started</th><th>took</th>
+      <th>scraped</th><th>upserted</th><th>images</th>
+    </tr></thead><tbody>${body || `<tr><td colspan="7" style="padding:14px">No runs yet — hit ▶ Run all on the Accounts tab.</td></tr>`}</tbody></table></div>`;
   $("[data-refresh-runs]").addEventListener("click", async () => { await loadData(); renderRuns(); });
 }
 

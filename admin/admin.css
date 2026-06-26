@@ -116,3 +116,12 @@ fieldset input { padding: 8px; border: 3px solid var(--ink); font-size: 1rem; }
 .ap-typeahead { position: absolute; top: 100%; left: 0; right: 0; z-index: 40; background: #fff; border: 3px solid var(--ink); border-top: none; max-height: 220px; overflow-y: auto; box-shadow: var(--shadow-sm, 3px 3px 0 #000); }
 .ap-ta-item { padding: 6px 10px; cursor: pointer; font-family: "VT323", monospace; font-size: 1.05rem; }
 .ap-ta-item:hover, .ap-ta-item.is-on { background: var(--knicks-blue); color: #fff; }
+/* Runs tab — health banner + status colors */
+.run-banner { margin: 0 0 14px; padding: 12px 16px; border: 3px solid var(--ink); font-family: "VT323", monospace; font-size: 1.15rem; box-shadow: var(--shadow-sm); }
+.run-banner.ok { background: #e6f4ea; }
+.run-banner.warn { background: #fff4e0; }
+.run-banner.bad { background: #fde7e7; }
+.run-status.ok { color: #1a7f37; }
+.run-status.warn { color: #b25e00; }
+.run-status.bad { color: #c0392b; font-weight: 700; }
+.run-row.bad td { background: #fdf1f1; }

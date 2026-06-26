@@ -196,10 +196,13 @@ function rowHTML(tab, schema, r) {
 }
 
 /* ---------------- runs ---------------- */
+// Always display run times in US Eastern (the cron runs at 09:00 UTC = 5:00 AM
+// ET in summer / EDT), with an explicit ET label so it's unambiguous regardless
+// of the viewer's machine timezone.
 const fmtTime = (iso) => {
   if (!iso) return "—";
   const d = new Date(iso);
-  return isNaN(d) ? "—" : d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  return isNaN(d) ? "—" : d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) + " ET";
 };
 const dur = (a, b) => {
   if (!a || !b) return "";
@@ -232,7 +235,7 @@ function renderRuns() {
     const detail = sched.status === "done"
       ? `captured ${sched.upserted ?? 0} posts (${sched.mirrored ?? 0} images) · ${fmtTime(sched.started_at)}`
       : sched.status === "error"
-        ? `${esc(sched.error || "failed")} — the watchdog re-runs ~40 min after the 9 AM job and will retry.`
+        ? `${esc(sched.error || "failed")} — the watchdog re-runs ~40 min after the daily 5 AM ET job and will retry.`
         : `${fmtTime(sched.started_at)}`;
     banner = `<div class="run-banner ${h.cls}">${h.e} <strong>Latest nightly run: ${h.label}</strong> — ${detail}</div>`;
   }

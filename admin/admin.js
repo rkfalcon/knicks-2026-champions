@@ -215,11 +215,17 @@ function runHealth(r) {
   const ageMin = r.started_at ? (Date.now() - Date.parse(r.started_at)) / 60000 : 0;
   if (r.status === "running") return ageMin > 10 ? { e: "🟠", label: `Stuck (${Math.round(ageMin)}m)`, cls: "bad" } : { e: "⏳", label: "Running…", cls: "run" };
   if (r.status === "error") return { e: "❌", label: "Failed", cls: "bad" };
+  // Mirror runs only upload images (no scraping) — judge them by image count.
+  if (r.trigger === "mirror") {
+    if (r.status === "done") return { e: "✅", label: "Healthy", cls: "ok" };
+    return { e: "•", label: r.status || "—", cls: "" };
+  }
   if (r.status === "done") return (r.upserted ?? 0) > 0 ? { e: "✅", label: "Healthy", cls: "ok" } : { e: "⚠️", label: "Captured nothing", cls: "warn" };
   return { e: "•", label: r.status || "—", cls: "" };
 }
 function runMessage(r) {
   const h = runHealth(r);
+  if (r.trigger === "mirror" && r.status === "done") return `${h.e} ${h.label} — mirrored ${r.mirrored ?? 0} images`;
   if (r.status === "done") return `${h.e} ${h.label} — ${r.upserted ?? 0} posts · ${r.mirrored ?? 0} images`;
   if (r.status === "error") return `${h.e} ${h.label} — ${esc(r.error || "unknown error")}`;
   return `${h.e} ${h.label}`;

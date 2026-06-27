@@ -520,23 +520,24 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
 /* Handle + per-post Share on one row at the very top of the caption, so the
    Share button is always above the fold (incl. mobile, where the body is short). */
 .lb-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.lb-share {
-  flex: 0 0 auto; cursor: pointer; white-space: nowrap;
-  font-family: "VT323", monospace; font-size: 1.05rem; letter-spacing: 1px;
-  background: var(--knicks-blue); color: #fff; border: 3px solid var(--ink);
-  box-shadow: var(--shadow-sm); padding: 5px 14px;
-}
-.lb-share:active { transform: translate(2px, 2px); box-shadow: none; }
-/* Heart (save) + Share share one row, always on the same line. */
+/* Heart (save) + Share share one row, always on the same line, as equal-size
+   boxes. Heart = orange heart on Knicks blue; Share = blue arrow on Knicks orange. */
 .lb-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 9px; }
-.lb-heart {
-  flex: 0 0 auto; cursor: pointer; line-height: 1; font-size: 1.25rem;
-  background: var(--paper); border: 3px solid var(--ink); box-shadow: var(--shadow-sm);
-  padding: 4px 9px; filter: grayscale(1); opacity: 0.5;
-  transition: filter .12s, opacity .12s, transform .08s;
+.lb-heart, .lb-share {
+  flex: 0 0 auto; cursor: pointer; line-height: 1; box-sizing: border-box;
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 44px; font-size: 1.35rem; border: 3px solid var(--ink); box-shadow: var(--shadow-sm);
+  transition: opacity .12s, transform .08s;
 }
-.lb-heart.is-saved { filter: none; opacity: 1; background: #fff1e2; border-color: var(--knicks-orange); }
-.lb-heart:active { transform: translate(2px, 2px); box-shadow: none; }
+.lb-heart { width: 44px; padding: 0; background: var(--knicks-blue); opacity: 0.55; }
+.lb-heart.is-saved { opacity: 1; }
+.lb-share {
+  white-space: nowrap; padding: 0 14px;
+  font-family: "VT323", monospace; letter-spacing: 1px;
+  background: var(--knicks-orange); color: var(--knicks-blue);
+}
+.lb-share-text { font-size: 1.05rem; }   /* keep the desktop word at label size */
+.lb-heart:active, .lb-share:active { transform: translate(2px, 2px); box-shadow: none; }
 .lb-body .card-handle { font-size: 1.05rem; }
 .lb-body .lb-text { font-size: 1.02rem; line-height: 1.55; white-space: pre-wrap; }
 .lb-source {
@@ -697,8 +698,8 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
 @media (max-width: 560px) {
   .acct-name { display: none; }              /* keep the statusbar tidy on phones */
   .acct-area { gap: 8px; }
-  .lb-share-text { display: none; }          /* Share → icon-only so heart + Share fit one line */
-  .lb-share { padding: 5px 11px; }
+  .lb-share-text { display: none; }          /* Share → icon-only square, equal to the heart */
+  .lb-share { width: 44px; padding: 0; }
   .lb-top .card-handle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 

@@ -796,13 +796,13 @@
   function renderBook(items, title, mine, emptyMsg) {
     state.bookFrames = items.map((it) => it.frame);
     state.view = items.map((it) => it.post);
-    // " photo book" drops on phones (just the name); "·" separators show only on
-    // phones, where the bar is a single left-to-right line.
+    // On phones " photo book" drops to just the name; the three groups spread
+    // edge-to-edge (Back pinned right) via space-between — no separators.
     const titleHtml = esc(title).replace(/ photo book$/, '<span class="bb-suffix"> photo book</span>');
     const shareBtn = mine && state.profile?.username
-      ? `<span class="bb-sep">·</span><button class="link-btn" id="bookShareBtn">Share<span class="bb-myword"> my</span> book ⤴</button>` : "";
+      ? `<button class="link-btn" id="bookShareBtn">Share my book ⤴</button>` : "";
     el.bookBanner.hidden = false;
-    el.bookBanner.innerHTML = `<div class="bb-inner"><strong>🧡 ${titleHtml}</strong><span class="bb-sep">·</span><span class="bb-count">${items.length} image${items.length === 1 ? "" : "s"}</span>${shareBtn}<span class="bb-sep">·</span><button class="link-btn" id="bookBackBtn">✕ Back to feed</button></div>`;
+    el.bookBanner.innerHTML = `<div class="bb-inner"><span class="bb-id"><strong>🧡 ${titleHtml}</strong> <span class="bb-count">(${items.length} image${items.length === 1 ? "" : "s"})</span></span>${shareBtn}<button class="link-btn" id="bookBackBtn">✕ Back to feed</button></div>`;
     const n = colCount();
     el.book.innerHTML = Array.from({ length: n }, () => `<div class="book-col"></div>`).join("");
     const cols = [...el.book.querySelectorAll(".book-col")];

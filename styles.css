@@ -750,24 +750,23 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
 /* Book banner (above the grid when viewing a book) */
 .book-banner { max-width: var(--maxw); margin: 0 auto; padding: 6px 16px 0; }
 .bb-inner {
-  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
   background: #fff1e2; border: 3px solid var(--ink); box-shadow: var(--shadow-sm); padding: 10px 14px;
 }
+.bb-id { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; }   /* name + (count) grouped */
 .bb-inner strong { font-family: "Anton", sans-serif; font-size: 1.15rem; letter-spacing: 0.5px; }
 .bb-count { font-family: "VT323", monospace; opacity: 0.7; }
-#bookBackBtn { margin-left: auto; }
-.bb-sep { display: none; }   /* "·" separators are phone-only */
 .book-card .card-media { border-bottom: none; }
 @media (max-width: 560px) {
-  /* One tight left-to-right line: name · count · Share book ⤴ · ✕ Back to feed */
+  /* Three groups spread edge-to-edge, Back pinned right:
+     🧡 name (N images)   Share my book ⤴   ✕ Back to feed */
   .book-banner { padding: 4px 12px 0; }
-  .bb-inner { gap: 5px; padding: 5px 9px; flex-wrap: nowrap; font-size: 0.85rem; }
-  .bb-inner strong { font-size: 0.85rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 0 1 auto; }
+  .bb-inner { gap: 6px; padding: 5px 9px; flex-wrap: nowrap; font-size: 0.85rem; }
+  .bb-id { flex: 0 1 auto; }
+  .bb-id strong { font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
   .bb-inner .link-btn { font-size: 0.85rem; flex: 0 0 auto; }
-  .bb-count { flex: 0 0 auto; opacity: 0.7; }
-  .bb-suffix, .bb-myword { display: none; }     /* " photo book"/" my" dropped on phones */
-  .bb-sep { display: inline; flex: 0 0 auto; opacity: 0.45; }
-  #bookBackBtn { margin-left: 0; }              /* flow inline, not pinned right */
+  .bb-count { flex: 0 0 auto; }
+  .bb-suffix { display: none; }                 /* drop " photo book" → just the name */
 }
 
 /* Save confirmation toast (after 🧡 add) — sits above the lightbox. */

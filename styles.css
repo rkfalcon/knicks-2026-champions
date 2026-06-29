@@ -756,6 +756,8 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
 .bb-id { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; }   /* name + (count) grouped */
 .bb-inner strong { font-family: "Anton", sans-serif; font-size: 1.15rem; letter-spacing: 0.5px; }
 .bb-count { font-family: "VT323", monospace; opacity: 0.7; }
+/* These two read as black, not orange. */
+#bookBackBtn, #signOutBtn { color: var(--ink); }
 .book-card .card-media { border-bottom: none; }
 @media (max-width: 560px) {
   /* Three groups spread edge-to-edge, Back pinned right:

@@ -372,9 +372,17 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
 }
 #share:active { transform: translate(2px, 2px); box-shadow: none; }
 @media (max-width: 560px) {
-  .statusbar { font-size: 1rem; }
-  .statusbar-actions { gap: 12px; }
-  #share { padding: 2px 9px; }
+  /* Tighter blue filter bar on phones. */
+  .filters { padding: 8px 12px; }
+  .filters-row + .filters-row { margin-top: 6px; }
+  /* Keep the status row on ONE line even when "clear filters" appears: the count
+     (informational) may shrink/ellipsis; the action buttons never wrap. */
+  .statusbar { font-size: 0.95rem; flex-wrap: nowrap; gap: 8px; letter-spacing: 0.5px; }
+  .statusbar .link-btn { font-size: 0.95rem; }
+  #count { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .statusbar-actions { flex: 0 0 auto; gap: 9px; }
+  #share { padding: 2px 8px; }
+  .cnt-suffix, .reset-full { display: none; }  /* "… moments" / "clear filters" → "clear" */
 }
 
 /* Loading state: a row of little bouncing basketballs. */

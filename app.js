@@ -361,9 +361,11 @@
     el.book.hidden = state.view.length === 0;
 
     const total = state.data.count || state.data.posts.length;
-    el.count.textContent = state.view.length === total
-      ? `📖 ${total} moments`
-      : `📖 ${state.view.length} of ${total} moments`;
+    // " moments" lives in a span so phones can drop it (keeps the status row to
+    // one line even when "clear filters" appears). The numbers are safe to inject.
+    const cnt = state.view.length === total ? `${total}` : `${state.view.length} of ${total}`;
+    el.count.classList.remove("is-loading");
+    el.count.innerHTML = `📖 ${cnt}<span class="cnt-suffix"> moments</span>`;
 
     const filtersActive = state.platform !== "all" || state.series !== "all" ||
       state.atype !== "all" || state.player || state.celeb || state.account || state.keyword ||

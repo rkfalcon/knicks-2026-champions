@@ -757,6 +757,15 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
 .bb-count { font-family: "VT323", monospace; opacity: 0.7; }
 #bookBackBtn { margin-left: auto; }
 .book-card .card-media { border-bottom: none; }
+@media (max-width: 560px) {
+  /* Make the book banner as small as possible on phones: one tight line,
+     drop the count and the trailing words ("photo book", "my book", etc.). */
+  .book-banner { padding: 4px 12px 0; }
+  .bb-inner { gap: 8px; padding: 5px 10px; flex-wrap: nowrap; }
+  .bb-inner strong { font-size: 0.95rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bb-inner .link-btn { font-size: 0.92rem; }
+  .bb-count, .bb-extra { display: none; }
+}
 
 /* Save confirmation toast (after 🧡 add) — sits above the lightbox. */
 .save-toast {

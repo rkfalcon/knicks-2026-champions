@@ -800,7 +800,7 @@
     // phones, where the bar is a single left-to-right line.
     const titleHtml = esc(title).replace(/ photo book$/, '<span class="bb-suffix"> photo book</span>');
     const shareBtn = mine && state.profile?.username
-      ? `<span class="bb-sep">·</span><button class="link-btn" id="bookShareBtn">Share my book ⤴</button>` : "";
+      ? `<span class="bb-sep">·</span><button class="link-btn" id="bookShareBtn">Share<span class="bb-myword"> my</span> book ⤴</button>` : "";
     el.bookBanner.hidden = false;
     el.bookBanner.innerHTML = `<div class="bb-inner"><strong>🧡 ${titleHtml}</strong><span class="bb-sep">·</span><span class="bb-count">${items.length} image${items.length === 1 ? "" : "s"}</span>${shareBtn}<span class="bb-sep">·</span><button class="link-btn" id="bookBackBtn">✕ Back to feed</button></div>`;
     const n = colCount();

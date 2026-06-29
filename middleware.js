@@ -98,9 +98,11 @@ export default async function middleware(req) {
       const meta = await bookMeta(url.searchParams.get("book"));
       if (!meta) return next();
       const title = `${meta.name}'s photo book`;
-      const ogImg = meta.cover
-        ? `${url.origin}/api/og?img=${encodeURIComponent(meta.cover)}&title=${encodeURIComponent(title)}`
-        : `${url.origin}/api/og?label=${encodeURIComponent(title)}`;
+      // Use the cover photo DIRECTLY (a real saved image) rather than the
+      // on-demand @vercel/og card: the card takes ~1.5s / ~1MB to render, which
+      // is too slow for the iOS share-sheet preview (it shows a blank icon).
+      // The storage photo loads in ~0.2s, so the preview reliably shows an image.
+      const ogImg = meta.cover || `${url.origin}/api/og?label=${encodeURIComponent(title)}`;
       return inject(url.origin, { img: ogImg, title: `${meta.name}'s Knicks photo book`, shareUrl: url.toString(), alt: title });
     }
 

@@ -759,13 +759,13 @@ h1 .line-2 em { font-style: normal; color: var(--knicks-orange); }
 .bb-sep { display: none; }   /* "·" separators are phone-only */
 .book-card .card-media { border-bottom: none; }
 @media (max-width: 560px) {
-  /* One tight left-to-right line: name · count · Share my book ⤴ · ✕ Back to feed */
+  /* One tight left-to-right line: name · count · Share book ⤴ · ✕ Back to feed */
   .book-banner { padding: 4px 12px 0; }
-  .bb-inner { gap: 5px; padding: 5px 9px; flex-wrap: nowrap; font-size: 0.78rem; }
-  .bb-inner strong { font-size: 0.82rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 0 1 auto; }
-  .bb-inner .link-btn { font-size: 0.78rem; flex: 0 0 auto; }
+  .bb-inner { gap: 5px; padding: 5px 9px; flex-wrap: nowrap; font-size: 0.85rem; }
+  .bb-inner strong { font-size: 0.85rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 0 1 auto; }
+  .bb-inner .link-btn { font-size: 0.85rem; flex: 0 0 auto; }
   .bb-count { flex: 0 0 auto; opacity: 0.7; }
-  .bb-suffix { display: none; }                 /* drop " photo book" → just the name */
+  .bb-suffix, .bb-myword { display: none; }     /* " photo book"/" my" dropped on phones */
   .bb-sep { display: inline; flex: 0 0 auto; opacity: 0.45; }
   #bookBackBtn { margin-left: 0; }              /* flow inline, not pinned right */
 }

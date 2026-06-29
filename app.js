@@ -813,8 +813,11 @@
       const img = (it.post.images && it.post.images[it.frame]) || it.post.image || "";
       cols[i % n].insertAdjacentHTML("beforeend", bookCardHTML(it.post, img, i));
     });
-    el.scrollMore.hidden = true;
     window.scrollTo({ top: 0 });
+    // Same "↓ Scroll for more" cue as the feed — book cards are .card in #book and
+    // state.view/state.rendered are set above, so the shared scroll logic works.
+    // Defer one frame so layout settles before measuring scroll height.
+    requestAnimationFrame(updateScrollMore);
   }
 
   function bookCardHTML(p, img, i) {

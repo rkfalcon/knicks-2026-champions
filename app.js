@@ -14,6 +14,7 @@
     lightbox: $("#lightbox"), lbStage: $("#lbStage"),
     lbClose: $("#lbClose"), lbPrev: $("#lbPrev"), lbNext: $("#lbNext"),
     acctArea: $("#acctArea"), bookBanner: $("#bookBanner"), authModal: $("#authModal"),
+    saveToast: $("#saveToast"),
   };
 
   const state = {
@@ -693,16 +694,34 @@
     const sb = state.sb;
     if (!sb || !state.user) return;
     const key = savedKey(postId, frame);
+    let added = false;
     try {
       if (on) {
-        await sb.from("saved_items").upsert({ user_id: state.user.id, post_id: postId, frame_idx: frame }, { onConflict: "user_id,post_id,frame_idx" });
-        state.saved.add(key);
+        const { error } = await sb.from("saved_items").upsert({ user_id: state.user.id, post_id: postId, frame_idx: frame }, { onConflict: "user_id,post_id,frame_idx" });
+        if (!error) { state.saved.add(key); added = true; }
       } else {
         await sb.from("saved_items").delete().eq("user_id", state.user.id).eq("post_id", postId).eq("frame_idx", frame);
         state.saved.delete(key);
       }
     } catch { /* RLS / network — ignore */ }
     refreshHeart();
+    if (added) showSaveToast();  // confirm the save + offer "View my book"
+  }
+
+  // Brief confirmation after saving an image, with a way to jump to the book.
+  let saveToastTimer;
+  function showSaveToast() {
+    if (!el.saveToast) return;
+    el.saveToast.hidden = false;
+    requestAnimationFrame(() => el.saveToast.classList.add("is-on"));
+    clearTimeout(saveToastTimer);
+    saveToastTimer = setTimeout(hideSaveToast, 4500);
+  }
+  function hideSaveToast() {
+    if (!el.saveToast) return;
+    clearTimeout(saveToastTimer);
+    el.saveToast.classList.remove("is-on");
+    setTimeout(() => { el.saveToast.hidden = true; }, 250);
   }
 
   // Sync the lightbox heart to the post + frame currently in view.
@@ -972,6 +991,10 @@
     el.bookBanner.addEventListener("click", (e) => {
       if (e.target.closest("#bookBackBtn")) exitBook();
       else if (e.target.closest("#bookShareBtn")) shareBook();
+    });
+    if (el.saveToast) el.saveToast.addEventListener("click", (e) => {
+      if (e.target.closest("#saveToastView")) { hideSaveToast(); if (!el.lightbox.hidden) closeLightbox(); openMyBook(); }
+      else if (e.target.closest("#saveToastDismiss")) hideSaveToast();
     });
     el.authModal.addEventListener("click", (e) => {
       if (e.target === el.authModal || e.target.closest("#authClose")) { closeAuth(); return; }

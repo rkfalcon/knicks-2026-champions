@@ -91,8 +91,7 @@
     state.authPending = /[?&]code=/.test(location.search) || /(?:^|[#&])(access_token|error_description)=/.test(location.hash);
     if (state.authPending) setTimeout(() => { state.authPending = false; }, 10000); // failsafe
     render();
-    initAdmin();      // enable admin remove controls if signed in (no-op otherwise)
-    initUser();       // load auth + this visitor's saved items (no-op if signed out)
+    initUser();       // auth + saved items; also flips on admin controls (checkAdmin)
     if (state.pendingPost) {   // a shared post link — open it on top of the feed
       const idx = state.view.findIndex((x) => x.id === state.pendingPost);
       if (idx >= 0) openLightbox(idx, state.pendingFrame || 0);
@@ -598,25 +597,19 @@
   /* ---------- admin: remove non-Knicks posts ---------- */
   // Cheap check first — only the admin's browser has a Supabase session, so
   // normal visitors never load the auth library.
-  function maybeAdmin() {
-    try { return Object.keys(localStorage).some((k) => /^sb-.*-auth-token$/.test(k)); }
-    catch { return false; }
-  }
-  async function initAdmin() {
-    if (!maybeAdmin()) return;
+  // Show admin remove-controls if the signed-in user is on the admins allowlist.
+  // Driven by onSession so it works whether the session is restored from storage
+  // or freshly established (async) after a magic-link / OAuth redirect.
+  async function checkAdmin(token) {
+    if (!token) { state.isAdmin = false; state.adminToken = null; document.body.classList.remove("is-admin"); return; }
+    if (state.isAdmin) { state.adminToken = token; return; } // already verified — just refresh the token
     try {
-      const sb = await getSupabase();
-      if (!sb) return;
-      const { data } = await sb.auth.getSession();
-      const token = data.session?.access_token;
-      if (!token) return;
       const ok = await fetch("/api/admin/hide", { headers: { Authorization: `Bearer ${token}` } })
         .then((r) => r.ok).catch(() => false);
-      if (!ok) return; // logged in but not an admin
-      state.adminToken = token;
-      document.body.classList.add("is-admin");
-      sb.auth.onAuthStateChange((_e, s) => { state.adminToken = s?.access_token || null; });
-    } catch { /* not admin / offline — stay in normal mode */ }
+      state.isAdmin = ok;
+      state.adminToken = ok ? token : null;
+      document.body.classList.toggle("is-admin", ok);
+    } catch { /* offline — stay in normal mode */ }
   }
   async function hidePost(id) {
     if (!state.adminToken || !id) return;
@@ -662,6 +655,7 @@
     state.user = session?.user || null;
     if (state.user) {
       state.authPending = false; // callback consumed — URL syncing can resume
+      checkAdmin(session?.access_token); // show remove-X's if this user is an admin
       await loadProfileAndSaved();
       // Apply a save the user started before signing in. Check in-memory first,
       // then localStorage (survives the magic-link/OAuth redirect). Ignore stale
@@ -674,7 +668,10 @@
       state.pendingSave = null;
       try { localStorage.removeItem("knicks_pendingSave"); } catch {}
       if (ps && ps.postId && !isSaved(ps.postId, ps.frame || 0)) await setSaved(ps.postId, ps.frame || 0, true);
-    } else { state.profile = null; state.saved = new Set(); }
+    } else {
+      state.profile = null; state.saved = new Set();
+      state.isAdmin = false; state.adminToken = null; document.body.classList.remove("is-admin");
+    }
     renderAcct();
     refreshHeart();
   }

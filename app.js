@@ -655,7 +655,17 @@
     state.user = session?.user || null;
     if (state.user) {
       await loadProfileAndSaved();
-      if (state.pendingSave) { const ps = state.pendingSave; state.pendingSave = null; await setSaved(ps.postId, ps.frame, true); }
+      // Apply a save the user started before signing in. Check in-memory first,
+      // then localStorage (survives the magic-link/OAuth redirect). Ignore stale
+      // ones (>30 min) so an old intent doesn't save unexpectedly later.
+      let ps = state.pendingSave;
+      if (!ps) {
+        try { const o = JSON.parse(localStorage.getItem("knicks_pendingSave") || "null");
+          if (o && o.postId && (!o.t || Date.now() - o.t < 1800000)) ps = o; } catch {}
+      }
+      state.pendingSave = null;
+      try { localStorage.removeItem("knicks_pendingSave"); } catch {}
+      if (ps && ps.postId && !isSaved(ps.postId, ps.frame || 0)) await setSaved(ps.postId, ps.frame || 0, true);
     } else { state.profile = null; state.saved = new Set(); }
     renderAcct();
     refreshHeart();
@@ -686,7 +696,14 @@
     if (!p) return;
     const gal = document.getElementById("lbGallery");
     const frame = gal ? Math.round(gal.scrollLeft / (gal.clientWidth || 1)) : 0;
-    if (!state.user) { state.pendingSave = { postId: p.id, frame }; openAuth(); return; }
+    if (!state.user) {
+      state.pendingSave = { postId: p.id, frame };
+      // Persist across the magic-link / OAuth page redirect (in-memory state is
+      // wiped when the user leaves to confirm their email and comes back).
+      try { localStorage.setItem("knicks_pendingSave", JSON.stringify({ postId: p.id, frame, t: Date.now() })); } catch {}
+      openAuth();
+      return;
+    }
     await setSaved(p.id, frame, !isSaved(p.id, frame));
   }
 

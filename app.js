@@ -86,6 +86,10 @@
     buildFilters();
     bind();
     applyUrlParams(); // pre-populate filters from a shared deep link
+    // Coming back from a Google/magic-link redirect? Hold off rewriting the URL
+    // (see syncUrl) until Supabase has exchanged the ?code=, so the sign-in lands.
+    state.authPending = /[?&]code=/.test(location.search) || /(?:^|[#&])(access_token|error_description)=/.test(location.hash);
+    if (state.authPending) setTimeout(() => { state.authPending = false; }, 10000); // failsafe
     render();
     initAdmin();      // enable admin remove controls if signed in (no-op otherwise)
     initUser();       // load auth + this visitor's saved items (no-op if signed out)
@@ -177,6 +181,9 @@
   }
 
   function syncUrl() {
+    // While an OAuth/magic-link callback is in the URL (?code=…), don't rewrite
+    // it — Supabase needs to read and exchange it first. Cleared once signed in.
+    if (state.authPending) return;
     const d = state.data;
     const p = new URLSearchParams();
     if (state.platform !== "all") p.set("platform", state.platform);
@@ -654,6 +661,7 @@
   async function onSession(session) {
     state.user = session?.user || null;
     if (state.user) {
+      state.authPending = false; // callback consumed — URL syncing can resume
       await loadProfileAndSaved();
       // Apply a save the user started before signing in. Check in-memory first,
       // then localStorage (survives the magic-link/OAuth redirect). Ignore stale
@@ -701,6 +709,8 @@
       // Persist across the magic-link / OAuth page redirect (in-memory state is
       // wiped when the user leaves to confirm their email and comes back).
       try { localStorage.setItem("knicks_pendingSave", JSON.stringify({ postId: p.id, frame, t: Date.now() })); } catch {}
+      // Come back to THIS post so it reopens and the heart turns solid after sign-in.
+      state.authRedirect = `${location.origin}${location.pathname}?post=${encodeURIComponent(p.id)}&frame=${frame}`;
       openAuth();
       return;
     }
@@ -759,11 +769,11 @@
   function closeAuth() { el.authModal.hidden = true; const m = $("#authMsg"); if (m) m.hidden = true; }
   async function signInGoogle() {
     const sb = await getSupabase(); if (!sb) return;
-    await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.href } });
+    await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: state.authRedirect || location.href } });
   }
   async function signInEmail(email) {
     const sb = await getSupabase(); if (!sb) return;
-    const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.href } });
+    const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: state.authRedirect || location.href } });
     const m = $("#authMsg");
     if (m) { m.hidden = false; m.textContent = error ? ("Couldn't send: " + error.message) : "✓ Check your email for the magic link to finish signing in."; }
   }

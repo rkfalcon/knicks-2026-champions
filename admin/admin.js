@@ -125,6 +125,7 @@ const acctFilter = { q: "", type: "all", focus: false };
 function renderTab(tab) {
   if (tab === "settings") return renderSettings();
   if (tab === "runs") return renderRuns();
+  if (tab === "users") return renderUsers();
   if (tab === "addpost") return renderAddPost();
   const schema = ENTITIES[tab];
   const all = DATA[tab] || [];
@@ -229,6 +230,31 @@ function runMessage(r) {
   if (r.status === "done") return `${h.e} ${h.label} — ${r.upserted ?? 0} posts · ${r.mirrored ?? 0} images`;
   if (r.status === "error") return `${h.e} ${h.label} — ${esc(r.error || "unknown error")}`;
   return `${h.e} ${h.label}`;
+}
+
+async function renderUsers() {
+  $("#panel").innerHTML = `<div class="panel-head"><h2>users</h2></div><p style="padding:14px">Loading…</p>`;
+  let data;
+  try { data = await api("GET", null, "/api/admin/users"); } catch { return; }
+  const users = data.users || [];
+  const withBooks = users.filter((u) => u.book_url).length;
+  const body = users.map((u) => `<tr>
+    <td>${esc(u.email)}</td>
+    <td>${fmtTime(u.created_at)}</td>
+    <td>${esc(u.provider)}</td>
+    <td>${u.book_url
+      ? `<a href="${esc(u.book_url)}" target="_blank" rel="noopener">${esc(u.book_url.replace(/^https?:\/\//, ""))}</a> <small>(${u.saved} saved)</small>`
+      : `<span style="opacity:.5">— no book yet</span>`}</td>
+  </tr>`).join("");
+  $("#panel").innerHTML = `
+    <div class="panel-head">
+      <h2>users <small>(${users.length} total · ${withBooks} with a photo book)</small></h2>
+      <button class="btn" data-refresh-users>↻ Refresh</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr>
+      <th>email</th><th>signed up</th><th>method</th><th>photo book</th>
+    </tr></thead><tbody>${body || `<tr><td colspan="4" style="padding:14px">No users yet.</td></tr>`}</tbody></table></div>`;
+  $("[data-refresh-users]").addEventListener("click", renderUsers);
 }
 
 function renderRuns() {

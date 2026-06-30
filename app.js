@@ -14,7 +14,7 @@
     lightbox: $("#lightbox"), lbStage: $("#lbStage"),
     lbClose: $("#lbClose"), lbPrev: $("#lbPrev"), lbNext: $("#lbNext"),
     acctArea: $("#acctArea"), bookBanner: $("#bookBanner"), authModal: $("#authModal"),
-    saveToast: $("#saveToast"),
+    saveToast: $("#saveToast"), layoutToggle: $("#layoutToggle"),
   };
 
   const state = {
@@ -33,6 +33,9 @@
     saved: new Set(),  // keys "<post_id>:<frame>" the user has saved
     bookMode: null,    // null | "mine" | { username, name } when viewing a book
     bookFrames: [],    // frame index per card when rendering a book view
+    // Photo layout, shared by the feed + book views ("cards" | "photos").
+    layout: (() => { try { return localStorage.getItem("knicks_layout") === "photos" ? "photos" : "cards"; } catch { return "cards"; } })(),
+    rerender: null,    // re-renders the current view (feed or book) — set per render
   };
 
   const savedKey = (postId, frame) => `${postId}:${frame || 0}`;
@@ -85,6 +88,7 @@
     state.data = payload;
     buildFilters();
     bind();
+    updateLayoutToggle(); // reflect the saved layout choice on the toggle
     applyUrlParams(); // pre-populate filters from a shared deep link
     // Coming back from a Google/magic-link redirect? Hold off rewriting the URL
     // (see syncUrl) until Supabase has exchanged the ?code=, so the sign-in lands.
@@ -346,17 +350,42 @@
   // Columns matched to the CSS breakpoints — used to lay cards out in row order.
   function colCount() {
     const w = window.innerWidth;
+    if (state.layout === "photos") {     // denser image-only grid
+      if (w >= 1180) return 6;
+      if (w >= 900) return 5;
+      if (w >= 560) return 4;
+      return 2;
+    }
     if (w >= 1180) return 4;
     if (w >= 900) return 3;
     if (w >= 560) return 2;
     return 1;
   }
+  // Reflect the active layout on the grid container (CSS does the rest).
+  function applyLayoutClass() {
+    el.book.classList.toggle("layout-photos", state.layout === "photos");
+  }
+  function updateLayoutToggle() {
+    if (!el.layoutToggle) return;
+    el.layoutToggle.querySelectorAll(".lt-btn").forEach((b) =>
+      b.classList.toggle("is-on", b.dataset.layout === state.layout));
+  }
+  function setLayout(layout) {
+    if (layout !== "cards" && layout !== "photos") return;
+    if (layout === state.layout) return;
+    state.layout = layout;
+    try { localStorage.setItem("knicks_layout", layout); } catch {}
+    updateLayoutToggle();
+    (state.rerender || render)(); // re-render whichever view is showing (feed or book)
+  }
 
   const PAGE_SIZE = 60; // cards rendered per batch (windowed — the rest append on scroll)
 
   function render() {
+    state.rerender = render;
     state.view = applyFilters();
     state.rendered = 0;
+    applyLayoutClass();
 
     // Empty columns up front; cards stream in (round-robin) in batches so a big
     // result set never rebuilds thousands of DOM nodes at once — that synchronous
@@ -818,6 +847,8 @@
   }
 
   function renderBook(items, title, mine, emptyMsg) {
+    state.rerender = () => renderBook(items, title, mine, emptyMsg);
+    applyLayoutClass();
     state.bookFrames = items.map((it) => it.frame);
     state.view = items.map((it) => it.post);
     // On phones " photo book" drops to just the name; the three groups spread
@@ -1079,6 +1110,10 @@
 
     // Collapsible filters panel (hidden by default).
     el.filtersToggle.addEventListener("click", () => setFiltersOpen(el.filterSelects.hidden));
+
+    if (el.layoutToggle) el.layoutToggle.addEventListener("click", (e) => {
+      const b = e.target.closest(".lt-btn"); if (b) setLayout(b.dataset.layout);
+    });
 
     el.activeChips.addEventListener("click", (e) => {
       const btn = e.target.closest(".active-chip");
